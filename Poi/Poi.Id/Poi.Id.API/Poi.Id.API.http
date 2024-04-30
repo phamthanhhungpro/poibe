@@ -1,0 +1,6 @@
+@Poi.Id.API_HostAddress = http://localhost:5193
+
+GET {{Poi.Id.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
