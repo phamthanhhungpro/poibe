@@ -267,8 +267,14 @@ namespace Poi.Id.InfraModel.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -277,6 +283,9 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -395,10 +404,7 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("TenantId")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("TenantId1")
+                    b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -424,7 +430,7 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.HasIndex("TenantId1");
+                    b.HasIndex("TenantId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -527,7 +533,7 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Tenant", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId1");
+                        .HasForeignKey("TenantId");
 
                     b.Navigation("Group");
 

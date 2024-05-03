@@ -7,13 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Poi.Id", "Poi.Id", "{D5147E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poi.Id.API", "Poi.Id\Poi.Id.API\Poi.Id.API.csproj", "{19EB6A86-91AF-4E11-8158-F5A212EDE0C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poi.Id.Logic", "Poi.Id\Poi.Id.Logic\Poi.Id.Logic.csproj", "{57916EF7-1D1E-49EE-875B-F0D5C17F6B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poi.Id.Logic", "Poi.Id\Poi.Id.Logic\Poi.Id.Logic.csproj", "{57916EF7-1D1E-49EE-875B-F0D5C17F6B0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poi.Id.InfraModel", "Poi.Id\Poi.Id.InfraModel\Poi.Id.InfraModel.csproj", "{73AA5EC7-8AE3-4C54-8969-33F997B263FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poi.Id.InfraModel", "Poi.Id\Poi.Id.InfraModel\Poi.Id.InfraModel.csproj", "{73AA5EC7-8AE3-4C54-8969-33F997B263FF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Poi.Shared", "Poi.Shared", "{F4C65656-8F9D-4EC3-B2B5-3DFDF868C5F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poi.Shared.Model", "Poi.Shared\Poi.Shared.Model\Poi.Shared.Model.csproj", "{4A9B1B6D-9299-458E-923C-BF6DEEEE3E6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poi.Shared.Model", "Poi.Shared\Poi.Shared.Model\Poi.Shared.Model.csproj", "{4A9B1B6D-9299-458E-923C-BF6DEEEE3E6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

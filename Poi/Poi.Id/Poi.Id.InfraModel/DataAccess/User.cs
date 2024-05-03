@@ -8,7 +8,6 @@ namespace Poi.Id.InfraModel.DataAccess
         public string Avatar { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
-        public string TenantId { get; set; }
         public bool IsActive { get; set; }
         public Tenant Tenant { get; set; }
         public Group Group { get; set; }

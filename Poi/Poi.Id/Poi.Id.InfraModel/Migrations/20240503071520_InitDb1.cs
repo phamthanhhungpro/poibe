@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Poi.Id.InfraModel.Migrations
 {
     /// <inheritdoc />
-    public partial class PoiidInit : Migration
+    public partial class InitDb1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,9 @@ namespace Poi.Id.InfraModel.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Code = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
@@ -143,9 +146,8 @@ namespace Poi.Id.InfraModel.Migrations
                     Avatar = table.Column<string>(type: "text", nullable: true),
                     Address = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),
-                    TenantId = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    TenantId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
                     GroupId = table.Column<Guid>(type: "uuid", nullable: true),
                     RoleId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -181,8 +183,8 @@ namespace Poi.Id.InfraModel.Migrations
                         principalTable: "Groups",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Tenants_TenantId1",
-                        column: x => x.TenantId1,
+                        name: "FK_AspNetUsers_Tenants_TenantId",
+                        column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id");
                 });
@@ -354,9 +356,9 @@ namespace Poi.Id.InfraModel.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_TenantId1",
+                name: "IX_AspNetUsers_TenantId",
                 table: "AspNetUsers",
-                column: "TenantId1");
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
