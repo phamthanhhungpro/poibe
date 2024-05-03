@@ -26,19 +26,21 @@ namespace Poi.Id.Logic.Services
 
         public async Task<CudResponseDto> CreateTenant(CreateTenantRequest tenant)
         {
-            // generate a new tenant for me
+            var apps = _context.Apps.Where(x => tenant.AppIds.Contains(x.Id)).ToList();
+
             var newTenant = new Tenant
             {
                 Name = tenant.Name,
                 Description = tenant.Description,
-                Code = tenant.Code
+                Code = tenant.Code,
+                Apps = apps
             };
 
-            // add the tenant to the database
+            newTenant.CreatedAt = DateTime.UtcNow;
+
             _context.Tenants.Add(newTenant);
             await _context.SaveChangesAsync();
 
-            // return the new tenant
             return new CudResponseDto
             {
                 Id = newTenant.Id
@@ -87,20 +89,25 @@ namespace Poi.Id.Logic.Services
 
         public async Task<Tenant> GetTenantById(Guid id)
         {
-            return await _context.Tenants.Include(t => t.Apps).FirstOrDefaultAsync(t => t.Id == id);
+           return await _context.Tenants.Include(t => t.Apps).FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<CudResponseDto> UpdateTenant(Guid id, CreateTenantRequest tenant)
         {
-            // find the tenant
-            var toUpdateTenant = await _context.Tenants.FindAsync(id);
+            // find apps
+            var apps = _context.Apps.Where(x => tenant.AppIds.Contains(x.Id)).ToList();
 
-            if (tenant == null)
+            // find the tenant
+            var toUpdateTenant = await _context.Tenants.Include(t => t.Apps).FirstOrDefaultAsync(t => t.Id == id);
+
+            if (toUpdateTenant == null)
             {
                 throw new Exception($"Tenant {Error.NotFound}");
             }
 
             _mapper.Map(tenant, toUpdateTenant);
+
+            toUpdateTenant.Apps = apps;
 
             toUpdateTenant.UpdatedAt = DateTime.UtcNow;
 

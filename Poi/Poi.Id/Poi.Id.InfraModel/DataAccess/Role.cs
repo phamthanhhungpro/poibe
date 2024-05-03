@@ -12,6 +12,7 @@ namespace Poi.Id.InfraModel.DataAccess
     {
         public string Description { get; set; }
         public string Code { get; set; }
+        public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }

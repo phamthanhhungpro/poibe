@@ -21,7 +21,6 @@ namespace Poi.Id.Logic.Services
 
         public async Task<CudResponseDto> CreateApp(AppRequest app)
         {
-            // generate a new app for me
             var newApp = new App()
             {
                 Code = app.Code,
@@ -29,11 +28,11 @@ namespace Poi.Id.Logic.Services
                 Description = app.Description,
             };
 
-            // add the app to the database
+            newApp.CreatedAt = DateTime.UtcNow;
+
             _context.Apps.Add(newApp);
             await _context.SaveChangesAsync();
 
-            // return the new app
             return new CudResponseDto()
             {
                 Id = newApp.Id,
@@ -88,16 +87,16 @@ namespace Poi.Id.Logic.Services
         public async Task<CudResponseDto> UpdateApp(Guid id, AppRequest app)
         {
             // find the app
-            var toUpdateapp = await _context.Apps.FindAsync(id);
+            var toUpdateApp = await _context.Apps.FindAsync(id);
 
-            if (app == null)
+            if (toUpdateApp == null)
             {
                 throw new Exception($"app {Error.NotFound}");
             }
 
-            _mapper.Map(app, toUpdateapp);
+            _mapper.Map(app, toUpdateApp);
 
-            toUpdateapp.UpdatedAt = DateTime.UtcNow;
+            toUpdateApp.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 
