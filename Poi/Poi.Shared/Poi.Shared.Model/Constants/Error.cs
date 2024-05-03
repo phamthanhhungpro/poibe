@@ -10,5 +10,6 @@ namespace Poi.Shared.Model.Constants
     {
         public const string NotFound = "NotFound";
         public const string Invalid = "Invalid";
+        public const string requriedMessage = "Thông tin này không thể bỏ trống";
     }
 }

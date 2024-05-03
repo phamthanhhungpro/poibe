@@ -63,6 +63,7 @@ builder.Services.AddAuthorization();
 
 // add DI for services
 builder.Services.AddScoped<ITenantService, TenantService>();
+builder.Services.AddScoped<IAppService, AppService>();
 ServiceRegister.AddLogic(builder.Services);
 
 var app = builder.Build();
