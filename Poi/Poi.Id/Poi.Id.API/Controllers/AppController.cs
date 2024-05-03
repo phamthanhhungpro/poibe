@@ -25,6 +25,14 @@ namespace Poi.Id.API.Controllers
             return Ok(apps);
         }
 
+        // GET api/app
+        [HttpGet("nopaging")]
+        public async Task<IActionResult> GetAllAppsNoPaging()
+        {
+            var apps = await _appService.GetAppNoPaging();
+            return Ok(apps);
+        }
+
         // GET api/apps/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetappById(Guid id)

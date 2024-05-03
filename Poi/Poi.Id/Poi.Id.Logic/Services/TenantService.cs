@@ -73,7 +73,9 @@ namespace Poi.Id.Logic.Services
             var pageSize = request.PageSize;
             var pageNumber = request.PageNumber;
 
-            var query = _context.Tenants.OrderByDescending(o => o.CreatedAt).AsNoTracking();
+            var query = _context.Tenants
+                .Include(t => t.Apps)
+                .OrderByDescending(o => o.CreatedAt).AsNoTracking();
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             var count = await query.CountAsync();

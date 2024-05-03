@@ -14,6 +14,7 @@ namespace Poi.Id.Logic.Interfaces
         Task<PagingResponse<App>> GetApp(PagingRequest request);
 
         Task<App> GetAppById(Guid id);
+        Task<IList<App>> GetAppNoPaging();
 
         Task<CudResponseDto> CreateApp(AppRequest app);
         Task<CudResponseDto> UpdateApp(Guid id, AppRequest app);

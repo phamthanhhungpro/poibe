@@ -84,6 +84,11 @@ namespace Poi.Id.Logic.Services
             return await _context.Apps.FirstOrDefaultAsync(t => t.Id == id);
         }
 
+        public async Task<IList<App>> GetAppNoPaging()
+        {
+            return await _context.Apps.AsNoTracking().ToListAsync();
+        }
+
         public async Task<CudResponseDto> UpdateApp(Guid id, AppRequest app)
         {
             // find the app
