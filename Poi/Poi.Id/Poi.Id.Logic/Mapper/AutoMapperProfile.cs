@@ -16,5 +16,17 @@ public class AutoMapperProfile : Profile
                           {
                               opts.Condition((src, dest, srcMember) => srcMember != null);
                           });
+
+        CreateMap<GroupRequest, Group>()
+                          .ForAllMembers(opts =>
+                          {
+                              opts.Condition((src, dest, srcMember) => srcMember != null);
+                          });
+
+        CreateMap<RoleRequest, Role>()
+                          .ForAllMembers(opts =>
+                          {
+                              opts.Condition((src, dest, srcMember) => srcMember != null);
+                          });
     }
 }

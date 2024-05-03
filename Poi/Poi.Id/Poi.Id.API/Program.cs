@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,12 +58,20 @@ builder.Services.AddSwaggerGen(opt =>
     });
 });
 
+builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
+
 builder.Services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<IdDbContext>();
 builder.Services.AddAuthorization();
 
 // add DI for services
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IAppService, AppService>();
+builder.Services.AddScoped<IGroupService, GroupService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 ServiceRegister.AddLogic(builder.Services);
 
 var app = builder.Build();
