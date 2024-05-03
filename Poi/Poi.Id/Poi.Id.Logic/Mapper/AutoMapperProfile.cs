@@ -10,5 +10,11 @@ public class AutoMapperProfile : Profile
                           {
                               opts.Condition((src, dest, srcMember) => srcMember != null);
                           });
+
+        CreateMap<AppRequest, App>()
+                          .ForAllMembers(opts =>
+                          {
+                              opts.Condition((src, dest, srcMember) => srcMember != null);
+                          });
     }
 }
