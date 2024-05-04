@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Poi.Id.API.Controllers;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic;
 using Poi.Id.Logic.Interfaces;
@@ -86,8 +87,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAllOrigins");
 app.UseHttpsRedirection();
 
-app.MapGroup("/api/id")
-    .MapIdentityApi<User>();
+app.MapGroup("/api/auth")
+    .CustomMapIdentityApi<User>();
 
 app.UseAuthorization();
 
