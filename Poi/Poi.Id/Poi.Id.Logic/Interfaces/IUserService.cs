@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Poi.Id.Logic.Dtos;
+using Poi.Id.Logic.Requests;
 
 namespace Poi.Id.Logic.Interfaces
 {
-    public class IUserService
+    public interface IUserService
     {
+        Task<PagingResponse<UserListInfoDto>> GetUsers(PagingRequest request);
     }
 }

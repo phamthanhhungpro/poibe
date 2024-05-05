@@ -73,6 +73,8 @@ builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddScoped<IGroupService, GroupService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 ServiceRegister.AddLogic(builder.Services);
 
 var app = builder.Build();
@@ -85,6 +87,7 @@ if (app.Environment.IsDevelopment())
 }
 // Enable CORS
 app.UseCors("AllowAllOrigins");
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.MapGroup("/api/auth")

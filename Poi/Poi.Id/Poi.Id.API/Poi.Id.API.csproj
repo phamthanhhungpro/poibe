@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Poi.Id.Logic\Poi.Id.Logic.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

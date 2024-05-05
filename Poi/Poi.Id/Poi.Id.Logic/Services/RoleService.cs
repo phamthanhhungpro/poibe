@@ -5,11 +5,6 @@ using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
 using Poi.Shared.Model.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Poi.Id.Logic.Services
 {
@@ -81,6 +76,11 @@ namespace Poi.Id.Logic.Services
                 Count = count,
                 Items = data
             };
+        }
+
+        public async Task<List<Role>> GetNoPaging()
+        {
+            return await _context.Roles.OrderByDescending(o => o.CreatedAt).AsNoTracking().ToListAsync();
         }
 
         public async Task<Role> GetRoleById(Guid id)

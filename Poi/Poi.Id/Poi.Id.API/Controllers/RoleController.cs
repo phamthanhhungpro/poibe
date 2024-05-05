@@ -24,6 +24,13 @@ namespace Poi.Id.API.Controllers
             return Ok(roles);
         }
 
+        [HttpGet("nopaging")]
+        public async Task<IActionResult> GetNoPaging()
+        {
+            var roles = await _roleService.GetNoPaging();
+            return Ok(roles);
+        }
+
         // GET api/roles/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRoleById(Guid id)
@@ -46,7 +53,7 @@ namespace Poi.Id.API.Controllers
             }
 
             var createdRole = await _roleService.CreateRole(roleDto);
-            return CreatedAtAction(nameof(GetRoleById), new { id = createdRole.Id }, createdRole);
+            return Ok(createdRole);
         }
 
         // PUT api/roles/{id}

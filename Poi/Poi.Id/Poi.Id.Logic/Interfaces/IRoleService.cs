@@ -7,6 +7,7 @@ namespace Poi.Id.Logic.Interfaces
     public interface IRoleService
     {
         Task<PagingResponse<Role>> GetRole(PagingRequest request);
+        Task<List<Role>> GetNoPaging();
 
         Task<Role> GetRoleById(Guid id);
 
