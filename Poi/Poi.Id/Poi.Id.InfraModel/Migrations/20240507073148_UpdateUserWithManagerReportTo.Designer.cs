@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240507073148_UpdateUserWithManagerReportTo")]
+    partial class UpdateUserWithManagerReportTo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,9 +415,7 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -426,9 +427,6 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -454,9 +452,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SurName")
                         .HasColumnType("text");
 
                     b.Property<Guid?>("TenantId")

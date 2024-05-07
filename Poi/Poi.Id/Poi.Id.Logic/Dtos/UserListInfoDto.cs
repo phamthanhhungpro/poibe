@@ -9,7 +9,8 @@ namespace Poi.Id.Logic.Dtos
     public class UserListInfoDto
     {
         public Guid Id { get; set; }
-        public string FullName { get; set; }
+        public string Name { get; set; }
+        public string SurName { get; set; }
         public string Email { get; set; }
         public string UserName { get; set; }
         public string Avatar { get; set; }
@@ -18,5 +19,11 @@ namespace Poi.Id.Logic.Dtos
         public string GroupName { get; set; }
         public string TenantName { get; set; }
         public bool IsActive { get; set; }
+
+        public string FullName
+        {
+            get { return SurName + " " + Name; }
+            set { }
+        }
     }
 }

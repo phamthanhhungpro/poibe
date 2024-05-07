@@ -94,6 +94,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             ([FromBody] CreateUserRequest registration, HttpContext context, [FromServices] IServiceProvider sp) =>
         {
             var userManager = sp.GetRequiredService<UserManager<User>>();
+            var dbContext = sp.GetRequiredService<IdDbContext>();
 
             if (!userManager.SupportsUserEmail)
             {
@@ -111,12 +112,16 @@ public static class IdentityApiEndpointRouteBuilderExtensions
 
             var user = new User() 
             { 
-                FullName = registration.FullName,
+                SurName = registration.SurName,
+                Name = registration.Name,
                 Email = registration.Email,
                 UserName = registration.UserName,
                 Avatar = registration.Avatar,
                 Address = registration.Address,
-                Phone = registration.Phone
+                Phone = registration.Phone,
+                Role = dbContext.Roles.FirstOrDefault(r => r.Id == registration.RoleId),
+                Apps = dbContext.Apps.Where(a => registration.AppIds.Contains(a.Id)).ToList(),
+                Group = dbContext.Groups.FirstOrDefault(g => g.Id == registration.GroupId)
             };
 
             await userStore.SetUserNameAsync(user, registration.UserName, CancellationToken.None);

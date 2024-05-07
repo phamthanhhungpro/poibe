@@ -55,6 +55,7 @@ namespace Poi.Id.InfraModel.DataAccess
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 

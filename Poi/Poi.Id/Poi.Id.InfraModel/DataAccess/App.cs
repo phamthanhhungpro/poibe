@@ -9,5 +9,6 @@ namespace Poi.Id.InfraModel.DataAccess
         public string Code { get; set; }
 
         public ICollection<Tenant> Tenants { get; set; }
+        public ICollection<User> Users { get; set; }
     }
 }
