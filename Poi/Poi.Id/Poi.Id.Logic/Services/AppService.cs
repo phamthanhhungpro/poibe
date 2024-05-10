@@ -4,6 +4,7 @@ using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
+using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 
 namespace Poi.Id.Logic.Services
@@ -60,12 +61,23 @@ namespace Poi.Id.Logic.Services
             };
         }
 
-        public async Task<PagingResponse<App>> GetApp(PagingRequest request)
+        public async Task<PagingResponse<App>> GetApp(PagingRequest request, TenantInfo info)
         {
             var pageSize = request.PageSize;
             var pageNumber = request.PageNumber;
 
-            var query = _context.Apps.OrderByDescending(o => o.CreatedAt).AsNoTracking();
+            var query = _context.Apps
+                .Include(a => a.Users)
+                .OrderByDescending(o => o.CreatedAt).AsNoTracking();
+
+            if (info.Role != RoleConstants.ROLE_SSA)
+            {
+                query = _context.Users
+                    .Where(u => u.Id == info.UserId)
+                    .SelectMany(u => u.Apps)
+                    .Include(a => a.Users)
+                    .OrderByDescending(o => o.CreatedAt).AsNoTracking();
+            }
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             var count = await query.CountAsync();
@@ -82,6 +94,16 @@ namespace Poi.Id.Logic.Services
         public async Task<App> GetAppById(Guid id)
         {
             return await _context.Apps.FirstOrDefaultAsync(t => t.Id == id);
+        }
+
+        public async Task<IList<App>> GetAppByUser(Guid userId)
+        {
+            var data = _context.Apps
+                .Include(a => a.Users)
+                .Where(a => a.Users.Any(au => au.Id == userId))
+                .AsNoTracking();
+
+            return await data.ToListAsync();
         }
 
         public async Task<IList<App>> GetAppNoPaging()

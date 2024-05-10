@@ -7,7 +7,7 @@ namespace Poi.Id.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoleController : ControllerBase
+    public class RoleController : ExtendedBaseController
     {
         private readonly IRoleService _roleService;
 

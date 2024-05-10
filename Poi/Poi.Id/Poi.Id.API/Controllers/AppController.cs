@@ -8,7 +8,7 @@ namespace Poi.Id.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AppController : ControllerBase
+    public class AppController : ExtendedBaseController
     {
         private readonly IAppService _appService;
 
@@ -21,7 +21,7 @@ namespace Poi.Id.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllApps([FromQuery] PagingRequest request)
         {
-            var apps = await _appService.GetApp(request);
+            var apps = await _appService.GetApp(request, TenantInfo);
             return Ok(apps);
         }
 
@@ -30,6 +30,13 @@ namespace Poi.Id.API.Controllers
         public async Task<IActionResult> GetAllAppsNoPaging()
         {
             var apps = await _appService.GetAppNoPaging();
+            return Ok(apps);
+        }
+
+        [HttpGet("byUser")]
+        public async Task<IActionResult> GetAppByUser(Guid userId)
+        {
+            var apps = await _appService.GetAppByUser(userId);
             return Ok(apps);
         }
 

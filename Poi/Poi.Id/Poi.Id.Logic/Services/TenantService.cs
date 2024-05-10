@@ -4,6 +4,7 @@ using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
+using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,18 @@ namespace Poi.Id.Logic.Services
             {
                 Id = tenant.Id
             };
+        }
+
+        public async Task<IList<Tenant>> GetTenantByInfo(TenantInfo request)
+        {
+            if(request.Role == RoleConstants.ROLE_SSA)
+            {
+                return await _context.Tenants.Include(t => t.Apps).ToListAsync();
+            }
+            else
+            {
+                return await _context.Tenants.Where(a => a.Id == request.TenantId).ToListAsync();
+            }   
         }
 
         public async Task<PagingResponse<Tenant>> GetTenant(PagingRequest request)

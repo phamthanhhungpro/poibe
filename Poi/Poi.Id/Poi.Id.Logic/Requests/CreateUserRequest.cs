@@ -12,6 +12,6 @@
         public string Phone { get; set; }
         public Guid? RoleId { get; set; }
         public List<Guid> AppIds { get; set; }
-        public Guid? GroupId { get; set; }
+        public Guid? TenantId { get; set; }
     }
 }

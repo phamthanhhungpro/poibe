@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Poi.Id.InfraModel.DataAccess;
@@ -121,7 +122,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 Phone = registration.Phone,
                 Role = dbContext.Roles.FirstOrDefault(r => r.Id == registration.RoleId),
                 Apps = dbContext.Apps.Where(a => registration.AppIds.Contains(a.Id)).ToList(),
-                Group = dbContext.Groups.FirstOrDefault(g => g.Id == registration.GroupId)
+                Tenant = dbContext.Tenants.FirstOrDefault(t => t.Id == registration.TenantId)
             };
 
             await userStore.SetUserNameAsync(user, registration.UserName, CancellationToken.None);
@@ -403,23 +404,33 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             (ClaimsPrincipal claimsPrincipal, [FromServices] IServiceProvider sp) =>
         {
             var userManager = sp.GetRequiredService<UserManager<TUser>>();
+            var dbContext = sp.GetRequiredService<IdDbContext>();
             if (await userManager.GetUserAsync(claimsPrincipal) is not { } user)
             {
                 return TypedResults.NotFound();
             }
             var userModel = user as User;
-            var info = new UserInfo()
-            {
-                Id = userModel.Id,
-                FullName = userModel.FullName,
-                Email = userModel.Email,
-                UserName = userModel.UserName,
-                Avatar = userModel.Avatar,
-                Address = userModel.Address,
-                Phone = userModel.Phone
-            };
 
-            return TypedResults.Ok(info);
+            // get user role by user id
+            var userDto = dbContext.Users
+                .Include(u => u.Role)
+                .Include(u => u.Tenant)
+                .Select(u => new UserInfo
+                {
+                    Id = u.Id,
+                    FullName = u.FullName,
+                    Email = u.Email,
+                    UserName = u.UserName,
+                    Avatar = u.Avatar,
+                    Address = u.Address,
+                    Phone = u.Phone,
+                    Role = u.Role.Code,
+                    TenantId = u.Tenant.Id
+                })
+                .FirstOrDefault(ur => ur.Id == userModel.Id);
+
+
+            return TypedResults.Ok(userDto);
         });
 
         accountGroup.MapPost("/info", async Task<Results<Ok<InfoResponse>, ValidationProblem, NotFound>>

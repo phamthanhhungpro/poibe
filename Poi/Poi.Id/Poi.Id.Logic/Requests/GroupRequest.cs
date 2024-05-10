@@ -17,8 +17,5 @@ namespace Poi.Id.Logic.Requests
 
         [Required(ErrorMessage = Error.requriedMessage)]
         public string Code { get; set; }
-
-        [Required(ErrorMessage = Error.requriedMessage)]
-        public Guid TenantId { get; set; }
     }
 }

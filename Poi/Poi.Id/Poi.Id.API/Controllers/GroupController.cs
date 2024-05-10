@@ -7,7 +7,7 @@ namespace Poi.Id.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GroupController : ControllerBase
+    public class GroupController : ExtendedBaseController
     {
         private readonly IGroupService _groupService;
 
@@ -20,7 +20,7 @@ namespace Poi.Id.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllgroups([FromQuery] PagingRequest request)
         {
-            var groups = await _groupService.GetGroup(request);
+            var groups = await _groupService.GetGroup(request, TenantInfo);
             return Ok(groups);
         }
 
@@ -45,7 +45,7 @@ namespace Poi.Id.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var createdGroup = await _groupService.CreateGroup(groupDto);
+            var createdGroup = await _groupService.CreateGroup(groupDto, TenantInfo);
             return CreatedAtAction(nameof(GetGroupById), new { id = createdGroup.Id }, createdGroup);
         }
 
@@ -53,7 +53,7 @@ namespace Poi.Id.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGroup(Guid id, [FromBody] GroupRequest groupDto)
         {
-            var updatedGroup = await _groupService.UpdateGroup(id, groupDto);
+            var updatedGroup = await _groupService.UpdateGroup(id, groupDto, TenantInfo);
             if (updatedGroup == null)
             {
                 return NotFound();

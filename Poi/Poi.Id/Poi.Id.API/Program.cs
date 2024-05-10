@@ -5,6 +5,7 @@ using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Services;
+using Poi.Shared.Model.MiddleWare;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -87,6 +88,8 @@ if (app.Environment.IsDevelopment())
 }
 // Enable CORS
 app.UseCors("AllowAllOrigins");
+
+app.UseMiddleware<HeaderExtractorMiddleWare>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 

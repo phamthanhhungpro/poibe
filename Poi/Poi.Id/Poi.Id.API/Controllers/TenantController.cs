@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
+using Poi.Id.Logic.Services;
 
 namespace Poi.Id.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TenantController : ControllerBase
+    public class TenantController : ExtendedBaseController
     {
         private readonly ITenantService _tenantService;
 
@@ -34,6 +35,14 @@ namespace Poi.Id.API.Controllers
                 return NotFound();
             }
             return Ok(tenant);
+        }
+
+        // GET api/app
+        [HttpGet("nopaging")]
+        public async Task<IActionResult> GetAllNoPaging()
+        {
+            var apps = await _tenantService.GetTenantByInfo(TenantInfo);
+            return Ok(apps);
         }
 
         // POST api/tenants

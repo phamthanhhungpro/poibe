@@ -64,7 +64,9 @@ namespace Poi.Id.Logic.Services
             var pageSize = request.PageSize;
             var pageNumber = request.PageNumber;
 
-            var query = _context.Roles.OrderByDescending(o => o.CreatedAt).AsNoTracking();
+            var query = _context.Roles
+                .Where(r => r.Code != RoleConstants.ROLE_SSA)
+                .OrderByDescending(o => o.CreatedAt).AsNoTracking();
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             var count = await query.CountAsync();
@@ -80,7 +82,10 @@ namespace Poi.Id.Logic.Services
 
         public async Task<List<Role>> GetNoPaging()
         {
-            return await _context.Roles.OrderByDescending(o => o.CreatedAt).AsNoTracking().ToListAsync();
+            return await _context.Roles
+                .Where(r => r.Code != RoleConstants.ROLE_SSA)
+                .OrderByDescending(o => o.CreatedAt)
+                .AsNoTracking().ToListAsync();
         }
 
         public async Task<Role> GetRoleById(Guid id)

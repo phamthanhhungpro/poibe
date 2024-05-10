@@ -9,6 +9,7 @@ namespace Poi.Id.Logic.Dtos
     public class UserInfo
     {
         public Guid Id { get; set; }
+        public Guid? TenantId { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
         public string UserName { get; set; }
@@ -16,5 +17,6 @@ namespace Poi.Id.Logic.Dtos
         public string Avatar { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public string Role { get; set; }
     }
 }

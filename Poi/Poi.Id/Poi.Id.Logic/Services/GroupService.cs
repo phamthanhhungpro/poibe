@@ -4,6 +4,7 @@ using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
+using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using System;
 using System.Collections.Generic;
@@ -24,9 +25,9 @@ namespace Poi.Id.Logic.Services
             _mapper = mapper;
         }
 
-        public async Task<CudResponseDto> CreateGroup(GroupRequest group)
+        public async Task<CudResponseDto> CreateGroup(GroupRequest group, TenantInfo info)
         {
-            var tenant = await _context.Tenants.FindAsync(group.TenantId);
+            var tenant = await _context.Tenants.FindAsync(info.TenantId);
 
             if (tenant == null)
             {
@@ -35,9 +36,9 @@ namespace Poi.Id.Logic.Services
 
             var newGroup = new Group
             {
-                Name = tenant.Name,
-                Description = tenant.Description,
-                Code = tenant.Code,
+                Name = group.Name,
+                Description = group.Description,
+                Code = group.Code,
                 Tenant = tenant
             };
 
@@ -64,6 +65,9 @@ namespace Poi.Id.Logic.Services
             group.DeletedAt = DateTime.UtcNow;
             group.IsDeleted = true;
 
+            // delete related data
+
+
             await _context.SaveChangesAsync();
 
             // return the deleted group
@@ -73,12 +77,15 @@ namespace Poi.Id.Logic.Services
             };
         }
 
-        public async Task<PagingResponse<Group>> GetGroup(PagingRequest request)
+        public async Task<PagingResponse<Group>> GetGroup(PagingRequest request, TenantInfo info)
         {
             var pageSize = request.PageSize;
             var pageNumber = request.PageNumber;
 
-            var query = _context.Groups.OrderByDescending(o => o.CreatedAt).AsNoTracking();
+            var query = _context.Groups
+                .Include(g => g.Tenant)
+                .Where(g => g.Tenant.Id == info.TenantId)
+                .OrderByDescending(o => o.CreatedAt).AsNoTracking();
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             var count = await query.CountAsync();
@@ -97,10 +104,10 @@ namespace Poi.Id.Logic.Services
             return await _context.Groups.Include(t => t.Tenant).FirstOrDefaultAsync(t => t.Id == id);
         }
 
-        public async Task<CudResponseDto> UpdateGroup(Guid id, GroupRequest group)
+        public async Task<CudResponseDto> UpdateGroup(Guid id, GroupRequest group, TenantInfo info)
         {
             // find apps
-            var tenant = await _context.Tenants.FindAsync(group.TenantId);
+            var tenant = await _context.Tenants.FindAsync(info.TenantId);
 
             if (tenant == null)
             {

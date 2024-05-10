@@ -4,6 +4,7 @@ using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
+using Poi.Shared.Model.BaseModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,7 @@ namespace Poi.Id.Logic.Services
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
-        public async Task<PagingResponse<UserListInfoDto>> GetUsers(PagingRequest request)
+        public async Task<PagingResponse<UserListInfoDto>> GetUsers(PagingRequest request, TenantInfo info)
         {
             var pageSize = request.PageSize;
             var pageNumber = request.PageNumber;
@@ -67,6 +68,7 @@ namespace Poi.Id.Logic.Services
                 .Include(t => t.Tenant)
                 .Include(t => t.Role)
                 .Include(t => t.Group)
+                .Where(t => t.Tenant.Id == info.TenantId)
                 .OrderByDescending(o => o.CreatedAt).AsNoTracking();
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize)

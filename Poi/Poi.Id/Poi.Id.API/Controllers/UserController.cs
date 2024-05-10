@@ -8,7 +8,7 @@ namespace Poi.Id.API.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : ExtendedBaseController
     {
         private readonly IUserService _userService;
         private readonly IWebHostEnvironment _environment;
@@ -23,7 +23,7 @@ namespace Poi.Id.API.Controllers
         public async Task<IActionResult> GetListUser([FromBody] PagingRequest request)
         {
             // TODO: Implement logic to retrieve all users
-            var data = await _userService.GetUsers(request);
+            var data = await _userService.GetUsers(request, TenantInfo);
             return Ok(data);
         }
 
