@@ -5,6 +5,7 @@ using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
+using Poi.Shared.Model.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,6 +72,14 @@ namespace Poi.Id.Logic.Services
                 .Where(t => t.Tenant.Id == info.TenantId)
                 .OrderByDescending(o => o.CreatedAt).AsNoTracking();
 
+            if (info.Role.IsSSA())
+            {
+                query = _context.Users
+                            .Include(t => t.Apps)
+                            .Include(t => t.Role)
+                            .Include(t => t.Group).OrderByDescending(o => o.CreatedAt).AsNoTracking();
+            }
+
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize)
                 .Select(x => new UserListInfoDto
                 {
@@ -82,9 +91,12 @@ namespace Poi.Id.Logic.Services
                     Avatar = x.Avatar,
                     Phone = x.Phone,
                     Role = x.Role.Name,
+                    RoleCode = x.Role.Code,
+                    RoleId = x.Role.Id,
                     GroupName = x.Group.Name,
                     TenantName = x.Tenant.Name,
-                    IsActive = x.IsActive
+                    IsActive = x.IsActive,
+                    Apps = x.Apps.ToList()
                 }).ToListAsync();
 
             var count = await query.CountAsync();

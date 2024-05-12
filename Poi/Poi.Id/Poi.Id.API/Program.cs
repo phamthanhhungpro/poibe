@@ -75,6 +75,7 @@ builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddScoped<IGroupService, GroupService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 ServiceRegister.AddLogic(builder.Services);
 
