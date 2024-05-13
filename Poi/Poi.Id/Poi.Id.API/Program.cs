@@ -91,6 +91,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAllOrigins");
 
 app.UseMiddleware<HeaderExtractorMiddleWare>();
+app.UseMiddleware<PermissionCheckMiddleware>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 

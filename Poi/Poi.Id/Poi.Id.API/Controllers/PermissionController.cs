@@ -18,6 +18,12 @@ namespace Poi.Id.API.Controllers
             return Ok(permissions);
         }
 
+        [HttpGet("nopaging")]
+        public async Task<IActionResult> GetNoPaging()
+        {
+            var permissions = await _permissionService.GetNoPaging();
+            return Ok(permissions);
+        }
         // GET: api/permission/{id}
         //[HttpGet("{id}")]
         //public async Task<IActionResult> GetPermissionById(int id)
@@ -68,6 +74,20 @@ namespace Poi.Id.API.Controllers
                 return NotFound();
             }
             return NoContent();
+        }
+        [HttpPost("assign")]
+        public async Task<IActionResult> AssignPermission([FromBody] AssignPermissionRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var updatedPermission = await _permissionService.AssignPermission(request);
+            if (updatedPermission == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedPermission);
         }
     }
 }

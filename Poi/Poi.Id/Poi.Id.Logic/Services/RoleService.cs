@@ -90,7 +90,9 @@ namespace Poi.Id.Logic.Services
 
         public async Task<Role> GetRoleById(Guid id)
         {
-            return await _context.Roles.FirstOrDefaultAsync(t => t.Id == id);
+            return await _context.Roles
+                .Include(r => r.Permissions)
+                .FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<CudResponseDto> UpdateRole(Guid id, RoleRequest role)

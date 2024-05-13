@@ -24,6 +24,35 @@ namespace Poi.Id.Logic.Services
                 
         }
 
+        public async Task<CudResponseDto> AssignPermission(AssignPermissionRequest request)
+        {
+            var role = await _context.Roles
+                                            .Include(r => r.Permissions)
+                                            .FirstOrDefaultAsync(r => r.Id == request.RoleId);
+            if (role == null)
+            {
+                return new CudResponseDto { IsSucceeded = false };
+            }
+
+            var permissions = await _context.Permissions.Where(p => request.PermissionIds.Contains(p.Id)).ToListAsync();
+            if (permissions.Count == 0)
+            {
+                return new CudResponseDto { IsSucceeded = false };
+            }
+            role.Permissions = permissions;
+            role.UpdatedAt = DateTime.UtcNow;
+
+            _context.Roles.Update(role);
+
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                IsSucceeded = true,
+                Id = role.Id
+            };
+        }
+
         public async Task<CudResponseDto> CreatePermission(CreatePermissionRequest request)
         {
             var permission = new Permission()
@@ -65,6 +94,11 @@ namespace Poi.Id.Logic.Services
                 Id = id,
                 IsSucceeded = true
             };
+        }
+
+        public async Task<IList<Permission>> GetNoPaging()
+        {
+            return await _context.Permissions.ToListAsync();
         }
 
         public async Task<PagingResponse<Permission>> GetPermission(PagingRequest request, TenantInfo info)
