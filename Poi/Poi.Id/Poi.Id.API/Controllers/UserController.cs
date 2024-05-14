@@ -107,5 +107,14 @@ namespace Poi.Id.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex}");
             }
         }
+
+        // GET api/user/{id}
+        [HttpGet("username")]
+        public async Task<IActionResult> GetByUserName([FromQuery] string userName)
+        {
+            var response = await _userService.GetByUserName(userName, TenantInfo);
+            return Ok(response);
+        }
+
     }
 }

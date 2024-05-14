@@ -47,6 +47,23 @@ namespace Poi.Id.Logic.Services
             };
         }
 
+        public async Task<List<UserListInfoDto>> GetByUserName(string userName, TenantInfo info)
+        {
+            return await _context.Users
+                .Include(t => t.Tenant)
+                .Include(t => t.Role)
+                .Where(t => t.UserName == userName)
+                .Where(t => t.Tenant.Id == info.TenantId)
+                .Select(x => new UserListInfoDto
+                {
+                    Id = x.Id,
+                    SurName = x.SurName,
+                    Name = x.Name,
+                    Email = x.Email,
+                    UserName = x.UserName,
+                }).ToListAsync();
+        }
+
         public async Task<User> GetUserById(Guid id)
         {
             return await _context.Users
@@ -132,6 +149,15 @@ namespace Poi.Id.Logic.Services
             if (request.RoleId != null)
             {
                 var role = await _context.Roles.FindAsync(request.RoleId);
+                if (role == null)
+                {
+                    return new CudResponseDto { IsSucceeded = false };
+                }
+                toUpdateUser.Role = role;
+            } 
+            else if (!string.IsNullOrEmpty(request.RoleCode))
+            {
+                var role = await _context.Roles.FirstOrDefaultAsync(t => t.Code == request.RoleCode);
                 if (role == null)
                 {
                     return new CudResponseDto { IsSucceeded = false };

@@ -15,9 +15,10 @@ namespace Poi.Id.Logic.Requests
         public string Address { get; set; }
         public string Phone { get; set; }
         public Guid? RoleId { get; set; }
+        public string RoleCode { get; set; }
         public List<Guid> AppIds { get; set; }
         public Guid? GroupId { get; set; }
-        public string IsActive { get; set; }
+        public bool IsActive { get; set; }
         public List<Guid> ManagerIds { get; set; } // Collection of managers (users)
         public List<Guid> DirectReportIds { get; set; } // Collection of direct reports (users)
     }

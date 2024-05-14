@@ -14,5 +14,6 @@ namespace Poi.Id.Logic.Interfaces
         Task<CudResponseDto> DeleteUser(Guid id);
 
         Task<User> GetUserById(Guid id);
+        Task<List<UserListInfoDto>> GetByUserName(string userName, TenantInfo info);
     }
 }

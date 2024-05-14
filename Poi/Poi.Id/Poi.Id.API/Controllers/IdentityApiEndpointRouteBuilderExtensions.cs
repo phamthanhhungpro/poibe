@@ -120,6 +120,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 Avatar = registration.Avatar,
                 Address = registration.Address,
                 Phone = registration.Phone,
+                IsActive = true,
                 Role = dbContext.Roles.FirstOrDefault(r => r.Id == registration.RoleId),
                 Apps = dbContext.Apps.Where(a => registration.AppIds.Contains(a.Id)).ToList(),
                 Tenant = dbContext.Tenants.FirstOrDefault(t => t.Id == registration.TenantId)

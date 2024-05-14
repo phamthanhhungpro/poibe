@@ -91,7 +91,14 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAllOrigins");
 
 app.UseMiddleware<HeaderExtractorMiddleWare>();
-app.UseMiddleware<PermissionCheckMiddleware>();
+
+// get the section from appsettings.json
+var isEnabled = app.Configuration.GetSection("EnableSecureMiddleware").Get<bool>();
+
+if (isEnabled)
+{
+    app.UseMiddleware<PermissionCheckMiddleware>();
+}
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 
