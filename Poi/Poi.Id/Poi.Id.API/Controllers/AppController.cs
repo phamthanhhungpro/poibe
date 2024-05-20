@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
-using Poi.Id.Logic.Services;
 
 namespace Poi.Id.API.Controllers
 {
@@ -44,7 +42,7 @@ namespace Poi.Id.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetappById(Guid id)
         {
-            var app = await _appService.GetAppById(id);
+            var app = await _appService.GetAppById(id, TenantInfo);
             if (app == null)
             {
                 return NotFound();
@@ -87,6 +85,17 @@ namespace Poi.Id.API.Controllers
                 return NotFound();
             }
             return Ok(deletedApp);
+        }
+
+        [HttpPut("appUser/{id}")]
+        public async Task<IActionResult> UpdateAppUser(Guid id, [FromBody] UpdateUserAppRequest request)
+        {
+            var updatedApp = await _appService.UpdateUserApp(id, request, TenantInfo);
+            if (updatedApp == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedApp);
         }
     }
 }

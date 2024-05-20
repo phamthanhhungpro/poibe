@@ -14,12 +14,14 @@ namespace Poi.Id.Logic.Interfaces
     {
         Task<PagingResponse<App>> GetApp(PagingRequest request, TenantInfo info);
 
-        Task<App> GetAppById(Guid id);
+        Task<App> GetAppById(Guid id, TenantInfo info);
         Task<IList<App>> GetAppNoPaging();
         Task<IList<App>> GetAppByUser(Guid userId);
 
         Task<CudResponseDto> CreateApp(AppRequest app);
         Task<CudResponseDto> UpdateApp(Guid id, AppRequest app);
         Task<CudResponseDto> DeleteApp(Guid id);
+        Task<CudResponseDto> UpdateUserApp(Guid id, UpdateUserAppRequest app, TenantInfo info);
+
     }
 }

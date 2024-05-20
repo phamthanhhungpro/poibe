@@ -76,6 +76,10 @@ builder.Services.AddScoped<IGroupService, GroupService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<ICoQuanDonViService, CoQuanDonViService>();
+builder.Services.AddScoped<IChiNhanhVanPhongService, ChiNhanhVanPhongService>();
+builder.Services.AddScoped<IPhongBanService, PhongBanService>();
+
 
 ServiceRegister.AddLogic(builder.Services);
 

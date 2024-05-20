@@ -91,9 +91,11 @@ namespace Poi.Id.Logic.Services
             };
         }
 
-        public async Task<App> GetAppById(Guid id)
+        public async Task<App> GetAppById(Guid id, TenantInfo info)
         {
-            return await _context.Apps.FirstOrDefaultAsync(t => t.Id == id);
+            return await _context.Apps
+                .Include(a => a.Users.Where(u => u.Tenant.Id == info.TenantId)).ThenInclude(u => u.Role)
+                .FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<IList<App>> GetAppByUser(Guid userId)
@@ -114,7 +116,8 @@ namespace Poi.Id.Logic.Services
         public async Task<CudResponseDto> UpdateApp(Guid id, AppRequest app)
         {
             // find the app
-            var toUpdateApp = await _context.Apps.FindAsync(id);
+            var toUpdateApp = await _context.Apps.Include(a => a.Users)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             if (toUpdateApp == null)
             {
@@ -122,6 +125,51 @@ namespace Poi.Id.Logic.Services
             }
 
             _mapper.Map(app, toUpdateApp);
+
+            if (app.UserIds.Count != 0)
+            {
+                var users = await _context.Users.Where(u => app.UserIds.Contains(u.Id)).ToListAsync();
+                toUpdateApp.Users = users;
+            }
+
+            toUpdateApp.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Id = id
+            };
+        }
+
+        public async Task<CudResponseDto> UpdateUserApp(Guid id, UpdateUserAppRequest app, TenantInfo info)
+        {
+            var toUpdateApp = await _context.Apps.Include(a => a.Users).ThenInclude(u => u.Role)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            var userList = new List<User>();
+            if (toUpdateApp == null)
+            {
+                throw new Exception($"app {Error.NotFound}");
+            }
+
+            if (app.UserType == RoleConstants.ROLE_APPADMIN)
+            {
+                userList = toUpdateApp.Users.Where(u => u.Role.Code != RoleConstants.ROLE_APPADMIN).ToList();
+            }
+            else
+            {
+                userList = toUpdateApp.Users.Where(u => u.Role.Code != RoleConstants.ROLE_ADMIN && u.Role.Code != RoleConstants.ROLE_MEMBER).ToList();
+            }
+
+            if (app.UserIds.Count != 0)
+            {
+                var users = await _context.Users.Where(u => app.UserIds.Contains(u.Id)).ToListAsync();
+                userList.AddRange(users);
+            }
+
+            toUpdateApp.Users = userList;
+
 
             toUpdateApp.UpdatedAt = DateTime.UtcNow;
 

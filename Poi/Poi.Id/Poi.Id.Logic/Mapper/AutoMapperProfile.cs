@@ -34,5 +34,29 @@ public class AutoMapperProfile : Profile
                   {
                       opts.Condition((src, dest, srcMember) => srcMember != null);
                   });
+
+        CreateMap<CreateUserRequest, User>()
+            .ForAllMembers(opts =>
+            {
+                opts.Condition((src, dest, srcMember) => srcMember != null);
+            });
+
+        CreateMap<CoQuanDonViRequest, CoQuanDonVi>()
+            .ForAllMembers(opts =>
+            {
+                opts.Condition((src, dest, srcMember) => srcMember != null);
+            });
+
+        CreateMap<ChiNhanhVanPhongRequest, ChiNhanhVanPhong>()
+            .ForAllMembers(opts =>
+            {
+                opts.Condition((src, dest, srcMember) => srcMember != null);
+            });
+
+        CreateMap<PhongBanRequest, PhongBanBoPhan>()
+            .ForAllMembers(opts =>
+            {
+                opts.Condition((src, dest, srcMember) => srcMember != null);
+            });
     }
 }

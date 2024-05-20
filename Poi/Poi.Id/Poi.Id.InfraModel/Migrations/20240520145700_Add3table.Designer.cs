@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240520145700_Add3table")]
+    partial class Add3table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,21 +171,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("RolesId");
 
                     b.ToTable("PermissionRole");
-                });
-
-            modelBuilder.Entity("PhongBanBoPhanUser", b =>
-                {
-                    b.Property<Guid>("ManagersId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PhongBanBoPhansId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ManagersId", "PhongBanBoPhansId");
-
-                    b.HasIndex("PhongBanBoPhansId");
-
-                    b.ToTable("PhongBanBoPhanUser");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.App", b =>
@@ -621,6 +609,9 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid?>("PhongBanBoPhanId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("RoleId")
                         .HasColumnType("uuid");
 
@@ -653,6 +644,8 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("PhongBanBoPhanId");
 
                     b.HasIndex("RoleId");
 
@@ -772,21 +765,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhongBanBoPhanUser", b =>
-                {
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", null)
-                        .WithMany()
-                        .HasForeignKey("ManagersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", null)
-                        .WithMany()
-                        .HasForeignKey("PhongBanBoPhansId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.ChiNhanhVanPhong", b =>
                 {
                     b.HasOne("Poi.Id.InfraModel.DataAccess.CoQuanDonVi", "CoQuanDonVi")
@@ -847,6 +825,10 @@ namespace Poi.Id.InfraModel.Migrations
                         .WithMany("Users")
                         .HasForeignKey("GroupId");
 
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", null)
+                        .WithMany("Managers")
+                        .HasForeignKey("PhongBanBoPhanId");
+
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
@@ -885,6 +867,8 @@ namespace Poi.Id.InfraModel.Migrations
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", b =>
                 {
                     b.Navigation("Children");
+
+                    b.Navigation("Managers");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Role", b =>

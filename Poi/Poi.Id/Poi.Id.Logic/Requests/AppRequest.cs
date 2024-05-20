@@ -17,5 +17,7 @@ namespace Poi.Id.Logic.Requests
 
         [Required(ErrorMessage = Error.requriedMessage)]
         public string Code { get; set; }
+
+        public List<Guid> UserIds { get; set; }
     }
 }

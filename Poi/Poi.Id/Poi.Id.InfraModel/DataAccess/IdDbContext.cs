@@ -18,6 +18,10 @@ namespace Poi.Id.InfraModel.DataAccess
         public DbSet<Group> Groups { get; set; }
         public DbSet<App> Apps { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<CoQuanDonVi> CoQuanDonVis { get; set; }
+        public DbSet<ChiNhanhVanPhong> ChiNhanhVanPhongs { get; set; }
+        public DbSet<PhongBanBoPhan> PhongBanBoPhans { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +64,27 @@ namespace Poi.Id.InfraModel.DataAccess
             });
 
             modelBuilder.Entity<Role>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<CoQuanDonVi>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<ChiNhanhVanPhong>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PhongBanBoPhan>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);

@@ -6,7 +6,6 @@ namespace Poi.Id.InfraModel.DataAccess
     {
         public string SurName { get; set; }
         public string Name { get; set; }
-        public string FullName { get; set; }
         public string Avatar { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
@@ -24,5 +23,11 @@ namespace Poi.Id.InfraModel.DataAccess
 
         // Collection of direct reports (users)
         public virtual ICollection<User> DirectReports { get; set; }
+        public virtual ICollection<PhongBanBoPhan> PhongBanBoPhans { get; set; }
+        public string FullName
+        {
+            get { return SurName + " " + Name; }
+            set { }
+        }
     }
 }

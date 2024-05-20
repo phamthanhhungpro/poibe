@@ -120,7 +120,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 Avatar = registration.Avatar,
                 Address = registration.Address,
                 Phone = registration.Phone,
-                IsActive = true,
+                IsActive = registration.IsActive,
                 Role = dbContext.Roles.FirstOrDefault(r => r.Id == registration.RoleId),
                 Apps = dbContext.Apps.Where(a => registration.AppIds.Contains(a.Id)).ToList(),
                 Tenant = dbContext.Tenants.FirstOrDefault(t => t.Id == registration.TenantId)
@@ -299,18 +299,17 @@ public static class IdentityApiEndpointRouteBuilderExtensions
 
             var user = await userManager.FindByEmailAsync(resetRequest.Email);
 
-            if (user is null || !(await userManager.IsEmailConfirmedAsync(user)))
+            if (user is null)
             {
-                // Don't reveal that the user does not exist or is not confirmed, so don't return a 200 if we would have
-                // returned a 400 for an invalid code given a valid user email.
                 return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidToken()));
             }
 
             IdentityResult result;
             try
             {
-                var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetRequest.ResetCode));
-                result = await userManager.ResetPasswordAsync(user, code, resetRequest.NewPassword);
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+                result = await userManager.ResetPasswordAsync(user, token, resetRequest.NewPassword);
             }
             catch (FormatException)
             {

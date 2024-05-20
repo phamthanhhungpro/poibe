@@ -15,5 +15,12 @@ namespace Poi.Id.Logic.Interfaces
 
         Task<User> GetUserById(Guid id);
         Task<List<UserListInfoDto>> GetByUserName(string userName, TenantInfo info);
+
+        Task<List<UserListInfoDto>> GetListCanBeManager(Guid userId, Guid userTenantId, TenantInfo info);
+        Task<List<UserListInfoDto>> GetListAppAdmin(TenantInfo info);
+        Task<List<UserListInfoDto>> GetListMember(TenantInfo info);
+        Task<List<UserListInfoDto>> GetListAdmin(TenantInfo info);
+
+        
     }
 }

@@ -10,6 +10,7 @@
         public string Avatar { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public bool IsActive { get; set; }
         public Guid? RoleId { get; set; }
         public List<Guid> AppIds { get; set; }
         public Guid? TenantId { get; set; }

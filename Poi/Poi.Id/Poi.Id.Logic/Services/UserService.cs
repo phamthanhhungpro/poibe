@@ -5,6 +5,7 @@ using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
+using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Helpers;
 using System;
 using System.Collections.Generic;
@@ -62,6 +63,79 @@ namespace Poi.Id.Logic.Services
                     Email = x.Email,
                     UserName = x.UserName,
                 }).ToListAsync();
+        }
+
+        public async Task<List<UserListInfoDto>> GetListAppAdmin(TenantInfo info)
+        {
+            var data = await _context.Users.Include(u => u.Role)
+                .Include(u => u.Tenant)
+                .Where(u => u.Tenant.Id == info.TenantId)
+                .Where(u => u.Role.Code == RoleConstants.ROLE_APPADMIN)
+                .Select(x => new UserListInfoDto
+                {
+                    Id = x.Id,
+                    SurName = x.SurName,
+                    Name = x.Name,
+                    Email = x.Email,
+                    UserName = x.UserName,
+                }).ToListAsync();
+
+            return data;
+        }
+
+        public async Task<List<UserListInfoDto>> GetListCanBeManager(Guid userId, Guid userTenantId, TenantInfo info)
+        {
+            var tenantId = (await _context.Users.Include(t => t.Tenant)
+                .FirstOrDefaultAsync(t => t.Id == userId)).Tenant.Id;
+            return await _context.Users
+                .Include(t => t.Tenant)
+                .Include(t => t.Role)
+                .Where(t => t.Id != userId)
+                .Where(t => t.Tenant.Id == tenantId)
+                .Select(x => new UserListInfoDto
+                {
+                    Id = x.Id,
+                    SurName = x.SurName,
+                    Name = x.Name,
+                    Email = x.Email,
+                    UserName = x.UserName,
+                }).ToListAsync();
+        }
+
+        public async Task<List<UserListInfoDto>> GetListMember(TenantInfo info)
+        {
+            var data = await _context.Users.Include(u => u.Role)
+                .Include(u => u.Tenant)
+                .Where(u => u.Tenant.Id == info.TenantId)
+                .Where(u => u.Role.Code == RoleConstants.ROLE_MEMBER || u.Role.Code == RoleConstants.ROLE_ADMIN)
+                .Select(x => new UserListInfoDto
+                {
+                    Id = x.Id,
+                    SurName = x.SurName,
+                    Name = x.Name,
+                    Email = x.Email,
+                    UserName = x.UserName,
+                }).ToListAsync();
+
+            return data;
+        }
+
+        public async Task<List<UserListInfoDto>> GetListAdmin(TenantInfo info)
+        {
+            var data = await _context.Users.Include(u => u.Role)
+                .Include(u => u.Tenant)
+                .Where(u => u.Tenant.Id == info.TenantId)
+                .Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
+                .Select(x => new UserListInfoDto
+                {
+                    Id = x.Id,
+                    SurName = x.SurName,
+                    Name = x.Name,
+                    Email = x.Email,
+                    UserName = x.UserName,
+                }).ToListAsync();
+
+            return data;
         }
 
         public async Task<User> GetUserById(Guid id)

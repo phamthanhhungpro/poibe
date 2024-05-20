@@ -20,8 +20,18 @@ namespace Poi.Shared.Model.MiddleWare
             string userId = context.Request.Headers["UserId"];
             string role = context.Request.Headers["Role"];
 
-            if(string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role))
+            string path = context.Request.Path.Value;
+
+            if (path.Contains("/api/auth/login"))
             {
+                await _next(context);
+                return;
+            }
+
+            if ((string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role)))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
                 await _next(context);
                 return;
             }

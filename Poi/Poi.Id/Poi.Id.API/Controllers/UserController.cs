@@ -116,5 +116,33 @@ namespace Poi.Id.API.Controllers
             return Ok(response);
         }
 
+        // GET api/user/{id}
+        [HttpGet("can-be-manager")]
+        public async Task<IActionResult> GetListCanbeManager([FromQuery] Guid userId, [FromQuery] Guid userTenantId)
+        {
+            var response = await _userService.GetListCanBeManager(userId, userTenantId, TenantInfo);
+            return Ok(response);
+        }
+
+        [HttpGet("appadmin")]
+        public async Task<IActionResult> GetAppAdmin()
+        {
+            var response = await _userService.GetListAppAdmin(TenantInfo);
+            return Ok(response);
+        }
+
+        [HttpGet("member")]
+        public async Task<IActionResult> GetMember()
+        {
+            var response = await _userService.GetListMember(TenantInfo);
+            return Ok(response);
+        }
+
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetAdmin()
+        {
+            var response = await _userService.GetListAdmin(TenantInfo);
+            return Ok(response);
+        }
     }
 }
