@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Poi.Id\Poi.Id.InfraModel\Poi.Id.InfraModel.csproj" />
+    <ProjectReference Include="..\..\Poi.Shared\Poi.Shared.Model\Poi.Shared.Model.csproj" />
+  </ItemGroup>
+
+</Project>

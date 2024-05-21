@@ -90,6 +90,27 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+
+            modelBuilder.Entity<HoSoNhanSu>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<KhuVucChuyenMon>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PhanLoaiNhanSu>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
         }
     }
 }

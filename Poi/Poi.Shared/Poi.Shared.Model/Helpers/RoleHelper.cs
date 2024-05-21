@@ -32,5 +32,10 @@ namespace Poi.Shared.Model.Helpers
         {
             return role == "OWNER";
         }
+
+        public static bool IsHigherThanAdmin(this string role)
+        {
+            return role == "ADMIN" || role == "SSA" || role == "APPADMIN" || role == "OWNER";
+        }
     }
 }
