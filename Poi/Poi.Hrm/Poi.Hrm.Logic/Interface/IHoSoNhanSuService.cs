@@ -17,6 +17,6 @@ namespace Poi.Hrm.Logic.Interface
 
         Task<CudResponseDto> CreateHoSo(TenantInfo tenantInfo, CreateHoSoNhanSuRequest hoSoNhanSu);
 
-        Task DeleteHoSo(TenantInfo tenantInfo, Guid id);
+        Task<CudResponseDto> DeleteHoSo(TenantInfo tenantInfo, Guid id);
     }
 }

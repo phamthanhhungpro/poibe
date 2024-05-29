@@ -144,5 +144,12 @@ namespace Poi.Id.API.Controllers
             var response = await _userService.GetListAdmin(TenantInfo);
             return Ok(response);
         }
+
+        [HttpGet("create-hosonhansu")]
+        public async Task<IActionResult> GetUserCreateHoSoNhanSu()
+        {
+            var response = await _userService.GetUserForCreateHoSoNhanSu(TenantInfo);
+            return Ok(response);
+        }
     }
 }

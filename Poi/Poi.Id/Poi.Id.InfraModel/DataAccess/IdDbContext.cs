@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Poi.Id.InfraModel.DataAccess
@@ -26,6 +28,18 @@ namespace Poi.Id.InfraModel.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.HasSequence<int>("HoSoNhanSuSeq")
+                        .StartsAt(1)
+                        .IncrementsBy(1)
+                        .HasMin(1)
+                        .HasMax(int.MaxValue)
+                        .IsCyclic(false);
+
+            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var converter = new ValueConverter<ThongTinNhanSu, string>(
+                v => JsonSerializer.Serialize(v, options),
+                v => JsonSerializer.Deserialize<ThongTinNhanSu>(v, options));
 
             modelBuilder.Entity<Tenant>(entity =>
             {
@@ -95,6 +109,10 @@ namespace Poi.Id.InfraModel.DataAccess
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.Property(e => e.ThongTinThem)
+                            .HasConversion(converter)
+                            .HasColumnType("jsonb");
+
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 

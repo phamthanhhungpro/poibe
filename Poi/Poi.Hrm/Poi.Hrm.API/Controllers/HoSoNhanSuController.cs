@@ -14,7 +14,7 @@ namespace Poi.Hrm.API.Controllers
             _hoSoNhanSuService = hoSoNhanSuService;
         }
 
-        [HttpGet]
+        [HttpGet("nopaging")]
         public async Task<IActionResult> GetHoSo()
         {
             var data = await _hoSoNhanSuService.GetHoSo(TenantInfo);
@@ -31,6 +31,28 @@ namespace Poi.Hrm.API.Controllers
             var data = await _hoSoNhanSuService.CreateHoSo(TenantInfo, hoSoNhanSu);
 
             return Ok(data);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteHoSo(Guid id)
+        {
+            var deletedModel = await _hoSoNhanSuService.DeleteHoSo(TenantInfo, id);
+            if (deletedModel == null)
+            {
+                return NotFound();
+            }
+            return Ok(deletedModel);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetHoSoById(Guid id)
+        {
+            var model = await _hoSoNhanSuService.GetHoSoById(TenantInfo, id);
+            if (model == null)
+            {
+                return NotFound();
+            }
+            return Ok(model);
         }
     }
 }

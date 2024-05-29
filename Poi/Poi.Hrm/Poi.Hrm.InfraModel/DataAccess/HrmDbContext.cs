@@ -2,16 +2,15 @@
 
 namespace Poi.Id.InfraModel.DataAccess
 {
-    public class HrmDbContext : DbContext
+    public class HrmDbContext : IdDbContext
     {
         public HrmDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        public DbSet<HoSoNhanSu> HoSoNhanSus { get; set; }
-        public DbSet<KhuVucChuyenMon> KhuVucChuyenMons { get; set; }
-        public DbSet<PhanLoaiNhanSu> PhanLoaiNhanSus { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<HoSoNhanSu> HoSoNhanSu { get; set; }
+        public DbSet<KhuVucChuyenMon> KhuVucChuyenMon { get; set; }
+        public DbSet<PhanLoaiNhanSu> PhanLoaiNhanSu { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

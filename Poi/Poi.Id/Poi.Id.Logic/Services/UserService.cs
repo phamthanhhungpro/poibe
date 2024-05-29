@@ -296,5 +296,28 @@ namespace Poi.Id.Logic.Services
                 IsSucceeded = true
             };
         }
+
+        public async Task<List<UserListInfoDto>> GetUserForCreateHoSoNhanSu(TenantInfo info)
+        {
+            var query = _context.Users.Include(u => u.Role)
+                .Include(u => u.Tenant)
+                .Where(u => u.Tenant.Id == info.TenantId);
+
+            if (info.Role.IsMember())
+            {
+                query = query.Where(a => a.Id == info.UserId);
+            }
+
+            var data = await query.Select(x => new UserListInfoDto
+                {
+                    Id = x.Id,
+                    SurName = x.SurName,
+                    Name = x.Name,
+                    Email = x.Email,
+                    UserName = x.UserName,
+                }).ToListAsync();
+
+            return data;
+        }
     }
 }

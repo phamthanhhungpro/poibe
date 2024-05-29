@@ -6,6 +6,7 @@ using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Helpers;
 using Poi.Shared.Model.Dtos;
 using AutoMapper;
+using Poi.Shared.Model.Constants;
 
 namespace Poi.Hrm.Logic.Service
 {
@@ -20,37 +21,64 @@ namespace Poi.Hrm.Logic.Service
         }
         public async Task<CudResponseDto> CreateHoSo(TenantInfo tenantInfo, CreateHoSoNhanSuRequest hoSoNhanSu)
         {
+            // Use the sequence to get the next value
+            var nextId = await _context.Database.ExecuteSqlRawAsync("SELECT nextval('\"HoSoNhanSuSeq\"')");
+
+            var formattedMaHoSo = $"THA-{nextId:0000}";
+
             var entity = _mapper.Map<HoSoNhanSu>(hoSoNhanSu);
 
-            entity.User = _context.Users.Find(tenantInfo.UserId);
+            entity.MaHoSo = formattedMaHoSo;
 
-            await _context.HoSoNhanSus.AddAsync(entity);
+            entity.User = await _context.Users.FindAsync(hoSoNhanSu.UserId);
+
+            await _context.HoSoNhanSu.AddAsync(entity);
             await _context.SaveChangesAsync();
+
             return new CudResponseDto { Id = entity.Id };
         }
 
-        public Task DeleteHoSo(TenantInfo tenantInfo, Guid id)
+        public async Task<CudResponseDto> DeleteHoSo(TenantInfo tenantInfo, Guid id)
         {
-            throw new NotImplementedException();
+            var model = await _context.HoSoNhanSu.FindAsync(id);
+
+            if (model == null)
+            {
+                throw new Exception($"HoSoNhanSu {Error.NotFound}");
+            }
+
+            model.IsDeleted = true;
+            model.DeletedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Id = model.Id,
+                IsSucceeded = true
+            };
         }
 
         public async Task<List<HoSoNhanSu>> GetHoSo(TenantInfo tenantInfo)
         {
-            var data = _context.HoSoNhanSus
+            var data = _context.HoSoNhanSu
                 .Include(h => h.User)
                 .Where(h => h.User.Id == tenantInfo.UserId);
 
             if(tenantInfo.Role.IsHigherThanAdmin())
             {
-                data = _context.HoSoNhanSus.Include(h => h.User);
+                data = _context.HoSoNhanSu.Include(h => h.User);
             }
 
             return await data.ToListAsync();
         }
 
-        public Task<HoSoNhanSu> GetHoSoById(TenantInfo tenantInfo, Guid id)
+        public async Task<HoSoNhanSu> GetHoSoById(TenantInfo tenantInfo, Guid id)
         {
-            throw new NotImplementedException();
+            var data = await _context.HoSoNhanSu.Include(x => x.User)
+                                                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return data;
         }
     }
 }
