@@ -80,5 +80,26 @@ namespace Poi.Hrm.Logic.Service
 
             return data;
         }
+
+        public async Task<CudResponseDto> UpdateHoSo(Guid id, TenantInfo tenantInfo, CreateHoSoNhanSuRequest hoSoNhanSu)
+        {
+            var model = await _context.HoSoNhanSu.FindAsync(id);
+
+            if (model == null)
+            {
+                throw new Exception($"HoSoNhanSu {Error.NotFound}");
+            }
+
+            _mapper.Map(hoSoNhanSu, model);
+
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Id = model.Id,
+                IsSucceeded = true
+            };
+
+        }
     }
 }

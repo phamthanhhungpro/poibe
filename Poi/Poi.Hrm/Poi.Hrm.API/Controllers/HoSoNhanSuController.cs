@@ -54,5 +54,17 @@ namespace Poi.Hrm.API.Controllers
             }
             return Ok(model);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateHoSo(Guid id, [FromBody] CreateHoSoNhanSuRequest hoSoNhanSu)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var data = await _hoSoNhanSuService.UpdateHoSo(id, TenantInfo, hoSoNhanSu);
+
+            return Ok(data);
+        }
     }
 }
