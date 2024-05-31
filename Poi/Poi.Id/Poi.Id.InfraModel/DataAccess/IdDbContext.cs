@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Poi.Id.InfraModel.DataAccess
 {
@@ -105,7 +100,7 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
-            modelBuilder.Entity<HoSoNhanSu>(entity =>
+            modelBuilder.Entity<HrmHoSoNhanSu>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
@@ -116,14 +111,28 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
-            modelBuilder.Entity<KhuVucChuyenMon>(entity =>
+            modelBuilder.Entity<HrmKhuVucChuyenMon>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
-            modelBuilder.Entity<PhanLoaiNhanSu>(entity =>
+            modelBuilder.Entity<HrmPhanLoaiNhanSu>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<HrmViTriCongViec>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<HrmVaiTro>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);

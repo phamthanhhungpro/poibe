@@ -5,11 +5,6 @@ using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Poi.Id.Logic.Services
 {
@@ -21,7 +16,7 @@ namespace Poi.Id.Logic.Services
         {
             _context = context;
             _mapper = mapper;
-                
+
         }
 
         public async Task<CudResponseDto> AssignPermission(AssignPermissionRequest request)

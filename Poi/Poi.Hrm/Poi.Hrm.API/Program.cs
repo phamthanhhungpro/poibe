@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Poi.Hrm.Logic;
 using Poi.Id.InfraModel.DataAccess;

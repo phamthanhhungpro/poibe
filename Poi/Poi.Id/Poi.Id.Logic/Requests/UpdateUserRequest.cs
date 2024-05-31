@@ -1,11 +1,4 @@
-﻿using Poi.Id.InfraModel.DataAccess;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Poi.Id.Logic.Requests
+﻿namespace Poi.Id.Logic.Requests
 {
     public class UpdateUserRequest
     {

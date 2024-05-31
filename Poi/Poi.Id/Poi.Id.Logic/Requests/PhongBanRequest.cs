@@ -1,6 +1,4 @@
-﻿using Poi.Id.InfraModel.DataAccess;
-
-namespace Poi.Id.Logic.Requests
+﻿namespace Poi.Id.Logic.Requests
 {
     public class PhongBanRequest
     {

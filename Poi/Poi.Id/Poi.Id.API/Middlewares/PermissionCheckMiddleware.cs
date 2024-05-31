@@ -74,6 +74,6 @@ public class PermissionCheckMiddleware
             return true;
         }
 
-        return false; 
+        return false;
     }
 }

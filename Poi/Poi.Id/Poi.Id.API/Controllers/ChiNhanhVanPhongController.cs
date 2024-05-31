@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
 

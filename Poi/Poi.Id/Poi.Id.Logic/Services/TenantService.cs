@@ -6,11 +6,6 @@ using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Poi.Id.Logic.Services
 {
@@ -71,14 +66,14 @@ namespace Poi.Id.Logic.Services
 
         public async Task<IList<Tenant>> GetTenantByInfo(TenantInfo request)
         {
-            if(request.Role == RoleConstants.ROLE_SSA)
+            if (request.Role == RoleConstants.ROLE_SSA)
             {
                 return await _context.Tenants.Include(t => t.Apps).ToListAsync();
             }
             else
             {
                 return await _context.Tenants.Where(a => a.Id == request.TenantId).ToListAsync();
-            }   
+            }
         }
 
         public async Task<PagingResponse<Tenant>> GetTenant(PagingRequest request)
@@ -104,7 +99,7 @@ namespace Poi.Id.Logic.Services
 
         public async Task<Tenant> GetTenantById(Guid id)
         {
-           return await _context.Tenants.Include(t => t.Apps).FirstOrDefaultAsync(t => t.Id == id);
+            return await _context.Tenants.Include(t => t.Apps).FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<CudResponseDto> UpdateTenant(Guid id, CreateTenantRequest tenant)

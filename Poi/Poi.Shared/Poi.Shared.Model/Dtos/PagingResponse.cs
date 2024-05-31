@@ -1,6 +1,6 @@
 ﻿namespace Poi.Shared.Model.Dtos
 {
-    public class PagingResponse<T> where T: class
+    public class PagingResponse<T> where T : class
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }

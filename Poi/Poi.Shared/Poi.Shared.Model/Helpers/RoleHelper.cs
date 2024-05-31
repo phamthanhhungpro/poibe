@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Poi.Shared.Model.Helpers
+﻿namespace Poi.Shared.Model.Helpers
 {
     public static class RoleHelper
     {

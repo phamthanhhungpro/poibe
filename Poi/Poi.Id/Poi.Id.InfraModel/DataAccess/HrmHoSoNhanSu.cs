@@ -1,14 +1,8 @@
-﻿using Poi.Id.InfraModel.DataAccess;
-using Poi.Shared.Model.BaseModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Poi.Shared.Model.BaseModel;
 
 namespace Poi.Id.InfraModel.DataAccess
 {
-    public class HoSoNhanSu : BaseEntity
+    public class HrmHoSoNhanSu : BaseEntity
     {
         public string MaHoSo { get; set; }
         public string NgaySinh { get; set; }
@@ -21,6 +15,11 @@ namespace Poi.Id.InfraModel.DataAccess
         public string NoiOHienNay { get; set; }
 
         public virtual User User { get; set; }
+
+        public virtual HrmKhuVucChuyenMon KhuVucChuyenMon { get; set; }
+        public virtual HrmPhanLoaiNhanSu PhanLoaiNhanSu { get; set; }
+        public virtual HrmViTriCongViec ViTriCongViec { get; set; }
+        public virtual HrmVaiTro VaiTro { get; set; }
         public ThongTinNhanSu ThongTinThem { get; set; }
     }
 

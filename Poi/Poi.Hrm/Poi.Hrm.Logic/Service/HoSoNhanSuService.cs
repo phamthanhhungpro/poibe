@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Poi.Hrm.Logic.Interface;
 using Poi.Hrm.Logic.Requests;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Shared.Model.BaseModel;
-using Poi.Shared.Model.Helpers;
-using Poi.Shared.Model.Dtos;
-using AutoMapper;
 using Poi.Shared.Model.Constants;
+using Poi.Shared.Model.Dtos;
+using Poi.Shared.Model.Helpers;
 
 namespace Poi.Hrm.Logic.Service
 {
@@ -26,13 +26,13 @@ namespace Poi.Hrm.Logic.Service
 
             var formattedMaHoSo = $"THA-{nextId:0000}";
 
-            var entity = _mapper.Map<HoSoNhanSu>(hoSoNhanSu);
+            var entity = _mapper.Map<HrmHoSoNhanSu>(hoSoNhanSu);
 
             entity.MaHoSo = formattedMaHoSo;
 
             entity.User = await _context.Users.FindAsync(hoSoNhanSu.UserId);
 
-            await _context.HoSoNhanSu.AddAsync(entity);
+            await _context.HrmHoSoNhanSu.AddAsync(entity);
             await _context.SaveChangesAsync();
 
             return new CudResponseDto { Id = entity.Id };
@@ -40,7 +40,7 @@ namespace Poi.Hrm.Logic.Service
 
         public async Task<CudResponseDto> DeleteHoSo(TenantInfo tenantInfo, Guid id)
         {
-            var model = await _context.HoSoNhanSu.FindAsync(id);
+            var model = await _context.HrmHoSoNhanSu.FindAsync(id);
 
             if (model == null)
             {
@@ -59,23 +59,23 @@ namespace Poi.Hrm.Logic.Service
             };
         }
 
-        public async Task<List<HoSoNhanSu>> GetHoSo(TenantInfo tenantInfo)
+        public async Task<List<HrmHoSoNhanSu>> GetHoSo(TenantInfo tenantInfo)
         {
-            var data = _context.HoSoNhanSu
+            var data = _context.HrmHoSoNhanSu
                 .Include(h => h.User)
                 .Where(h => h.User.Id == tenantInfo.UserId);
 
-            if(tenantInfo.Role.IsHigherThanAdmin())
+            if (tenantInfo.Role.IsHigherThanAdmin())
             {
-                data = _context.HoSoNhanSu.Include(h => h.User);
+                data = _context.HrmHoSoNhanSu.Include(h => h.User);
             }
 
             return await data.ToListAsync();
         }
 
-        public async Task<HoSoNhanSu> GetHoSoById(TenantInfo tenantInfo, Guid id)
+        public async Task<HrmHoSoNhanSu> GetHoSoById(TenantInfo tenantInfo, Guid id)
         {
-            var data = await _context.HoSoNhanSu.Include(x => x.User)
+            var data = await _context.HrmHoSoNhanSu.Include(x => x.User)
                                                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return data;
@@ -83,7 +83,7 @@ namespace Poi.Hrm.Logic.Service
 
         public async Task<CudResponseDto> UpdateHoSo(Guid id, TenantInfo tenantInfo, CreateHoSoNhanSuRequest hoSoNhanSu)
         {
-            var model = await _context.HoSoNhanSu.FindAsync(id);
+            var model = await _context.HrmHoSoNhanSu.FindAsync(id);
 
             if (model == null)
             {

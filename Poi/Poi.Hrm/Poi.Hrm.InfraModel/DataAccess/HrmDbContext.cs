@@ -8,9 +8,12 @@ namespace Poi.Id.InfraModel.DataAccess
         {
         }
 
-        public DbSet<HoSoNhanSu> HoSoNhanSu { get; set; }
-        public DbSet<KhuVucChuyenMon> KhuVucChuyenMon { get; set; }
-        public DbSet<PhanLoaiNhanSu> PhanLoaiNhanSu { get; set; }
+        public DbSet<HrmHoSoNhanSu> HrmHoSoNhanSu { get; set; }
+        public DbSet<HrmKhuVucChuyenMon> HrmKhuVucChuyenMon { get; set; }
+        public DbSet<HrmPhanLoaiNhanSu> HrmPhanLoaiNhanSu { get; set; }
+
+        public DbSet<HrmViTriCongViec> HrmViTriCongViec { get; set; }
+        public DbSet<HrmVaiTro> HrmVaiTro { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

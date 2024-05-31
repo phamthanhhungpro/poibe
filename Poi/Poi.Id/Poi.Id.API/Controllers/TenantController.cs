@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
-using Poi.Id.Logic.Services;
 
 namespace Poi.Id.API.Controllers
 {

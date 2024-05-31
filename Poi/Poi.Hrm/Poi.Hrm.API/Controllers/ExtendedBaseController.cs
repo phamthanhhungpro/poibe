@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Poi.Shared.Model.BaseModel;
 
 namespace Poi.Hrm.API.Controllers

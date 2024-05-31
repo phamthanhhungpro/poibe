@@ -7,11 +7,6 @@ using Poi.Id.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Poi.Id.Logic.Services
 {
@@ -214,7 +209,7 @@ namespace Poi.Id.Logic.Services
 
             if (toUpdateUser == null)
             {
-                   return new CudResponseDto { IsSucceeded = false };
+                return new CudResponseDto { IsSucceeded = false };
             }
 
             _mapper.Map(request, toUpdateUser);
@@ -228,7 +223,7 @@ namespace Poi.Id.Logic.Services
                     return new CudResponseDto { IsSucceeded = false };
                 }
                 toUpdateUser.Role = role;
-            } 
+            }
             else if (!string.IsNullOrEmpty(request.RoleCode))
             {
                 var role = await _context.Roles.FirstOrDefaultAsync(t => t.Code == request.RoleCode);
@@ -309,13 +304,13 @@ namespace Poi.Id.Logic.Services
             }
 
             var data = await query.Select(x => new UserListInfoDto
-                {
-                    Id = x.Id,
-                    SurName = x.SurName,
-                    Name = x.Name,
-                    Email = x.Email,
-                    UserName = x.UserName,
-                }).ToListAsync();
+            {
+                Id = x.Id,
+                SurName = x.SurName,
+                Name = x.Name,
+                Email = x.Email,
+                UserName = x.UserName,
+            }).ToListAsync();
 
             return data;
         }

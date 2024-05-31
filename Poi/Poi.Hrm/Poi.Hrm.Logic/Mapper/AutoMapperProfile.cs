@@ -5,7 +5,7 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        CreateMap<CreateHoSoNhanSuRequest, HoSoNhanSu>()
+        CreateMap<CreateHoSoNhanSuRequest, HrmHoSoNhanSu>()
             .ForAllMembers(opts =>
             {
                 opts.Condition((src, dest, srcMember) => srcMember != null);

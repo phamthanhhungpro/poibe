@@ -1,26 +1,22 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Requests;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Poi.Id.API.Controllers;
 
@@ -111,8 +107,8 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
             }
 
-            var user = new User() 
-            { 
+            var user = new User()
+            {
                 SurName = registration.SurName,
                 Name = registration.Name,
                 Email = registration.Email,
