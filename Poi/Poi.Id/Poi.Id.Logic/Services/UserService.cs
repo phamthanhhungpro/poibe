@@ -313,6 +313,7 @@ namespace Poi.Id.Logic.Services
                 Name = x.Name,
                 Email = x.Email,
                 UserName = x.UserName,
+                Phone = x.Phone,
             }).ToListAsync();
 
             return data;

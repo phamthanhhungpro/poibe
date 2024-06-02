@@ -91,7 +91,7 @@ namespace Poi.Id.InfraModel.DataAccess
     {
         public string TuThangNam { get; set; }
         public string DenThangNam { get; set; }
-        public string ChucDanh { get; set; }
+        public string ChucDanhChucVu { get; set; }
         public string DonViCongTac { get; set; }
     }
 
@@ -100,7 +100,8 @@ namespace Poi.Id.InfraModel.DataAccess
         public string MoiQuanHe { get; set; }
         public string HoTen { get; set; }
         public string NamSinh { get; set; }
-        public string QueQuanNgheNghiep { get; set; }
+        public string QueQuan { get; set; }
+        public string NgheNghiep { get; set; }
     }
 
     public class LuongCongChuc

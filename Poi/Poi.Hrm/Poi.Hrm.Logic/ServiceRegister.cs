@@ -13,6 +13,8 @@ namespace Poi.Hrm.Logic
             services.AddScoped<IHoSoNhanSuService, HoSoNhanSuService>();
             services.AddScoped<IVaiTroService, VaiTroService>();
             services.AddScoped<IViTriCongViecService, ViTriCongViecService>();
+            services.AddScoped<IThamSoLuongService, ThamSoLuongService>();
+            services.AddScoped<ICongThucLuongService, CongThucLuongService>();
         }
     }
 }

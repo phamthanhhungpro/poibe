@@ -15,6 +15,10 @@ namespace Poi.Id.InfraModel.DataAccess
         public DbSet<HrmViTriCongViec> HrmViTriCongViec { get; set; }
         public DbSet<HrmVaiTro> HrmVaiTro { get; set; }
 
+        public DbSet<HrmThamSoLuong> HrmThamSoLuong { get; set; }
+        public DbSet<HrmCongThucLuong> HrmCongThucLuong { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
