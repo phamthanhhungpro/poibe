@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531162654_UpdateHSNSTable")]
+    partial class UpdateHSNSTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -429,7 +432,7 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("VaiTroId")
@@ -448,8 +451,7 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.HasIndex("PhongBanBoPhanId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.HasIndex("VaiTroId");
 
@@ -1094,10 +1096,8 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasForeignKey("PhongBanBoPhanId");
 
                     b.HasOne("Poi.Id.InfraModel.DataAccess.User", "User")
-                        .WithOne("HrmHoSoNhanSu")
-                        .HasForeignKey("Poi.Id.InfraModel.DataAccess.HrmHoSoNhanSu", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.HasOne("Poi.Id.InfraModel.DataAccess.HrmVaiTro", "VaiTro")
                         .WithMany()
@@ -1233,11 +1233,6 @@ namespace Poi.Id.InfraModel.Migrations
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Tenant", b =>
                 {
                     b.Navigation("Groups");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.User", b =>
-                {
-                    b.Navigation("HrmHoSoNhanSu");
                 });
 #pragma warning restore 612, 618
         }

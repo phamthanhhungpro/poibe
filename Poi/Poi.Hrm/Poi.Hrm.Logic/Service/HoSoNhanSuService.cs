@@ -32,6 +32,26 @@ namespace Poi.Hrm.Logic.Service
 
             entity.User = await _context.Users.FindAsync(hoSoNhanSu.UserId);
 
+            if (hoSoNhanSu.VaiTroId.HasValue)
+            {
+                entity.VaiTro = await _context.HrmVaiTro.FindAsync(hoSoNhanSu.VaiTroId);
+            }
+
+            if (hoSoNhanSu.ViTriCongViecId.HasValue)
+            {
+                entity.ViTriCongViec = await _context.HrmViTriCongViec.FindAsync(hoSoNhanSu.ViTriCongViecId);
+            }
+
+            if (hoSoNhanSu.ChiNhanhVanPhongId.HasValue)
+            {
+                entity.ChiNhanhVanPhong = await _context.ChiNhanhVanPhongs.FindAsync(hoSoNhanSu.ChiNhanhVanPhongId);
+            }
+
+            if (hoSoNhanSu.PhongBanBoPhanId.HasValue)
+            {
+                entity.PhongBanBoPhan = await _context.PhongBanBoPhans.FindAsync(hoSoNhanSu.PhongBanBoPhanId);
+            }
+
             await _context.HrmHoSoNhanSu.AddAsync(entity);
             await _context.SaveChangesAsync();
 
@@ -63,11 +83,17 @@ namespace Poi.Hrm.Logic.Service
         {
             var data = _context.HrmHoSoNhanSu
                 .Include(h => h.User)
+                .Include(h => h.VaiTro)
+                .Include(h => h.ViTriCongViec)
+                .Include(h => h.PhongBanBoPhan)
                 .Where(h => h.User.Id == tenantInfo.UserId);
 
             if (tenantInfo.Role.IsHigherThanAdmin())
             {
-                data = _context.HrmHoSoNhanSu.Include(h => h.User);
+                data = _context.HrmHoSoNhanSu.Include(h => h.User)
+                                    .Include(h => h.VaiTro)
+                                    .Include(h => h.ViTriCongViec)
+                                    .Include(h => h.PhongBanBoPhan);
             }
 
             return await data.ToListAsync();
@@ -75,8 +101,11 @@ namespace Poi.Hrm.Logic.Service
 
         public async Task<HrmHoSoNhanSu> GetHoSoById(TenantInfo tenantInfo, Guid id)
         {
-            var data = await _context.HrmHoSoNhanSu.Include(x => x.User)
-                                                .FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _context.HrmHoSoNhanSu.Include(h => h.User)
+                                                   .Include(h => h.VaiTro)
+                                                   .Include(h => h.ViTriCongViec)
+                                                   .Include(h => h.PhongBanBoPhan)
+                                                   .FirstOrDefaultAsync(x => x.Id == id);
 
             return data;
         }

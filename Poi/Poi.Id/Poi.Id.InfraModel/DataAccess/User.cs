@@ -24,6 +24,8 @@ namespace Poi.Id.InfraModel.DataAccess
         // Collection of direct reports (users)
         public virtual ICollection<User> DirectReports { get; set; }
         public virtual ICollection<PhongBanBoPhan> PhongBanBoPhans { get; set; }
+
+        public virtual HrmHoSoNhanSu HrmHoSoNhanSu { get; set; }
         public string FullName
         {
             get { return SurName + " " + Name; }

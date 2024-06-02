@@ -294,9 +294,12 @@ namespace Poi.Id.Logic.Services
 
         public async Task<List<UserListInfoDto>> GetUserForCreateHoSoNhanSu(TenantInfo info)
         {
-            var query = _context.Users.Include(u => u.Role)
+            var query = _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.HrmHoSoNhanSu)
                 .Include(u => u.Tenant)
-                .Where(u => u.Tenant.Id == info.TenantId);
+                .Where(u => u.Tenant.Id == info.TenantId)
+                .Where(u => u.HrmHoSoNhanSu == null);
 
             if (info.Role.IsMember())
             {

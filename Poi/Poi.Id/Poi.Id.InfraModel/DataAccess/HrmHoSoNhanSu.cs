@@ -1,4 +1,5 @@
 ﻿using Poi.Shared.Model.BaseModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Poi.Id.InfraModel.DataAccess
 {
@@ -14,12 +15,17 @@ namespace Poi.Id.InfraModel.DataAccess
         public string ThuongTru { get; set; }
         public string NoiOHienNay { get; set; }
 
+        [ForeignKey("UserId")]
+        public Guid UserId { get; set; }
         public virtual User User { get; set; }
 
         public virtual HrmKhuVucChuyenMon KhuVucChuyenMon { get; set; }
         public virtual HrmPhanLoaiNhanSu PhanLoaiNhanSu { get; set; }
         public virtual HrmViTriCongViec ViTriCongViec { get; set; }
         public virtual HrmVaiTro VaiTro { get; set; }
+
+        public virtual ChiNhanhVanPhong ChiNhanhVanPhong { get; set; }
+        public virtual PhongBanBoPhan PhongBanBoPhan { get; set; }
         public ThongTinNhanSu ThongTinThem { get; set; }
     }
 

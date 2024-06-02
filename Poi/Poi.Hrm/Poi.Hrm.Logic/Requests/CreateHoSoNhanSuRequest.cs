@@ -13,6 +13,13 @@ namespace Poi.Hrm.Logic.Requests
         public string ThuongTru { get; set; }
         public string NoiOHienNay { get; set; }
         public Guid UserId { get; set; }
+        public Guid? KhuVucChuyenMonId { get; set; }
+        public Guid? PhanLoaiNhanSuId { get; set; }
+        public Guid? ViTriCongViecId { get; set; }
+        public Guid? VaiTroId { get; set; }
+        public Guid? ChiNhanhVanPhongId { get; set; }
+        public Guid? PhongBanBoPhanId { get; set; }
+
         public ThongTinNhanSu ThongTinThem { get; set; }
     }
 }

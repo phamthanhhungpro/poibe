@@ -12,6 +12,7 @@ namespace Poi.Hrm.Logic
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IHoSoNhanSuService, HoSoNhanSuService>();
             services.AddScoped<IVaiTroService, VaiTroService>();
+            services.AddScoped<IViTriCongViecService, ViTriCongViecService>();
         }
     }
 }

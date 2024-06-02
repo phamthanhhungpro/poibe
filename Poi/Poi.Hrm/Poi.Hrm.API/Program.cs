@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Poi.Hrm.Logic;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Shared.Model.MiddleWare;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 ServiceRegister.AddLogic(builder.Services);
 
 
