@@ -17,7 +17,7 @@ namespace Poi.Id.InfraModel.DataAccess
 
         public DbSet<HrmThamSoLuong> HrmThamSoLuong { get; set; }
         public DbSet<HrmCongThucLuong> HrmCongThucLuong { get; set; }
-
+        public DbSet<HrmTrangThaiChamCong> HrmTrangThaiChamCong { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

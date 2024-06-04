@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240604040253_AddTableTrangThaiChamCong")]
+    partial class AddTableTrangThaiChamCong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -642,9 +645,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<string>("TenTrangThai")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("TrangThai")
                         .HasColumnType("boolean");
 
@@ -655,8 +655,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
 
                     b.ToTable("HrmTrangThaiChamCong");
                 });
@@ -1262,15 +1260,6 @@ namespace Poi.Id.InfraModel.Migrations
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.HrmPhanLoaiNhanSu", b =>
-                {
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId");
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.HrmTrangThaiChamCong", b =>
                 {
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Tenant", "Tenant")
                         .WithMany()
