@@ -70,7 +70,7 @@ namespace Poi.Hrm.Logic.Service
         {
             return await _hrmDbContext.HrmTrangThaiChamCong
                 .Include(x => x.Tenant)
-                .Where(x => x.Tenant.Id == tenantInfo.TenantId)
+                .Where(x => x.IsSystem || x.Tenant.Id == tenantInfo.TenantId)
                 .ToListAsync();
         }
 

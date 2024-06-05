@@ -9,6 +9,7 @@ namespace Poi.Id.InfraModel.DataAccess
         public bool YeuCauGiaiTrinh { get; set; }
         public bool TrangThai { get; set; }
         public string MauSac { get; set; }
+        public bool IsSystem { get; set; }
         public Tenant Tenant { get; set; }
     }
 }

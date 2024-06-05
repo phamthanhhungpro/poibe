@@ -24,8 +24,4 @@
     <ProjectReference Include="..\..\Poi.Shared\Poi.Shared.Model\Poi.Shared.Model.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

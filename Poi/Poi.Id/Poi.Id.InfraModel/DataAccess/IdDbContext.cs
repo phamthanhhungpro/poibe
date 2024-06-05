@@ -159,6 +159,31 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+
+            modelBuilder.Entity<HrmCongKhaiBao>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<HrmChamCongDiemDanh>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+                entity.Property(e => e.TrangThai)
+                     .HasConversion(
+                         v => v.ToString(), // Convert Enum to string for storage
+                         v => (TrangThaiEnum)Enum.Parse(typeof(TrangThaiEnum), v)); // Convert string to Enum for use
+            });
+
+            modelBuilder.Entity<HrmDiemDanhHistory>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
         }
     }
 }
