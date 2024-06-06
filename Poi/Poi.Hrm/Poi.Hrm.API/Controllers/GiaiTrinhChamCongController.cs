@@ -22,5 +22,19 @@ namespace Poi.Hrm.API.Controllers
             var res = await _giaiTrinhChamCongService.CreateGiaiTrinhChamCong(TenantInfo, request);
             return Ok(res);
         }
+
+        [HttpGet("danh-sach-by-user")]
+        public async Task<ActionResult<IEnumerable<HrmGiaiTrinhChamCong>>> GetByUserId(Guid userId)
+        {
+            var result = await _giaiTrinhChamCongService.GetGiaiTrinhChamCongByUserId(TenantInfo, userId);
+            return Ok(result);
+        }
+
+        [HttpPost("confirm")]
+        public async Task<ActionResult<HrmGiaiTrinhChamCong>> UpdateTrangThai(XacNhanGiaiTrinhRequest request)
+        {
+            var res = await _giaiTrinhChamCongService.XacNhanGiaiTrinh(TenantInfo, request);
+            return Ok(res);
+        }
     }
 }

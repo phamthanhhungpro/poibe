@@ -335,12 +335,19 @@ namespace Poi.Id.Logic.Services
                 }).ToListAsync();
         }
 
-        public async Task<User> GetUserPhongBanInfo(Guid userId, TenantInfo info)
+        public async Task<UserPhongBanDto> GetUserPhongBanInfo(Guid userId, TenantInfo info)
         {
-            return await _context.Users
+            var data = await _context.Users
                 .Include(u => u.Tenant)
-                .Include(u => u.PhongBanBoPhan).ThenInclude(p => p.Managers)
-                .FirstOrDefaultAsync(u => u.Id == userId && u.Tenant.Id == info.TenantId);
+                .Include(u => u.PhongBanBoPhan).ThenInclude(p => p.QuanLy)
+                .Select(u => new UserPhongBanDto
+                {
+                    Id = u.Id,
+                    PhongBanBoPhan = u.PhongBanBoPhan,
+                })
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            return data;
         }
     }
 }

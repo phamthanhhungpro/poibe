@@ -81,7 +81,7 @@ namespace Poi.Id.InfraModel.DataAccess
             // Configure User -> PhongBanBoPhan (Managers) relationship
             modelBuilder.Entity<User>()
                 .HasOne(u => u.ManagerOfPhongBanBoPhan)
-                .WithMany(p => p.Managers)
+                .WithMany(p => p.QuanLy)
                 .HasForeignKey(u => u.ManagerOfPhongBanBoPhanId)
                 .OnDelete(DeleteBehavior.Restrict);
 

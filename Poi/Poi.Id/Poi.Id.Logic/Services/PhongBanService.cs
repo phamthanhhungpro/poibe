@@ -37,7 +37,7 @@ namespace Poi.Id.Logic.Services
 
             if (phongBan.ManagerIds != null && phongBan.ManagerIds.Count > 0)
             {
-                entity.Managers = await _context.Users
+                entity.QuanLy = await _context.Users
                     .Include(u => u.Role)
                     .Where(u => phongBan.ManagerIds.Contains(u.Id))
                     .Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
@@ -71,7 +71,7 @@ namespace Poi.Id.Logic.Services
             var query = _context.PhongBanBoPhans
                 .Include(x => x.Parent)
                 .Include(x => x.ChiNhanhVanPhong)
-                .Include(x => x.Managers)
+                .Include(x => x.QuanLy)
                 .Include(x => x.Tenant)
                 .Include(x => x.ThanhVien)
                 .Where(x => x.Tenant.Id == info.TenantId);
@@ -107,7 +107,7 @@ namespace Poi.Id.Logic.Services
 
             if (request.ManagerIds != null && request.ManagerIds.Count > 0)
             {
-                entity.Managers = await _context.Users
+                entity.QuanLy = await _context.Users
                     .Include(u => u.Role)
                     .Where(u => request.ManagerIds.Contains(u.Id))
                     .Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
