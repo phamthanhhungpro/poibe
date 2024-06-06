@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240605181040_AddUserPhongBan")]
+    partial class AddUserPhongBan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1141,9 +1144,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ManagerOfPhongBanBoPhanId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -1168,6 +1168,9 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<Guid?>("PhongBanBoPhanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PhongBanBoPhanId1")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("RoleId")
@@ -1196,8 +1199,6 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("ManagerOfPhongBanBoPhanId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -1206,6 +1207,8 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.HasIndex("PhongBanBoPhanId");
+
+                    b.HasIndex("PhongBanBoPhanId1");
 
                     b.HasIndex("RoleId");
 
@@ -1546,15 +1549,13 @@ namespace Poi.Id.InfraModel.Migrations
                         .WithMany("Users")
                         .HasForeignKey("GroupId");
 
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", "ManagerOfPhongBanBoPhan")
-                        .WithMany("Managers")
-                        .HasForeignKey("ManagerOfPhongBanBoPhanId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", "PhongBanBoPhan")
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", "PhongBanBoPhans")
                         .WithMany("ThanhVien")
-                        .HasForeignKey("PhongBanBoPhanId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("PhongBanBoPhanId");
+
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", null)
+                        .WithMany("Managers")
+                        .HasForeignKey("PhongBanBoPhanId1");
 
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Role", "Role")
                         .WithMany("Users")
@@ -1566,9 +1567,7 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.Navigation("Group");
 
-                    b.Navigation("ManagerOfPhongBanBoPhan");
-
-                    b.Navigation("PhongBanBoPhan");
+                    b.Navigation("PhongBanBoPhans");
 
                     b.Navigation("Role");
 

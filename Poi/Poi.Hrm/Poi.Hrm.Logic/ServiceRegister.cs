@@ -18,6 +18,7 @@ namespace Poi.Hrm.Logic
             services.AddScoped<ITrangThaiChamCongService, TrangThaiChamCongService>();
             services.AddScoped<ICongKhaiBaoService, CongKhaiBaoService>();
             services.AddScoped<IChamCongDiemDanhService, ChamCongDiemDanhService>();
+            services.AddScoped<IGiaiTrinhChamCongService, GiaiTrinhChamCongService>();
         }
     }
 }

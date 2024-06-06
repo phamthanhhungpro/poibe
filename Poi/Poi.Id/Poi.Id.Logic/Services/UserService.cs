@@ -318,5 +318,29 @@ namespace Poi.Id.Logic.Services
 
             return data;
         }
+
+        public async Task<List<UserListInfoDto>> GetUserInTenant(TenantInfo info)
+        {
+            return await _context.Users
+                .Include(u => u.Tenant)
+                .Where(u => u.Tenant.Id == info.TenantId)
+                .Select(x => new UserListInfoDto
+                {
+                    Id = x.Id,
+                    SurName = x.SurName,
+                    Name = x.Name,
+                    Email = x.Email,
+                    UserName = x.UserName,
+                    Phone = x.Phone,
+                }).ToListAsync();
+        }
+
+        public async Task<User> GetUserPhongBanInfo(Guid userId, TenantInfo info)
+        {
+            return await _context.Users
+                .Include(u => u.Tenant)
+                .Include(u => u.PhongBanBoPhan).ThenInclude(p => p.Managers)
+                .FirstOrDefaultAsync(u => u.Id == userId && u.Tenant.Id == info.TenantId);
+        }
     }
 }

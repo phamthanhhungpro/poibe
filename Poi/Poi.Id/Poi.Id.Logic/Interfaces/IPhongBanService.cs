@@ -12,5 +12,8 @@ namespace Poi.Id.Logic.Interfaces
         Task<CudResponseDto> DeleteAsync(Guid id);
         Task<PhongBanBoPhan> GetByIdAsync(Guid id);
         Task<IEnumerable<PhongBanBoPhan>> GetAllAsync(TenantInfo info);
+
+        Task<CudResponseDto> UpdateMember(Guid id, UpdateMemberPhongBanRequest request);
+
     }
 }

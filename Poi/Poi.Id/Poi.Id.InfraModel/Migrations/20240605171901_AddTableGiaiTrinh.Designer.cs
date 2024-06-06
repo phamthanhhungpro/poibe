@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240605171901_AddTableGiaiTrinh")]
+    partial class AddTableGiaiTrinh
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,6 +175,21 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("RolesId");
 
                     b.ToTable("PermissionRole");
+                });
+
+            modelBuilder.Entity("PhongBanBoPhanUser", b =>
+                {
+                    b.Property<Guid>("ManagersId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PhongBanBoPhansId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ManagersId", "PhongBanBoPhansId");
+
+                    b.HasIndex("PhongBanBoPhansId");
+
+                    b.ToTable("PhongBanBoPhanUser");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.App", b =>
@@ -514,57 +532,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("HrmDiemDanhHistory");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.HrmGiaiTrinhChamCong", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("HrmChamCongDiemDanhId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("HrmCongKhaiBaoId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("LyDo")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("NguoiXacNhanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ThoiGian")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("TrangThai")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HrmChamCongDiemDanhId");
-
-                    b.HasIndex("HrmCongKhaiBaoId");
-
-                    b.HasIndex("NguoiXacNhanId");
-
-                    b.ToTable("HrmGiaiTrinhChamCong");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.HrmHoSoNhanSu", b =>
@@ -1141,9 +1108,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ManagerOfPhongBanBoPhanId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -1166,9 +1130,6 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<Guid?>("PhongBanBoPhanId")
-                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("RoleId")
                         .HasColumnType("uuid");
@@ -1196,16 +1157,12 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("ManagerOfPhongBanBoPhanId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
-
-                    b.HasIndex("PhongBanBoPhanId");
 
                     b.HasIndex("RoleId");
 
@@ -1325,6 +1282,21 @@ namespace Poi.Id.InfraModel.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PhongBanBoPhanUser", b =>
+                {
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", null)
+                        .WithMany()
+                        .HasForeignKey("ManagersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", null)
+                        .WithMany()
+                        .HasForeignKey("PhongBanBoPhansId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.ChiNhanhVanPhong", b =>
                 {
                     b.HasOne("Poi.Id.InfraModel.DataAccess.CoQuanDonVi", "CoQuanDonVi")
@@ -1404,27 +1376,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.HrmGiaiTrinhChamCong", b =>
-                {
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.HrmChamCongDiemDanh", "HrmChamCongDiemDanh")
-                        .WithMany()
-                        .HasForeignKey("HrmChamCongDiemDanhId");
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.HrmCongKhaiBao", "HrmCongKhaiBao")
-                        .WithMany()
-                        .HasForeignKey("HrmCongKhaiBaoId");
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", "NguoiXacNhan")
-                        .WithMany()
-                        .HasForeignKey("NguoiXacNhanId");
-
-                    b.Navigation("HrmChamCongDiemDanh");
-
-                    b.Navigation("HrmCongKhaiBao");
-
-                    b.Navigation("NguoiXacNhan");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.HrmHoSoNhanSu", b =>
@@ -1546,16 +1497,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .WithMany("Users")
                         .HasForeignKey("GroupId");
 
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", "ManagerOfPhongBanBoPhan")
-                        .WithMany("Managers")
-                        .HasForeignKey("ManagerOfPhongBanBoPhanId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", "PhongBanBoPhan")
-                        .WithMany("ThanhVien")
-                        .HasForeignKey("PhongBanBoPhanId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
@@ -1565,10 +1506,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasForeignKey("TenantId");
 
                     b.Navigation("Group");
-
-                    b.Navigation("ManagerOfPhongBanBoPhan");
-
-                    b.Navigation("PhongBanBoPhan");
 
                     b.Navigation("Role");
 
@@ -1598,10 +1535,6 @@ namespace Poi.Id.InfraModel.Migrations
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.PhongBanBoPhan", b =>
                 {
                     b.Navigation("Children");
-
-                    b.Navigation("Managers");
-
-                    b.Navigation("ThanhVien");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Role", b =>

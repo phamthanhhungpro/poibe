@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Poi.Id.Logic.Interfaces;
 using Poi.Id.Logic.Requests;
+using Poi.Id.Logic.Services;
 
 namespace Poi.Id.API.Controllers
 {
@@ -61,6 +62,17 @@ namespace Poi.Id.API.Controllers
         {
             var result = await _phongBanBoPhanService.DeleteAsync(id);
             return Ok(result);
+        }
+
+        [HttpPut("member/{id}")]
+        public async Task<IActionResult> UpdateMember(Guid id, [FromBody] UpdateMemberPhongBanRequest request)
+        {
+            var updatedApp = await _phongBanBoPhanService.UpdateMember(id, request);
+            if (updatedApp == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedApp);
         }
     }
 }

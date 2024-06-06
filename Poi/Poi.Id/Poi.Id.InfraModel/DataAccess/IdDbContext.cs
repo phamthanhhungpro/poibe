@@ -71,6 +71,19 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+            // Configure User -> PhongBanBoPhan (ThanhVien) relationship
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.PhongBanBoPhan)
+                .WithMany(p => p.ThanhVien)
+                .HasForeignKey(u => u.PhongBanBoPhanId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure User -> PhongBanBoPhan (Managers) relationship
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.ManagerOfPhongBanBoPhan)
+                .WithMany(p => p.Managers)
+                .HasForeignKey(u => u.ManagerOfPhongBanBoPhanId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Role>(entity =>
             {
@@ -184,6 +197,14 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+
+            modelBuilder.Entity<HrmGiaiTrinhChamCong>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
         }
     }
 }

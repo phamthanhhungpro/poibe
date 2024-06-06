@@ -150,5 +150,19 @@ namespace Poi.Id.API.Controllers
             var response = await _userService.GetUserForCreateHoSoNhanSu(TenantInfo);
             return Ok(response);
         }
+
+        [HttpGet("all-in-tenant")]
+        public async Task<IActionResult> GetAllUserInTenant()
+        {
+            var response = await _userService.GetUserInTenant(TenantInfo);
+            return Ok(response);
+        }
+
+        [HttpGet("phongban")]
+        public async Task<IActionResult> GetUserPhongBan(Guid userId)
+        {
+            var response = await _userService.GetUserPhongBanInfo(userId, TenantInfo);
+            return Ok(response);
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Poi.Id.InfraModel.DataAccess
         public string Phone { get; set; }
         public string Description { get; set; }
         public virtual ICollection<User> Managers { get; set; }
+        public virtual ICollection<User> ThanhVien { get; set; }
         public virtual ICollection<PhongBanBoPhan> Children { get; set; }
         public PhongBanBoPhan Parent { get; set; }
         public ChiNhanhVanPhong ChiNhanhVanPhong { get; set; }

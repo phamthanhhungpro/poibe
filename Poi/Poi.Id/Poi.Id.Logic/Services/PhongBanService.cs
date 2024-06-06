@@ -73,6 +73,7 @@ namespace Poi.Id.Logic.Services
                 .Include(x => x.ChiNhanhVanPhong)
                 .Include(x => x.Managers)
                 .Include(x => x.Tenant)
+                .Include(x => x.ThanhVien)
                 .Where(x => x.Tenant.Id == info.TenantId);
 
             return await query.ToListAsync();
@@ -117,6 +118,30 @@ namespace Poi.Id.Logic.Services
             _context.PhongBanBoPhans.Update(entity);
             await _context.SaveChangesAsync();
             return new CudResponseDto { Id = entity.Id };
+        }
+
+        public async Task<CudResponseDto> UpdateMember(Guid id, UpdateMemberPhongBanRequest request)
+        {
+            var entity = await _context.PhongBanBoPhans.Include(x => x.ThanhVien)
+                                                       .Include(x => x.Tenant)
+                                                       .FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+            {
+                throw new Exception($"PhongBanBoPhan {Error.NotFound}");
+            }
+
+            if (request.UserIds != null && request.UserIds.Count > 0)
+            {
+                entity.ThanhVien = await _context.Users
+                    .Include(u => u.Tenant)
+                    .Where(u => request.UserIds.Contains(u.Id))
+                    .Where(u => u.Tenant.Id == entity.Tenant.Id)
+                    .ToListAsync();
+            }
+
+            _context.PhongBanBoPhans.Update(entity);
+            await _context.SaveChangesAsync();
+            return new CudResponseDto { Id = entity.Id, IsSucceeded = true };
         }
     }
 }
