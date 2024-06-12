@@ -19,18 +19,19 @@ public class FaceRecognitionService : IFaceRecognitionService
 {
     private readonly LBPHFaceRecognizer _faceRecognizer;
     private readonly Dictionary<int, string> _labels;
-    private readonly string _modelPath = Path.Combine("wwwroot", "face_model.xml");
+    private readonly string _modelPath;
     private readonly ILogger<FaceRecognitionService> _logger;
     private readonly CascadeClassifier _faceCascade;
     private readonly HrmDbContext _context;
 
     public FaceRecognitionService(ILogger<FaceRecognitionService> logger, HrmDbContext context)
     {
-        _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 123.0); // Parameters can be tuned
+        _modelPath = Path.Combine("wwwroot", "face_model.xml");
+        _faceRecognizer = new LBPHFaceRecognizer(1, 8, 8, 8, 90); // Tuned parameter
         _labels = new Dictionary<int, string>();
-        _logger = logger;
-        _faceCascade = new CascadeClassifier(Path.Combine("wwwroot", "haarcascade_frontalface_default.xml")); // Path to Haar Cascade XML file
-        _context = context;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _faceCascade = new CascadeClassifier(Path.Combine("wwwroot", "haarcascade_frontalface_default.xml"));
 
         if (File.Exists(_modelPath))
         {
@@ -41,25 +42,47 @@ public class FaceRecognitionService : IFaceRecognitionService
 
     public async Task TrainAsync(string datasetDir)
     {
+        if (!Directory.Exists(datasetDir))
+        {
+            throw new DirectoryNotFoundException($"The dataset directory {datasetDir} does not exist.");
+        }
+
         var images = new List<Image<Gray, byte>>();
         var labels = new List<int>();
         int labelIndex = 0;
 
-        foreach (var personDir in Directory.GetDirectories(datasetDir))
+        var directories = Directory.GetDirectories(datasetDir);
+        foreach (var personDir in directories)
         {
             var personName = Path.GetFileName(personDir);
-            foreach (var imagePath in Directory.GetFiles(personDir, "*.jpg"))
+            var imagePaths = Directory.EnumerateFiles(personDir, "*.*")
+                                      .Where(file => file.ToLower().EndsWith(".jpg") || file.ToLower().EndsWith(".jpeg"));
+
+            foreach (var imagePath in imagePaths)
             {
-                var image = new Image<Gray, byte>(imagePath);
-                var preprocessedImage = PreprocessImage(image);
-                if (preprocessedImage != null)
+                try
                 {
-                    images.Add(preprocessedImage);
-                    labels.Add(labelIndex);
+                    var image = new Image<Gray, byte>(imagePath);
+                    var preprocessedImage = PreprocessImage(image);
+                    if (preprocessedImage != null)
+                    {
+                        lock (images)
+                        {
+                            images.Add(preprocessedImage);
+                            labels.Add(labelIndex);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error processing image {imagePath}");
                 }
             }
 
-            _labels[labelIndex] = personName;
+            lock (_labels)
+            {
+                _labels[labelIndex] = personName;
+            }
             labelIndex++;
         }
 
@@ -82,6 +105,12 @@ public class FaceRecognitionService : IFaceRecognitionService
         CvInvoke.Imdecode(imageBytes, ImreadModes.Grayscale, imageMat);
 
         var image = PreprocessImage(imageMat.ToImage<Gray, byte>());
+
+        // Save the image to a file for manual checking
+        var outputPath = Path.Combine("wwwroot", "snapshot", $"{Guid.NewGuid()}.jpg");
+        Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+
+        image?.Save(outputPath);
         if (image == null)
         {
             _logger.LogInformation("No face detected in the input image.");
@@ -90,17 +119,20 @@ public class FaceRecognitionService : IFaceRecognitionService
 
         var result = await Task.Run(() => _faceRecognizer.Predict(image));
 
-        if (result.Distance < 110 &&  result.Label != -1 && _labels.TryGetValue(result.Label, out var name))
+        if (result.Distance < 90 && result.Label != -1 && _labels.TryGetValue(result.Label, out var name))
         {
             _logger.LogInformation($"Face recognized: {name}");
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == info.UserId);
-
-            // do check later
-            if (user.UserName != name)
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == name);
+            var checkIn = new HrmDiemDanhHistory
             {
-                return "Unknown";
-            }
+                Time = DateTime.UtcNow,
+                SnapShotPath = outputPath,
+                User = user,
+            };
+
+            _context.HrmDiemDanhHistory.Add(checkIn);
+            await _context.SaveChangesAsync();
 
             return user.FullName;
         }
@@ -111,21 +143,35 @@ public class FaceRecognitionService : IFaceRecognitionService
 
     private Image<Gray, byte> PreprocessImage(Image<Gray, byte> image)
     {
-        // Detect faces in the image
         var faces = _faceCascade.DetectMultiScale(image, 1.1, 5, new Size(30, 30), Size.Empty);
 
         if (faces.Length == 0)
         {
-            // No faces detected, return null
             return null;
         }
 
-        // Use the first detected face
-        var faceRect = faces[0];
-        var faceImage = image.GetSubRect(faceRect).Clone();
+        var largestFace = faces.OrderByDescending(f => f.Width * f.Height).FirstOrDefault();
 
-        // Resize the face image to a standard size (e.g., 100x100) and apply histogram equalization
+        if (largestFace == default(Rectangle))
+        {
+            return null;
+        }
+
+        var faceImage = image.GetSubRect(largestFace).Clone();
+
+        CvInvoke.EqualizeHist(faceImage, faceImage);
+
+        faceImage = ApplyPreprocessingSteps(faceImage);
+
         faceImage = faceImage.Resize(100, 100, Inter.Linear);
+        faceImage._EqualizeHist();
+
+        return faceImage;
+    }
+
+    private Image<Gray, byte> ApplyPreprocessingSteps(Image<Gray, byte> faceImage)
+    {
+        faceImage = faceImage.SmoothGaussian(3);
         faceImage._EqualizeHist();
 
         return faceImage;
@@ -133,21 +179,35 @@ public class FaceRecognitionService : IFaceRecognitionService
 
     private void SaveLabels()
     {
-        using (var writer = new StreamWriter(Path.Combine("wwwroot", "labels.txt")))
+        try
         {
-            foreach (var label in _labels)
+            using (var writer = new StreamWriter(Path.Combine("wwwroot", "labels.txt")))
             {
-                writer.WriteLine($"{label.Key},{label.Value}");
+                foreach (var label in _labels)
+                {
+                    writer.WriteLine($"{label.Key},{label.Value}");
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving labels");
         }
     }
 
     private void LoadLabels()
     {
-        foreach (var line in File.ReadLines(Path.Combine("wwwroot", "labels.txt")))
+        try
         {
-            var parts = line.Split(',');
-            _labels[int.Parse(parts[0])] = parts[1];
+            foreach (var line in File.ReadLines(Path.Combine("wwwroot", "labels.txt")))
+            {
+                var parts = line.Split(',');
+                _labels[int.Parse(parts[0])] = parts[1];
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading labels");
         }
     }
 }
