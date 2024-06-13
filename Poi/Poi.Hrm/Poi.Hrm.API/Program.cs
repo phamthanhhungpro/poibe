@@ -1,4 +1,9 @@
+using Hangfire;
+using Hangfire.PostgreSql;
+using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Poi.Hrm.API.Jobs;
 using Poi.Hrm.Logic;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Shared.Model.MiddleWare;
@@ -6,7 +11,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
@@ -18,6 +22,14 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+
+// Add Hangfire services.
+builder.Services.AddHangfire(config =>
+config.UsePostgreSqlStorage(c =>
+        c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+builder.Services.AddHangfireServer();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<HrmDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -51,6 +63,9 @@ app.UseMiddleware<HeaderExtractorMiddleWare>();
 app.UseHttpsRedirection();
 
 //app.UseAuthorization();
+app.UseHangfireDashboard();
+// Schedule the job to run at 10 PM every day.
+RecurringJob.AddOrUpdate<SyncChamCongService>(job => job.SyncChamCong(), "0 23 * * *");
 
 app.MapControllers();
 
