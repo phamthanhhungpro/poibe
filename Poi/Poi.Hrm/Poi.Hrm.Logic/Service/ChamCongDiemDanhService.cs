@@ -68,7 +68,7 @@ namespace Poi.Hrm.Logic.Service
                 {
                     User = listUser.FirstOrDefault(x => x.Id == item.User.Id),
                     HrmCongKhaiBao = defaultCongKhaiBao,
-                    ThoiGian = request.NgayChamCong.Value,
+                    ThoiGian = request.NgayChamCong.Value.ToUniversalTime(),
                     HrmTrangThaiChamCong = defaultTrangThaiChamCong.FirstOrDefault(x => x.MaTrangThai == MaTrangThaiChamCongSystem.HOP_LE)
                 };
 
@@ -114,7 +114,7 @@ namespace Poi.Hrm.Logic.Service
                 {
                     User = user,
                     HrmCongKhaiBao = defaultCongKhaiBao,
-                    ThoiGian = request.NgayChamCong.Value,
+                    ThoiGian = request.NgayChamCong.Value.ToUniversalTime(),
                     HrmTrangThaiChamCong = defaultTrangThaiChamCong.FirstOrDefault(x => x.MaTrangThai == "CHUA_CHAM_CONG")
                 };
                 model.TrangThai = model.HrmTrangThaiChamCong.YeuCauGiaiTrinh ? TrangThaiEnum.ChoGiaiTrinh : TrangThaiEnum.XacNhan;

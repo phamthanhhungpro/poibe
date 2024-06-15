@@ -20,6 +20,8 @@ namespace Poi.Hrm.Logic
             services.AddScoped<IChamCongDiemDanhService, ChamCongDiemDanhService>();
             services.AddScoped<IGiaiTrinhChamCongService, GiaiTrinhChamCongService>();
             services.AddScoped<IFaceRecognitionService, FaceRecognitionService>();
+            services.AddScoped<IChucNangService, ChucNangService>();
+            services.AddScoped<INhomChucNangService, NhomChucNangService>();
         }
     }
 }
