@@ -22,5 +22,8 @@ namespace Poi.Hrm.Logic.Interface
         Task<CudResponseDto> DeleteNhomChucNang(TenantInfo tenantInfo, Guid id);
 
         Task<CudResponseDto> UpdateNhomChucNang(Guid id, TenantInfo tenantInfo, NhomChucNangRequest NhomChucNang);
+        Task<CudResponseDto> AssignPermission(AssignNhomChucNangToVaiTroRequest request, TenantInfo tenantInfo);
+        Task<CudResponseDto> AssignChucNang(AssignChucNangToNhomChucNangRequest request, TenantInfo tenantInfo);
+
     }
 }

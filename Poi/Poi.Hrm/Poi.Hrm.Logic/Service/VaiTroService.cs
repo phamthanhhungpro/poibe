@@ -27,6 +27,7 @@ namespace Poi.Hrm.Logic.Service
         {
             return await _context.HrmVaiTro
                 .Include(x => x.Tenant)
+                .Include(x => x.HrmNhomChucNang)
                 .Where(x => x.Tenant.Id == info.TenantId)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }

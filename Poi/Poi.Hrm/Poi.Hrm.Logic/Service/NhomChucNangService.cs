@@ -20,6 +20,84 @@ namespace Poi.Hrm.Logic.Service
             _hrmDbContext = hrmDbContext;
         }
 
+        public async Task<CudResponseDto> AssignChucNang(AssignChucNangToNhomChucNangRequest request, TenantInfo tenantInfo)
+        {
+            var nhomChucNang = await _hrmDbContext.HrmNhomChucNang
+                                .Include(x => x.HrmChucNang)
+                                .FirstOrDefaultAsync(a => a.Id == request.NhomChucNangId);
+
+            if (nhomChucNang == null)
+            {
+                return new CudResponseDto
+                {
+                    Id = Guid.Empty,
+                    IsSucceeded = false,
+                    Message = "Nhom chuc nang khong ton tai"
+                };
+            }
+
+            var chucNangs = await _hrmDbContext.HrmChucNang.Where(x => request.ChucNangIds.Contains(x.Id)).ToListAsync();
+            if (chucNangs == null)
+            {
+                return new CudResponseDto
+                {
+                    Id = Guid.Empty,
+                    IsSucceeded = false,
+                    Message = "Chuc nang khong ton tai"
+                };
+            }
+
+            nhomChucNang.HrmChucNang = chucNangs;
+
+            _hrmDbContext.Update(nhomChucNang);
+            await _hrmDbContext.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Id = nhomChucNang.Id,
+                IsSucceeded = true
+            };
+        }
+
+        public async Task<CudResponseDto> AssignPermission(AssignNhomChucNangToVaiTroRequest request, TenantInfo tenantInfo)
+        {
+            var vaiTro = await _hrmDbContext.HrmVaiTro
+                                .Include(x => x.HrmNhomChucNang)
+                                .FirstOrDefaultAsync(a => a.Id == request.VaiTroId);
+
+            if (vaiTro == null)
+            {
+                return new CudResponseDto
+                {
+                    Id = Guid.Empty,
+                    IsSucceeded = false,
+                    Message = "Vai tro khong ton tai"
+                };
+            }
+
+            var nhomChucNangs = await _hrmDbContext.HrmNhomChucNang.Where(x => request.NhomChucNangIds.Contains(x.Id)).ToListAsync();
+            if (nhomChucNangs == null)
+            {
+                return new CudResponseDto
+                {
+                    Id = Guid.Empty,
+                    IsSucceeded = false,
+                    Message = "Nhom chuc nang khong ton tai"
+                };
+            }
+
+            vaiTro.HrmNhomChucNang = nhomChucNangs;
+
+            _hrmDbContext.Update(vaiTro);
+            await _hrmDbContext.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Id = vaiTro.Id,
+                IsSucceeded = true
+            };
+        }
+
         public async Task<CudResponseDto> CreateNhomChucNang(TenantInfo tenantInfo, NhomChucNangRequest NhomChucNang)
         {
             var nhomChucNang = new HrmNhomChucNang
@@ -66,13 +144,16 @@ namespace Poi.Hrm.Logic.Service
         public async Task<List<HrmNhomChucNang>> GetNhomChucNang(TenantInfo tenantInfo)
         {
             return await _hrmDbContext.HrmNhomChucNang
+                .Include(x => x.HrmVaiTro)
                 .Where(x => x.TenantId == tenantInfo.TenantId)
                 .ToListAsync();
         }
 
         public async Task<HrmNhomChucNang> GetNhomChucNangById(TenantInfo tenantInfo, Guid id)
         {
-            return await _hrmDbContext.HrmNhomChucNang.FindAsync(id);
+            return await _hrmDbContext.HrmNhomChucNang
+                .Include(x => x.HrmVaiTro)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<PagingResponse<HrmNhomChucNang>> GetPagingNhomChucNang(PagingRequest request, TenantInfo info)

@@ -2,6 +2,7 @@
 using Poi.Hrm.Logic.Interface;
 using Poi.Hrm.Logic.Requests;
 using Poi.Id.InfraModel.DataAccess;
+using Poi.Shared.Model.Dtos;
 
 namespace Poi.Hrm.API.Controllers
 {
@@ -54,6 +55,20 @@ namespace Poi.Hrm.API.Controllers
         public async Task<ActionResult<HrmNhomChucNang>> GetById(Guid id)
         {
             var res = await _NhomChucNangService.GetNhomChucNangById(TenantInfo, id);
+            return Ok(res);
+        }
+
+        [HttpPost("assign-permission")]
+        public async Task<ActionResult<CudResponseDto>> AssignPermission(AssignNhomChucNangToVaiTroRequest request)
+        {
+            var res = await _NhomChucNangService.AssignPermission(request, TenantInfo);
+            return Ok(res);
+        }
+
+        [HttpPost("assign-chuc-nang")]
+        public async Task<ActionResult<CudResponseDto>> AssignChucNang(AssignChucNangToNhomChucNangRequest request)
+        {
+            var res = await _NhomChucNangService.AssignChucNang(request, TenantInfo);
             return Ok(res);
         }
     }
