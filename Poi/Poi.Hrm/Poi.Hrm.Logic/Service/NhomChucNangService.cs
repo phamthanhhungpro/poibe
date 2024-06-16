@@ -153,6 +153,7 @@ namespace Poi.Hrm.Logic.Service
         {
             return await _hrmDbContext.HrmNhomChucNang
                 .Include(x => x.HrmVaiTro)
+                .Include(x => x.HrmChucNang)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
