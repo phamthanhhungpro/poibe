@@ -103,6 +103,7 @@ if (isEnabled)
 {
     app.UseMiddleware<PermissionCheckMiddleware>();
 }
+
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 

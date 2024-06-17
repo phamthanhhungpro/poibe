@@ -61,6 +61,7 @@ app.UseCors("AllowAllOrigins");
 
 app.UseMiddleware<HeaderExtractorMiddleWare>();
 app.UseHttpsRedirection();
+app.UseMiddleware<VaiTroPermissionMiddleware>();
 
 //app.UseAuthorization();
 app.UseHangfireDashboard();

@@ -72,7 +72,7 @@ namespace Poi.Hrm.Logic.Service
 
         public async Task<List<HrmChucNang>> GetChucNang(TenantInfo tenantInfo)
         {
-            return await _context.HrmChucNang.ToListAsync();
+            return await _context.HrmChucNang.OrderBy(o => o.TenChucNang).ToListAsync();
         }
 
         public async Task<HrmChucNang> GetChucNangById(TenantInfo tenantInfo, Guid id)
