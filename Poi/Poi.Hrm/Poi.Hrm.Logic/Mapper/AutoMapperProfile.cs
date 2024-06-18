@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Poi.Hrm.Logic.Requests;
-using Poi.Id.InfraModel.DataAccess;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()

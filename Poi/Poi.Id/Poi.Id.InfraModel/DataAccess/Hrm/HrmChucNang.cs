@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Poi.Id.InfraModel.DataAccess
+namespace Poi.Id.InfraModel.DataAccess.Hrm
 {
     public class HrmChucNang : BaseEntity
     {

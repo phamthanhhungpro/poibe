@@ -7,13 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Poi.Hrm.Logic.Interface;
 using Poi.Id.InfraModel.DataAccess;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 using Poi.Shared.Model.BaseModel;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 public class FaceRecognitionService : IFaceRecognitionService
 {

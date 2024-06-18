@@ -1,6 +1,6 @@
 ﻿using Poi.Shared.Model.BaseModel;
 
-namespace Poi.Id.InfraModel.DataAccess
+namespace Poi.Id.InfraModel.DataAccess.Hrm
 {
     public class HrmTrangThaiChamCong : BaseEntity
     {

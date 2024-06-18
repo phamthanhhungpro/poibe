@@ -2,7 +2,7 @@
 using Poi.Hrm.Logic.Interface;
 using Poi.Hrm.Logic.Requests;
 using Poi.Hrm.Logic.Service;
-using Poi.Id.InfraModel.DataAccess;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 
 namespace Poi.Hrm.API.Controllers
 {

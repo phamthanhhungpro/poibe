@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 using System.Text.Json;
 
 namespace Poi.Id.InfraModel.DataAccess

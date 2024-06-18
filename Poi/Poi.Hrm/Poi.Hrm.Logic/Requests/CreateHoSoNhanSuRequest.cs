@@ -1,4 +1,4 @@
-﻿using Poi.Id.InfraModel.DataAccess;
+﻿using Poi.Id.InfraModel.DataAccess.Hrm;
 namespace Poi.Hrm.Logic.Requests
 {
     public class CreateHoSoNhanSuRequest

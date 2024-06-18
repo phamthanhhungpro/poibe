@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 
 namespace Poi.Id.InfraModel.DataAccess
 {

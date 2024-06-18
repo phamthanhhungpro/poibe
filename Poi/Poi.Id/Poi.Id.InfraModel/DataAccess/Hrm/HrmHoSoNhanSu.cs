@@ -1,7 +1,7 @@
 ﻿using Poi.Shared.Model.BaseModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Poi.Id.InfraModel.DataAccess
+namespace Poi.Id.InfraModel.DataAccess.Hrm
 {
     public class HrmHoSoNhanSu : BaseEntity
     {

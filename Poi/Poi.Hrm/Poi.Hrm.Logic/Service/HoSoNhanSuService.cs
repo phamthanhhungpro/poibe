@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Poi.Hrm.Logic.Interface;
 using Poi.Hrm.Logic.Requests;
 using Poi.Id.InfraModel.DataAccess;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Dtos;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Poi.Hrm.Logic.Interface;
-using Poi.Id.InfraModel.DataAccess;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 
 namespace Poi.Hrm.API.Controllers
 {

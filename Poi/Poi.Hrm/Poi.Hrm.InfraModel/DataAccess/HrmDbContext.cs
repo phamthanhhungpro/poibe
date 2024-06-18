@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Poi.Id.InfraModel.DataAccess.Hrm;
 
 namespace Poi.Id.InfraModel.DataAccess
 {
