@@ -243,6 +243,17 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
+            modelBuilder.Entity<PrjDuAnNvChuyenMon>()
+                .HasMany(d => d.ThanhVienDuAn)
+                .WithMany(u => u.PrjDuAnNvChuyenMon)
+                .UsingEntity(j => j.ToTable("PrjDuAnChuyenMonThanhVienDuAn"));
+
+            modelBuilder.Entity<PrjDuAnNvChuyenMon>()
+                .HasOne(d => d.QuanLyDuAn)
+                .WithMany()
+                .HasForeignKey(d => d.QuanLyDuAnId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<PrjLinhVuc>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -256,6 +267,17 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+
+            modelBuilder.Entity<PrjToNhom>()
+                .HasMany(tn => tn.Members)
+                .WithMany(u => u.PrjToNhom)
+                .UsingEntity(j => j.ToTable("PrjToNhomThanhVien"));
+
+            modelBuilder.Entity<PrjToNhom>()
+                .HasOne(tn => tn.TruongNhom)
+                .WithMany()
+                .HasForeignKey(tn => tn.TruongNhomId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

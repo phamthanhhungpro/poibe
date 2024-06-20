@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Poi.Id.InfraModel.DataAccess.Hrm;
+using Poi.Id.InfraModel.DataAccess.Prj;
 
 namespace Poi.Id.InfraModel.DataAccess
 {
@@ -31,6 +32,10 @@ namespace Poi.Id.InfraModel.DataAccess
         public virtual PhongBanBoPhan ManagerOfPhongBanBoPhan { get; set; } // Navigation property for Managers
 
         public virtual HrmHoSoNhanSu HrmHoSoNhanSu { get; set; }
+
+        public virtual ICollection<PrjToNhom> PrjToNhom { get; set; }
+        public virtual ICollection<PrjDuAnNvChuyenMon> PrjDuAnNvChuyenMon { get; set; }
+
         public string FullName
         {
             get { return SurName + " " + Name; }

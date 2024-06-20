@@ -1,4 +1,5 @@
 ﻿using Poi.Shared.Model.BaseModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Poi.Id.InfraModel.DataAccess.Prj
 {
