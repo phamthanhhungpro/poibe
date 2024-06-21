@@ -269,15 +269,14 @@ namespace Poi.Id.InfraModel.DataAccess
             });
 
             modelBuilder.Entity<PrjToNhom>()
-                .HasMany(tn => tn.Members)
-                .WithMany(u => u.PrjToNhom)
+                .HasMany(tn => tn.ThanhVien)
+                .WithMany(u => u.ThanhVienToNhom)
                 .UsingEntity(j => j.ToTable("PrjToNhomThanhVien"));
 
             modelBuilder.Entity<PrjToNhom>()
-                .HasOne(tn => tn.TruongNhom)
-                .WithMany()
-                .HasForeignKey(tn => tn.TruongNhomId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasMany(tn => tn.LanhDao)
+                .WithMany(u => u.LanhDaoToNhom)
+                .UsingEntity(j => j.ToTable("PrjToNhomLanhDao"));
         }
     }
 }

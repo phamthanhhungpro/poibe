@@ -5,11 +5,6 @@ using Poi.Prj.Logic.Interface;
 using Poi.Prj.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Poi.Prj.Logic.Service
 {
@@ -27,10 +22,10 @@ namespace Poi.Prj.Logic.Service
             {
                 TenToNhom = ToNhom.TenToNhom,
                 Description = ToNhom.Description,
-                TruongNhomId = ToNhom.TruongNhomId,
             };
 
-            newToNhom.Members = await _context.Users.Where(x => ToNhom.MemberIds.Contains(x.Id)).ToListAsync();
+            newToNhom.ThanhVien = await _context.Users.Where(x => ToNhom.MemberIds.Contains(x.Id)).ToListAsync();
+            newToNhom.LanhDao = await _context.Users.Where(x => ToNhom.LanhDaoIds.Contains(x.Id)).ToListAsync();
             newToNhom.TenantId = info.TenantId;
 
             _context.PrjToNhom.Add(newToNhom);
@@ -74,22 +69,26 @@ namespace Poi.Prj.Logic.Service
         public async Task<PrjToNhom> GetByIdAsync(Guid id, TenantInfo info)
         {
             return await _context.PrjToNhom
-                .Include(x => x.Members)
+                .Include(x => x.ThanhVien)
+                .Include(x => x.LanhDao)
                 .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == info.TenantId);
         }
 
         public async Task<IEnumerable<PrjToNhom>> GetNoPaging(TenantInfo info)
         {
             return await _context.PrjToNhom
-                .Include(x => x.Members)
-                .Include(x => x.TruongNhom)
+                .Include(x => x.ThanhVien)
+                .Include(x => x.LanhDao)
                 .Where(x => x.TenantId == info.TenantId)
                 .ToListAsync();
         }
 
         public async Task<CudResponseDto> UpdateAsync(Guid id, ToNhomRequest ToNhom, TenantInfo info)
         {
-            var entity = await _context.PrjToNhom.FirstOrDefaultAsync(x => x.Id == id && x.TenantId == info.TenantId);
+            var entity = await _context.PrjToNhom
+                .Include(ToNhom => ToNhom.LanhDao)
+                .Include(ToNhom => ToNhom.ThanhVien)
+                .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == info.TenantId);
             if (entity == null)
             {
                 return new CudResponseDto
@@ -102,8 +101,16 @@ namespace Poi.Prj.Logic.Service
 
             entity.TenToNhom = ToNhom.TenToNhom;
             entity.Description = ToNhom.Description;
-            entity.TruongNhomId = ToNhom.TruongNhomId;
-            entity.Members = await _context.Users.Where(x => ToNhom.MemberIds.Contains(x.Id)).ToListAsync();
+
+            if (ToNhom.LanhDaoIds != null && ToNhom.LanhDaoIds.Any())
+            {
+                entity.LanhDao = await _context.Users.Where(x => ToNhom.LanhDaoIds.Contains(x.Id)).ToListAsync();
+            }
+
+            if (ToNhom.MemberIds != null && ToNhom.MemberIds.Any())
+            {
+                entity.ThanhVien = await _context.Users.Where(x => ToNhom.MemberIds.Contains(x.Id)).ToListAsync();
+            }
 
             entity.UpdatedAt = DateTime.UtcNow;
             _context.PrjToNhom.Update(entity);

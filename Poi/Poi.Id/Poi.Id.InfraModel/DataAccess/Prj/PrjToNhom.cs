@@ -10,8 +10,7 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public Guid TenantId { get; set; }
 
         public virtual ICollection<PrjDuAnNvChuyenMon> DuAn { get; set; }
-        public User TruongNhom { get; set; }
-        public Guid? TruongNhomId { get; set; }
-        public virtual ICollection<User> Members { get; set; }
+        public virtual ICollection<User> LanhDao { get; set; }
+        public virtual ICollection<User> ThanhVien { get; set; }
     }
 }

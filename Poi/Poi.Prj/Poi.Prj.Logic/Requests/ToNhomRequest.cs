@@ -12,7 +12,7 @@ namespace Poi.Prj.Logic.Requests
     {
         public string TenToNhom { get; set; }
         public string Description { get; set; }
-        public Guid? TruongNhomId { get; set; }
         public List<Guid> MemberIds { get; set; }
+        public List<Guid> LanhDaoIds { get; set; }
     }
 }
