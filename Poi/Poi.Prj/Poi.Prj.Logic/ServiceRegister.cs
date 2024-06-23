@@ -12,6 +12,7 @@ namespace Poi.Prj.Logic
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<ILinhVucService, LinhVucService>();
             services.AddScoped<IToNhomService, ToNhomService>();
+            services.AddScoped<IDuAnNvChuyenMonService, DuAnNvChuyenMonService>();
         }
     }
 }

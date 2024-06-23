@@ -81,7 +81,10 @@ namespace Poi.Id.Logic.Services
 
         public async Task<PhongBanBoPhan> GetByIdAsync(Guid id)
         {
-            return await _context.PhongBanBoPhans.FindAsync(id);
+            return await _context.PhongBanBoPhans
+                .Include(x => x.QuanLy)
+                .Include(x => x.ThanhVien)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<CudResponseDto> UpdateAsync(Guid id, PhongBanRequest request)
