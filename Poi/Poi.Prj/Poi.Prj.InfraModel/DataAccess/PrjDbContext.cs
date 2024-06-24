@@ -14,6 +14,7 @@ namespace Poi.Prj.InfraModel.DataAccess
         public DbSet<PrjLinhVuc> PrjLinhVuc { get; set; }
         public DbSet<PrjToNhom> PrjToNhom { get; set; }
         public DbSet<PrjDuAnNvChuyenMon> PrjDuAnNvChuyenMon { get; set; }
+        public DbSet<PrjNhomCongViec> PrjNhomCongViec { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

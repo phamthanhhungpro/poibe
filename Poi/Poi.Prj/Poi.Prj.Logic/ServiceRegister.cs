@@ -13,6 +13,8 @@ namespace Poi.Prj.Logic
             services.AddScoped<ILinhVucService, LinhVucService>();
             services.AddScoped<IToNhomService, ToNhomService>();
             services.AddScoped<IDuAnNvChuyenMonService, DuAnNvChuyenMonService>();
+            services.AddScoped<INhomCongViecService, NhomCongViecService>();
+
         }
     }
 }
