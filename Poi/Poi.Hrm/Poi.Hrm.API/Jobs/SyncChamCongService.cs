@@ -1,4 +1,5 @@
-﻿using Poi.Hrm.Logic.Interface;
+﻿using Hangfire;
+using Poi.Hrm.Logic.Interface;
 using Poi.Hrm.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
 
@@ -12,6 +13,7 @@ namespace Poi.Hrm.API.Jobs
             _chamCongDiemDanhService = chamCongDiemDanhService;
         }
 
+        [AutomaticRetry(Attempts = 3)]
         public async Task SyncChamCong()
         {
             var tenantInfo = new TenantInfo

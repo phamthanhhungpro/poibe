@@ -66,7 +66,8 @@ app.UseMiddleware<VaiTroPermissionMiddleware>();
 //app.UseAuthorization();
 app.UseHangfireDashboard();
 // Schedule the job to run at 10 PM every day.
-RecurringJob.AddOrUpdate<SyncChamCongService>(job => job.SyncChamCong(), "0 23 * * *");
+RecurringJob.AddOrUpdate<SyncChamCongService>(job => job.SyncChamCong(), "0 21 * * 1-5");
+
 
 app.MapControllers();
 
