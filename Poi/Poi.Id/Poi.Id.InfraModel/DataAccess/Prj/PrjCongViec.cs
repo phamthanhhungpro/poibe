@@ -13,7 +13,10 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public Guid TenantId { get; set; }
 
         public PrjNhomCongViec NhomCongViec { get; set; }
-        public Guid NhomCongViecId { get; set; }
+        public Guid? NhomCongViecId { get; set; }
+
+        public PrjLoaiCongViec LoaiCongViec { get; set; }
+        public Guid? LoaiCongViecId { get; set; }
         public PrjCongViec CongViecCha { get; set; }
         public Guid? CongViecChaId { get; set; }
     }

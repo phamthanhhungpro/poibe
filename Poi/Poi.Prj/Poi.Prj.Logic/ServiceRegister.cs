@@ -14,7 +14,9 @@ namespace Poi.Prj.Logic
             services.AddScoped<IToNhomService, ToNhomService>();
             services.AddScoped<IDuAnNvChuyenMonService, DuAnNvChuyenMonService>();
             services.AddScoped<INhomCongViecService, NhomCongViecService>();
-
+            services.AddScoped<ILoaiCongViecService, LoaiCongViecService>();
+            services.AddScoped<ITagCongViecService, TagCongViecService>();
+            services.AddScoped<ITagCommentService, TagCommentService>();
         }
     }
 }

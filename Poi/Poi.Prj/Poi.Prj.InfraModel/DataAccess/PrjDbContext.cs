@@ -15,6 +15,11 @@ namespace Poi.Prj.InfraModel.DataAccess
         public DbSet<PrjToNhom> PrjToNhom { get; set; }
         public DbSet<PrjDuAnNvChuyenMon> PrjDuAnNvChuyenMon { get; set; }
         public DbSet<PrjNhomCongViec> PrjNhomCongViec { get; set; }
+        public DbSet<PrjLoaiCongViec> PrjLoaiCongViec { get; set; }
+        public DbSet<PrjCongViec> PrjCongViec { get; set; }
+        public DbSet<PrjTagCongViec> PrjTagCongViec { get; set; }
+        public DbSet<PrjTagComment> PrjTagComment { get; set; }
+        public DbSet<PrjComment> PrjComment { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
