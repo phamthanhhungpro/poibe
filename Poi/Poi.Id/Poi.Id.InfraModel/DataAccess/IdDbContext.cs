@@ -240,6 +240,7 @@ namespace Poi.Id.InfraModel.DataAccess
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.Property(e => e.IsCaNhan).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
@@ -300,6 +301,13 @@ namespace Poi.Id.InfraModel.DataAccess
             });
 
             modelBuilder.Entity<PrjComment>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PrjDuAnSetting>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);

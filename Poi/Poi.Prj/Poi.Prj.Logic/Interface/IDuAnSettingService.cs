@@ -12,5 +12,7 @@ namespace Poi.Prj.Logic.Interface
         Task<CudResponseDto> AddAsync(DuAnSettingRequest request, TenantInfo info);
         Task<CudResponseDto> UpdateAsync(Guid id, DuAnSettingRequest request, TenantInfo info);
         Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info);
+
+        Task<CudResponseDto> UpdateAllSetting(UpdateDuAnSettingRequest request, TenantInfo info);
     }
 }

@@ -1,14 +1,10 @@
-﻿using Poi.Id.InfraModel.DataAccess.Prj;
+﻿using Microsoft.EntityFrameworkCore;
+using Poi.Id.InfraModel.DataAccess.Prj;
 using Poi.Prj.InfraModel.DataAccess;
 using Poi.Prj.Logic.Interface;
 using Poi.Prj.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Poi.Prj.Logic.Service
 {
@@ -22,40 +18,113 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> AddAsync(DuAnSettingRequest request, TenantInfo info)
         {
-            var setting = new PrjDuAnSetting
+            // Check if the key already exists
+            var check = _context.PrjDuAnSetting.Any(x => x.Key == request.Key && x.DuAnNvChuyenMonId == request.DuAnId);
+            if (check)
             {
-                DuAnNvChuyenMonId = Guid.NewGuid(),
-                Setting = request.Settings.Select(kvp => new Dictionary<string, object> { { kvp.Key, kvp.Value } }).ToList()
+                return new CudResponseDto
+                {
+                    Message = "Key đã tồn tại",
+                    IsSucceeded = false
+                };
+            }
+            var entity = new PrjDuAnSetting
+            {
+                DuAnNvChuyenMonId = request.DuAnId,
+                Key = request.Key,
+                Value = request.Value,
+                MoTa = request.MoTa
             };
 
-            _context.PrjDuAnSetting.Add(setting);
-            _context.SaveChanges();
-
+            _context.PrjDuAnSetting.Add(entity);
+            await _context.SaveChangesAsync();
             return new CudResponseDto
             {
-                Message = "Success",
+                Id = entity.Id,
+                Message = "Thêm thành công",
+                IsSucceeded = true
+            };
+
+        }
+
+        public async Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info)
+        {
+            var entity = await _context.PrjDuAnSetting.FindAsync(id);
+            if (entity == null)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Không tìm thấy dữ liệu",
+                    IsSucceeded = false
+                };
+            }
+            entity.IsDeleted = true;
+            entity.DeletedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return new CudResponseDto
+            {
+                Message = "Xóa thành công",
                 IsSucceeded = true
             };
         }
 
-        public Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info)
+        public async Task<PrjDuAnSetting> GetByIdAsync(Guid id, TenantInfo info)
         {
-            throw new NotImplementedException();
+            return await _context.PrjDuAnSetting.FindAsync(id);
         }
 
-        public Task<PrjDuAnSetting> GetByIdAsync(Guid id, TenantInfo info)
+        public async Task<IEnumerable<PrjDuAnSetting>> GetNoPaging(TenantInfo info, Guid DuanId)
         {
-            throw new NotImplementedException();
+            return await _context.PrjDuAnSetting.Where(x => x.DuAnNvChuyenMonId == DuanId).ToListAsync();
         }
 
-        public Task<IEnumerable<PrjDuAnSetting>> GetNoPaging(TenantInfo info, Guid DuanId)
+        public async Task<CudResponseDto> UpdateAllSetting(UpdateDuAnSettingRequest request, TenantInfo info)
         {
-            throw new NotImplementedException();
+            var settings = await _context.PrjDuAnSetting.Where(x => x.DuAnNvChuyenMonId == request.DuAnId).ToListAsync();
+
+            // clear then add new settings
+            _context.PrjDuAnSetting.RemoveRange(settings);
+
+            foreach(var item in request.Settings)
+            {
+                var entity = new PrjDuAnSetting
+                {
+                    DuAnNvChuyenMonId = request.DuAnId,
+                    Key = item.Key,
+                    Value = item.Value,
+                };
+                _context.PrjDuAnSetting.Add(entity);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Message = "Cập nhật thành công",
+                IsSucceeded = true
+            };
         }
 
-        public Task<CudResponseDto> UpdateAsync(Guid id, DuAnSettingRequest request, TenantInfo info)
+        public async Task<CudResponseDto> UpdateAsync(Guid id, DuAnSettingRequest request, TenantInfo info)
         {
-            throw new NotImplementedException();
+            var entity = await _context.PrjDuAnSetting.FindAsync(id);
+            if (entity == null)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Không tìm thấy dữ liệu",
+                    IsSucceeded = false
+                };
+            }
+
+            entity.Value = request.Value;
+            entity.MoTa = request.MoTa;
+            await _context.SaveChangesAsync();
+            return new CudResponseDto
+            {
+                Message = "Cập nhật thành công",
+                IsSucceeded = true
+            };
         }
     }
 }

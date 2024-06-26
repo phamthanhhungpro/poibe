@@ -83,6 +83,9 @@ namespace Poi.Prj.Logic.Service
         {
             return await _context.PrjDuAnNvChuyenMon
                 .Include(x => x.ThanhVienDuAn)
+                .Include(x => x.QuanLyDuAn)
+                .Include(x => x.NhomCongViec)
+                .Include(x => x.DuAnSetting)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

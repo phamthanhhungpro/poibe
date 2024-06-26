@@ -7,8 +7,9 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
     {
         public PrjDuAnNvChuyenMon DuAnNvChuyenMon { get; set; }
         public Guid DuAnNvChuyenMonId { get; set; }
+        public string Key { get; set; }
+        public string Value { get; set; }
+        public string MoTa { get; set; }
 
-        [Column(TypeName = "jsonb")]
-        public List<Dictionary<string, object>> Setting { get; set; }
     }
 }

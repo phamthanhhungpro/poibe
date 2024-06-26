@@ -27,5 +27,8 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public Guid? LinhVucId { get; set; }
         public bool IsNhiemVuChuyenMon { get; set; }
         public ICollection<PrjNhomCongViec> NhomCongViec { get; set; }
+        public bool IsCaNhan { get; set; }
+        public ICollection<PrjDuAnSetting> DuAnSetting { get; set; }
+
     }
 }
