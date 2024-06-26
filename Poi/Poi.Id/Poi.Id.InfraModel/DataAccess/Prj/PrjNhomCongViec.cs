@@ -6,6 +6,7 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
     {
         public string TenNhomCongViec { get; set; }
         public string MoTa { get; set; }
+        public string MaNhomCongViec { get; set; }
         public Tenant Tenant { get; set; }
         public Guid TenantId { get; set; }
 

@@ -6,6 +6,7 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
     {
         public string TenCongViec { get; set; }
         public string MoTa { get; set; }
+        public string MaCongViec { get; set; }
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }
         public int TrangThai { get; set; }

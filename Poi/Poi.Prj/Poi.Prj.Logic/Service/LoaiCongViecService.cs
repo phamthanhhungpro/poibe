@@ -24,6 +24,18 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> AddAsync(LoaiCongViecRequest request, TenantInfo info)
         {
+            // Kiểm tra xem loại công việc đã tồn tại chưa
+            var isExist = await _context.PrjLoaiCongViec.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                                 && x.MaLoaiCongViec == request.MaLoaiCongViec);
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Mã loại công việc đã tồn tại",
+                    IsSucceeded = false
+                };
+            };
+
             var loaiCongViec = new PrjLoaiCongViec
             {
                 TenantId = info.TenantId,
@@ -96,6 +108,20 @@ namespace Poi.Prj.Logic.Service
                 {
                     Id = id,
                     Message = "Không tìm thấy dữ liệu",
+                    IsSucceeded = false
+                };
+            }
+
+            // Kiểm tra xem loại công việc đã tồn tại chưa
+            var isExist = await _context.PrjLoaiCongViec.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                                            && x.MaLoaiCongViec == request.MaLoaiCongViec
+                                                                                            && x.Id != id);
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Id = id,
+                    Message = "Mã loại công việc đã tồn tại",
                     IsSucceeded = false
                 };
             }

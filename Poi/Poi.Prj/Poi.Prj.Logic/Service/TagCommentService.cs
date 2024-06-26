@@ -19,6 +19,18 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> AddAsync(TagCommentRequest request, TenantInfo info)
         {
+            // Kiểm tra xem tag đã tồn tại chưa
+            var isExist = await _context.PrjTagComment.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                  && x.MaTag == request.MaTag);
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Mã Tag đã tồn tại",
+                    IsSucceeded = false
+                };
+            };
+
             var TagComment = new PrjTagComment
             {
                 TenantId = info.TenantId,
@@ -94,6 +106,20 @@ namespace Poi.Prj.Logic.Service
                     IsSucceeded = false
                 };
             }
+
+            // Kiểm tra xem tag đã tồn tại chưa
+            var isExist = await _context.PrjTagComment.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                             && x.MaTag == request.MaTag
+                                                                             && x.Id != id);
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Mã Tag đã tồn tại",
+                    IsSucceeded = false
+                };
+            }
+
 
             TagComment.TenTag = request.TenTag;
             TagComment.MaTag = request.MaTag;

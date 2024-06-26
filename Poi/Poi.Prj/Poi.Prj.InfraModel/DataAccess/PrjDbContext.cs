@@ -20,6 +20,8 @@ namespace Poi.Prj.InfraModel.DataAccess
         public DbSet<PrjTagCongViec> PrjTagCongViec { get; set; }
         public DbSet<PrjTagComment> PrjTagComment { get; set; }
         public DbSet<PrjComment> PrjComment { get; set; }
+        public DbSet<PrjDuAnSetting> PrjDuAnSetting { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

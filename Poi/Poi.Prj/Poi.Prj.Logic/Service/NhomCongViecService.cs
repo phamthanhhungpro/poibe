@@ -23,9 +23,20 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> AddAsync(NhomCongViecRequest request, TenantInfo info)
         {
+            var isExist = await _context.PrjNhomCongViec.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                              && x.MaNhomCongViec == request.MaNhomCongViec);
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Mã nhóm công việc đã tồn tại",
+                    IsSucceeded = false
+                };
+            }
             var entity = new PrjNhomCongViec
             {
                 TenNhomCongViec = request.TenNhomCongViec,
+                MaNhomCongViec = request.MaNhomCongViec,
                 MoTa = request.MoTa,
                 TenantId = info.TenantId,
                 DuAnNvChuyenMonId = request.DuAnNvChuyenMonId
@@ -93,7 +104,22 @@ namespace Poi.Prj.Logic.Service
                 };
             }
 
+            // Check if MaNhomCongViec is already exist
+            var isExist = await _context.PrjNhomCongViec.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                                 && x.MaNhomCongViec == request.MaNhomCongViec
+                                                                                 && x.Id != id);
+
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Mã nhóm công việc đã tồn tại",
+                    IsSucceeded = false
+                };
+            }
+
             entity.TenNhomCongViec = request.TenNhomCongViec;
+            entity.MaNhomCongViec = request.MaNhomCongViec;
             entity.MoTa = request.MoTa;
             entity.UpdatedAt = DateTime.UtcNow;
 

@@ -24,6 +24,18 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> AddAsync(TagCongViecRequest request, TenantInfo info)
         {
+            // Kiểm tra xem tag đã tồn tại chưa
+            var isExist = await _context.PrjTagCongViec.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                             && x.MaTag == request.MaTag);
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Mã Tag đã tồn tại",
+                    IsSucceeded = false
+                };
+            }
+
             var TagCongViec = new PrjTagCongViec
             {
                 TenantId = info.TenantId,
@@ -95,6 +107,20 @@ namespace Poi.Prj.Logic.Service
                 {
                     Id = id,
                     Message = "Không tìm thấy dữ liệu",
+                    IsSucceeded = false
+                };
+            }
+
+            // Kiểm tra xem tag đã tồn tại chưa
+            var isExist = await _context.PrjTagCongViec.AnyAsync(x => x.DuAnNvChuyenMonId == request.DuAnNvChuyenMonId
+                                                                                && x.MaTag == request.MaTag
+                                                                                && x.Id != id);
+            if (isExist)
+            {
+                return new CudResponseDto
+                {
+                    Id = id,
+                    Message = "Mã Tag đã tồn tại",
                     IsSucceeded = false
                 };
             }
