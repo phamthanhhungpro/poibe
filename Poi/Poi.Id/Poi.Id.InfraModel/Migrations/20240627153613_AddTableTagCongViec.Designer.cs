@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240627153613_AddTableTagCongViec")]
+    partial class AddTableTagCongViec
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1239,9 +1242,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("DuAnNvChuyenMonId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1286,8 +1286,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CongViecChaId");
-
-                    b.HasIndex("DuAnNvChuyenMonId");
 
                     b.HasIndex("LoaiCongViecId");
 
@@ -1419,58 +1417,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("DuAnNvChuyenMonId");
 
                     b.ToTable("PrjDuAnSetting");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Prj.PrjKanban", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("DuAnNvChuyenMonId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("MoTa")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TenCot")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ThuTu")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TrangThaiCongViec")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("YeuCauXacNhan")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DuAnNvChuyenMonId");
-
-                    b.ToTable("PrjKanban");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Prj.PrjLinhVuc", b =>
@@ -2447,12 +2393,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .WithMany()
                         .HasForeignKey("CongViecChaId");
 
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.Prj.PrjDuAnNvChuyenMon", "DuAnNvChuyenMon")
-                        .WithMany("CongViec")
-                        .HasForeignKey("DuAnNvChuyenMonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Prj.PrjLoaiCongViec", "LoaiCongViec")
                         .WithMany("CongViec")
                         .HasForeignKey("LoaiCongViecId");
@@ -2476,8 +2416,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .IsRequired();
 
                     b.Navigation("CongViecCha");
-
-                    b.Navigation("DuAnNvChuyenMon");
 
                     b.Navigation("LoaiCongViec");
 
@@ -2530,17 +2468,6 @@ namespace Poi.Id.InfraModel.Migrations
                 {
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Prj.PrjDuAnNvChuyenMon", "DuAnNvChuyenMon")
                         .WithMany("DuAnSetting")
-                        .HasForeignKey("DuAnNvChuyenMonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DuAnNvChuyenMon");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Prj.PrjKanban", b =>
-                {
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.Prj.PrjDuAnNvChuyenMon", "DuAnNvChuyenMon")
-                        .WithMany()
                         .HasForeignKey("DuAnNvChuyenMonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2802,8 +2729,6 @@ namespace Poi.Id.InfraModel.Migrations
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Prj.PrjDuAnNvChuyenMon", b =>
                 {
-                    b.Navigation("CongViec");
-
                     b.Navigation("DuAnSetting");
 
                     b.Navigation("NhomCongViec");

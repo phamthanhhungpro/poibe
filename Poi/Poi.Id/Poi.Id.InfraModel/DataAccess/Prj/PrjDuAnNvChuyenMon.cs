@@ -30,5 +30,6 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public bool IsCaNhan { get; set; }
         public ICollection<PrjDuAnSetting> DuAnSetting { get; set; }
 
+        public ICollection<PrjCongViec> CongViec { get; set; }
     }
 }

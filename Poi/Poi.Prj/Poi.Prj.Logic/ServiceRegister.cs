@@ -18,7 +18,8 @@ namespace Poi.Prj.Logic
             services.AddScoped<ITagCongViecService, TagCongViecService>();
             services.AddScoped<ITagCommentService, TagCommentService>();
             services.AddScoped<IDuAnSettingService, DuAnSettingService>();
-
+            services.AddScoped<ICongViecService, CongViecService>();
+            services.AddScoped<IKanbanService, KanbanService>();
         }
     }
 }

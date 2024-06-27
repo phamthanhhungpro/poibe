@@ -313,6 +313,19 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+
+            modelBuilder.Entity<PrjCongViec>()
+                .HasMany(d => d.NguoiPhoiHop)
+                .WithMany()
+                .UsingEntity(j => j.ToTable("PrjCongViecNguoiPhoiHop"));
+
+            modelBuilder.Entity<PrjKanban>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.Property(e => e.YeuCauXacNhan).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
         }
     }
 }

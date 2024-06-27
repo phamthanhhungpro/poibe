@@ -18,7 +18,20 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
 
         public PrjLoaiCongViec LoaiCongViec { get; set; }
         public Guid? LoaiCongViecId { get; set; }
+
         public PrjCongViec CongViecCha { get; set; }
         public Guid? CongViecChaId { get; set; }
+
+        public User NguoiThucHien { get; set; }
+        public Guid? NguoiThucHienId { get; set; }
+
+        public User NguoiGiaoViec { get; set; }
+        public Guid? NguoiGiaoViecId { get; set; }
+
+        public ICollection<User> NguoiPhoiHop { get; set; }
+        public ICollection<PrjTagCongViec> TagCongViec { get; set; }
+
+        public PrjDuAnNvChuyenMon DuAnNvChuyenMon { get; set; }
+        public Guid DuAnNvChuyenMonId { get; set; }
     }
 }

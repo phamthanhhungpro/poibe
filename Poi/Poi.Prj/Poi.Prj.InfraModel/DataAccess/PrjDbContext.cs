@@ -21,7 +21,7 @@ namespace Poi.Prj.InfraModel.DataAccess
         public DbSet<PrjTagComment> PrjTagComment { get; set; }
         public DbSet<PrjComment> PrjComment { get; set; }
         public DbSet<PrjDuAnSetting> PrjDuAnSetting { get; set; }
-
+        public DbSet<PrjKanban> PrjKanban { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
