@@ -43,7 +43,9 @@ namespace Poi.Id.API.Controllers
                         await file.CopyToAsync(stream);
                     }
 
-                    screenshotPaths.Add(filePath);
+                    // path in db
+                    var pathDB = $"feedbacks/{newFileName}";
+                    screenshotPaths.Add(pathDB.Replace("\\", "/"));
                 }
             }
             feedback.AttachmentUrls = [.. screenshotPaths];
@@ -52,7 +54,7 @@ namespace Poi.Id.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpGet("nopaging")]
         public async Task<IActionResult> Get()
         {
             var result = await _feedbackService.GetAFeedbacks();
