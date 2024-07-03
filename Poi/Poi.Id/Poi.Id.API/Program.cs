@@ -79,7 +79,7 @@ builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ICoQuanDonViService, CoQuanDonViService>();
 builder.Services.AddScoped<IChiNhanhVanPhongService, ChiNhanhVanPhongService>();
 builder.Services.AddScoped<IPhongBanService, PhongBanService>();
-
+builder.Services.AddScoped<IAFeedbackService, FeedbackService>();
 
 ServiceRegister.AddLogic(builder.Services);
 

@@ -20,6 +20,7 @@ namespace Poi.Id.InfraModel.DataAccess
         public DbSet<CoQuanDonVi> CoQuanDonVis { get; set; }
         public DbSet<ChiNhanhVanPhong> ChiNhanhVanPhongs { get; set; }
         public DbSet<PhongBanBoPhan> PhongBanBoPhans { get; set; }
+        public DbSet<AFeedback> AFeedbacks { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -324,6 +325,13 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.Property(e => e.YeuCauXacNhan).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<AFeedback>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
         }
