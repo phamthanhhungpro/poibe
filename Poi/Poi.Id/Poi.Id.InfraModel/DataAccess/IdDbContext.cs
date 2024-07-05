@@ -21,6 +21,7 @@ namespace Poi.Id.InfraModel.DataAccess
         public DbSet<ChiNhanhVanPhong> ChiNhanhVanPhongs { get; set; }
         public DbSet<PhongBanBoPhan> PhongBanBoPhans { get; set; }
         public DbSet<AFeedback> AFeedbacks { get; set; }
+        public DbSet<TokenExpired> TokenExpired { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -312,6 +313,7 @@ namespace Poi.Id.InfraModel.DataAccess
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.Property(e => e.JsonValue).HasColumnType("jsonb");
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
@@ -329,6 +331,13 @@ namespace Poi.Id.InfraModel.DataAccess
             });
 
             modelBuilder.Entity<AFeedback>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<TokenExpired>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);

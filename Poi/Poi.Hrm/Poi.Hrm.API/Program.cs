@@ -60,6 +60,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAllOrigins");
 
 app.UseMiddleware<HeaderExtractorMiddleWare>();
+app.UseMiddleware<TokenCheckMiddleware>();
 app.UseHttpsRedirection();
 app.UseMiddleware<VaiTroPermissionMiddleware>();
 

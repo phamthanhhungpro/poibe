@@ -24,6 +24,7 @@ namespace Poi.Prj.Logic.Requests
         [Required]
         public Guid DuAnId { get; set; }
 
-        public Dictionary<string, string> Settings { get; set; }
+        public Dictionary<string, string> Settings { get; set; } // key-value settings
+        public Dictionary<string, object> JsonSettings { get; set; } // key-json settings
     }
 }

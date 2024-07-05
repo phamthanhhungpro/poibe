@@ -13,7 +13,7 @@ namespace Poi.Prj.Logic.Dtos
         public string MoTa { get; set; }
         public bool YeuCauXacNhan { get; set; }
         public int ThuTu { get; set; }
-        public int TrangThaiCongViec { get; set; }
+        public string TrangThaiCongViec { get; set; }
         public List<CongViecGridDto> ListCongViec { get; set; }
     }
 }

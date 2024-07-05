@@ -32,6 +32,10 @@ namespace Poi.Id.Logic.Services
 
             toDeleteUser.DeletedAt = DateTime.UtcNow;
             toDeleteUser.IsDeleted = true;
+            toDeleteUser.UserName = toDeleteUser.UserName + "_" + toDeleteUser.Id;
+            toDeleteUser.NormalizedUserName = toDeleteUser.UserName + "_" + toDeleteUser.Id;
+            toDeleteUser.Email = toDeleteUser.Email + "_" + toDeleteUser.Id;
+            toDeleteUser.NormalizedEmail = toDeleteUser.Email + "_" + toDeleteUser.Id;
 
             _context.Users.Update(toDeleteUser);
             await _context.SaveChangesAsync();

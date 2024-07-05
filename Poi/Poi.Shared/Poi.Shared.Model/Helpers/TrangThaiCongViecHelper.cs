@@ -24,5 +24,8 @@ namespace Poi.Shared.Model.Helpers
                     return "Không xác định";
             }
         }
+
+        public const string DefaultTrangThaiKey = "chua-xac-dinh";
+        public const string DefaultTrangThaiValue = "Chưa xác định";
     }
 }

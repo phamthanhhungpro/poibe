@@ -7,7 +7,7 @@
         public string MaCongViec { get; set; }
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }
-        public int TrangThai { get; set; }
+        public string TrangThai { get; set; }
         public Guid? NhomCongViecId { get; set; }
         public Guid? LoaiCongViecId { get; set; }
         public Guid? CongViecChaId { get; set; }

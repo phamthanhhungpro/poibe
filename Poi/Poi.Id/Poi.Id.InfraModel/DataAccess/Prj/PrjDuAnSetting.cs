@@ -9,7 +9,8 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public Guid DuAnNvChuyenMonId { get; set; }
         public string Key { get; set; }
         public string Value { get; set; }
+        [Column(TypeName = "jsonb")]
+        public string JsonValue { get; set; }
         public string MoTa { get; set; }
-
     }
 }

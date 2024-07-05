@@ -19,6 +19,7 @@ namespace Poi.Shared.Model.MiddleWare
             string tenantId = context.Request.Headers["TenantId"];
             string userId = context.Request.Headers["UserId"];
             string role = context.Request.Headers["Role"];
+            string token = context.Request.Headers["Authorization"];
 
             string path = context.Request.Path.Value;
 
@@ -45,7 +46,8 @@ namespace Poi.Shared.Model.MiddleWare
             {
                 TenantId = Guid.Parse(tenantId),
                 UserId = Guid.Parse(userId),
-                Role = role
+                Role = role,
+                Token = token?.Replace("Bearer ", "")
             };
 
             // Store the tenant ID in the context items

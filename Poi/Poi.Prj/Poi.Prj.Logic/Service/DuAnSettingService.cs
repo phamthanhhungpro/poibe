@@ -5,6 +5,8 @@ using Poi.Prj.Logic.Interface;
 using Poi.Prj.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Dtos;
+using Poi.Shared.Model.Helpers;
+using System.Text.Json;
 
 namespace Poi.Prj.Logic.Service
 {
@@ -94,6 +96,18 @@ namespace Poi.Prj.Logic.Service
                     Value = item.Value,
                 };
                 _context.PrjDuAnSetting.Add(entity);
+            }
+
+            foreach(var item in request.JsonSettings)
+            {
+                var jsonSettingEntity = new PrjDuAnSetting
+                {
+                    DuAnNvChuyenMonId = request.DuAnId,
+                    Key = item.Key,
+                    JsonValue = JsonSerializer.Serialize(item.Value)
+                };
+
+                _context.PrjDuAnSetting.Add(jsonSettingEntity);
             }
 
             await _context.SaveChangesAsync();

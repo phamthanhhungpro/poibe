@@ -15,7 +15,7 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public PrjDuAnNvChuyenMon DuAnNvChuyenMon { get; set; }
         public Guid DuAnNvChuyenMonId { get; set; }
 
-        public int TrangThaiCongViec { get; set; }
+        public string TrangThaiCongViec { get; set; }
         public int ThuTu { get; set; }
         public bool YeuCauXacNhan { get; set; }
     }

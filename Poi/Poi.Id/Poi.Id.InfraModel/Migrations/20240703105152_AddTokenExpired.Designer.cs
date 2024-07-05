@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240703105152_AddTokenExpired")]
+    partial class AddTokenExpired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1325,8 +1328,8 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("TrangThai")
-                        .HasColumnType("text");
+                    b.Property<int>("TrangThai")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1450,9 +1453,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("JsonValue")
-                        .HasColumnType("jsonb");
-
                     b.Property<string>("Key")
                         .HasColumnType("text");
 
@@ -1506,8 +1506,8 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<int>("ThuTu")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TrangThaiCongViec")
-                        .HasColumnType("text");
+                    b.Property<int>("TrangThaiCongViec")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -2324,7 +2324,7 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasForeignKey("HrmTrangThaiChamCongId");
 
                     b.HasOne("Poi.Id.InfraModel.DataAccess.User", "User")
-                        .WithMany("HrmChamCongDiemDanh")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("HrmCongKhaiBao");
@@ -2920,8 +2920,6 @@ namespace Poi.Id.InfraModel.Migrations
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.User", b =>
                 {
-                    b.Navigation("HrmChamCongDiemDanh");
-
                     b.Navigation("HrmHoSoNhanSu");
                 });
 #pragma warning restore 612, 618

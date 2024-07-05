@@ -80,6 +80,7 @@ builder.Services.AddScoped<ICoQuanDonViService, CoQuanDonViService>();
 builder.Services.AddScoped<IChiNhanhVanPhongService, ChiNhanhVanPhongService>();
 builder.Services.AddScoped<IPhongBanService, PhongBanService>();
 builder.Services.AddScoped<IAFeedbackService, FeedbackService>();
+builder.Services.AddScoped<ITokenExpiredService, TokenExpiredService>();
 
 ServiceRegister.AddLogic(builder.Services);
 
@@ -95,6 +96,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAllOrigins");
 
 app.UseMiddleware<HeaderExtractorMiddleWare>();
+app.UseMiddleware<TokenCheckMiddleware>();
 
 // get the section from appsettings.json
 var isEnabled = app.Configuration.GetSection("EnableSecureMiddleware").Get<bool>();

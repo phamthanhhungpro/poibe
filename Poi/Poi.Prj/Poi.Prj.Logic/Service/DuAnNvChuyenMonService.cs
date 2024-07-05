@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Poi.Prj.Logic.Service
@@ -42,6 +43,22 @@ namespace Poi.Prj.Logic.Service
             entity.ThanhVienDuAn = _context.Users.Where(x => request.ThanhVienDuAnIds.Contains(x.Id)).ToList();
 
             _context.PrjDuAnNvChuyenMon.Add(entity);
+            await _context.SaveChangesAsync();
+
+            // Khởi tạo mặc định 1 số thông tin cho Dự án, Nhiệm vụ
+
+            // Khởi tạo Tag
+
+            // Khởi tạo trạng thái công việc mặc định
+            var jsonSettingEntity = new PrjDuAnSetting
+            {
+                DuAnNvChuyenMonId = entity.Id,
+                Key = "trangThaiSetting",
+                JsonValue = $@"[{{""key"": ""{TrangThaiCongViecHelper.DefaultTrangThaiKey}"", ""value"": ""{TrangThaiCongViecHelper.DefaultTrangThaiValue}"", ""yeuCauXacNhan"": false }}]"
+            };
+
+            _context.PrjDuAnSetting.Add(jsonSettingEntity);
+
             await _context.SaveChangesAsync();
 
             return new CudResponseDto

@@ -9,7 +9,7 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public string MaCongViec { get; set; }
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }
-        public int TrangThai { get; set; }
+        public string TrangThai { get; set; }
         public Tenant Tenant { get; set; }
         public Guid TenantId { get; set; }
 
