@@ -37,7 +37,8 @@ namespace Poi.Prj.Logic.Service
                 TenTag = request.TenTag,
                 MaTag = request.MaTag,
                 YeuCauXacThuc = request.YeuCauXacThuc,
-                DuAnNvChuyenMonId = request.DuAnNvChuyenMonId
+                DuAnNvChuyenMonId = request.DuAnNvChuyenMonId,
+                MauSac = request.MauSac
             };
 
             _context.PrjTagComment.Add(TagComment);
@@ -125,6 +126,7 @@ namespace Poi.Prj.Logic.Service
             TagComment.MaTag = request.MaTag;
             TagComment.YeuCauXacThuc = request.YeuCauXacThuc;
             TagComment.UpdatedAt = DateTime.UtcNow;
+            TagComment.MauSac = request.MauSac;
 
             _context.PrjTagComment.Update(TagComment);
             await _context.SaveChangesAsync();

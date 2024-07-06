@@ -12,5 +12,6 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public PrjDuAnNvChuyenMon DuAnNvChuyenMon { get; set; }
         public Guid DuAnNvChuyenMonId { get; set; }
         public virtual ICollection<PrjComment> Comments { get; set; }
+        public string MauSac { get; set; }
     }
 }

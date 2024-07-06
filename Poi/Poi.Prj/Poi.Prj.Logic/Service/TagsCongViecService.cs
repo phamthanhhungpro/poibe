@@ -41,7 +41,8 @@ namespace Poi.Prj.Logic.Service
                 TenantId = info.TenantId,
                 TenTag = request.TenTag,
                 MaTag = request.MaTag,
-                DuAnNvChuyenMonId = request.DuAnNvChuyenMonId
+                DuAnNvChuyenMonId = request.DuAnNvChuyenMonId,
+                MauSac = request.MauSac,
             };
 
             _context.PrjTagCongViec.Add(TagCongViec);
@@ -128,6 +129,7 @@ namespace Poi.Prj.Logic.Service
             TagCongViec.TenTag = request.TenTag;
             TagCongViec.MaTag = request.MaTag;
             TagCongViec.UpdatedAt = DateTime.UtcNow;
+            TagCongViec.MauSac = request.MauSac;
 
             _context.PrjTagCongViec.Update(TagCongViec);
             await _context.SaveChangesAsync();

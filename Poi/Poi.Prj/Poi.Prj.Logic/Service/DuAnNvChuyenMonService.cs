@@ -103,6 +103,8 @@ namespace Poi.Prj.Logic.Service
                 .Include(x => x.QuanLyDuAn)
                 .Include(x => x.NhomCongViec)
                 .Include(x => x.DuAnSetting)
+                .Include(x => x.LoaiCongViec)
+                .Include(x => x.TagCongViec)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
