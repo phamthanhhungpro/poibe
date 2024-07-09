@@ -39,7 +39,7 @@ namespace Poi.Prj.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, CongViecRequest request)
+        public async Task<IActionResult> Update(Guid id, UpdateCongViecRequest request)
         {
             var result = await _congViecService.UpdateAsync(id, request, TenantInfo);
             return Ok(result);

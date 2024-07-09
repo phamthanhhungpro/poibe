@@ -9,6 +9,6 @@ namespace Poi.Prj.Logic.Interface
     public interface ICommentService
     {
         Task<CudResponseDto> CreatePrjCommentAsync(CongViecCommentRequest request, TenantInfo info);
-        Task<CongViecCommentDto> GetCommentByIdCongViec(Guid congViecId);
+        Task<List<CongViecCommentDto>> GetCommentByIdCongViec(Guid congViecId);
     }
 }

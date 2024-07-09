@@ -114,11 +114,11 @@ namespace Poi.Prj.Logic.Service
                                             .ToListAsync();
         }
 
-        public async Task<CudResponseDto> UpdateAsync(Guid id, CongViecRequest request, TenantInfo info)
+        public async Task<CudResponseDto> UpdateAsync(Guid id, UpdateCongViecRequest request, TenantInfo info)
         {
             var entity = await _context.PrjCongViec
                                             .Include(x => x.NguoiPhoiHop)
-                                            .Include(x => x.TagCongViec)
+                                            .Include(x => x.NguoiThucHien)
                                             .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == info.TenantId);
             if (entity == null)
             {
@@ -129,19 +129,11 @@ namespace Poi.Prj.Logic.Service
                 };
             }
 
-            entity.TenCongViec = request.TenCongViec;
-            entity.MoTa = request.MoTa;
-            entity.DuAnNvChuyenMonId = request.DuAnNvChuyenMonId;
-            entity.NgayBatDau = request.NgayBatDau.ToUTC();
             entity.NgayKetThuc = request.NgayKetThuc.ToUTC();
             entity.TrangThai = request.TrangThai;
             entity.NguoiDuocGiaoId = request.NguoiDuocGiaoId;
-            entity.NguoiGiaoViecId = request.NguoiGiaoViecId;
-            entity.CongViecChaId = request.CongViecChaId;
-            entity.LoaiCongViecId = request.LoaiCongViecId;
-            entity.NhomCongViecId = request.NhomCongViecId;
             entity.NguoiPhoiHop = await _context.Users.Where(x => request.NguoiPhoiHopIds.Contains(x.Id)).ToListAsync();
-            entity.TagCongViec = await _context.PrjTagCongViec.Where(x => request.TagCongViecIds.Contains(x.Id)).ToListAsync();
+            entity.NguoiThucHien = await _context.Users.Where(x => request.NguoiThucHienIds.Contains(x.Id)).ToListAsync();
 
             _context.PrjCongViec.Update(entity);
             await _context.SaveChangesAsync();

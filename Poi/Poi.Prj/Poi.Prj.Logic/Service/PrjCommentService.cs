@@ -1,4 +1,5 @@
-﻿using Poi.Id.InfraModel.DataAccess.Prj;
+﻿using Microsoft.EntityFrameworkCore;
+using Poi.Id.InfraModel.DataAccess.Prj;
 using Poi.Prj.InfraModel.DataAccess;
 using Poi.Prj.Logic.Dtos;
 using Poi.Prj.Logic.Interface;
@@ -34,7 +35,7 @@ namespace Poi.Prj.Logic.Service
 
             foreach (Match match in tagMatches)
             {
-                Tags.Add(match.Value);
+                Tags.Add(match.Value.Replace("#", ""));
             }
 
             foreach (Match match in usernameMatches)
@@ -68,9 +69,21 @@ namespace Poi.Prj.Logic.Service
             };
         }
 
-        public async Task<CongViecCommentDto> GetCommentByIdCongViec(Guid congViecId)
+        public async Task<List<CongViecCommentDto>> GetCommentByIdCongViec(Guid congViecId)
         {
-            throw new NotImplementedException();
+            var comment = await _context.PrjComment
+                .Include(x => x.TagComments)
+                .Where(x => x.CongViecId == congViecId)
+                .OrderByDescending(x => x.CreatedAt)
+                .Select(x => new CongViecCommentDto
+                {
+                    Id = x.Id,
+                    NoiDung = x.NoiDung,
+                    ThoiGian = x.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
+                    TagComments = x.TagComments
+                }).ToListAsync();
+
+            return comment;
         }
     }
 }

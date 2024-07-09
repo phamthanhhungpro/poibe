@@ -11,7 +11,7 @@ namespace Poi.Prj.Logic.Interface
         Task<IEnumerable<PrjCongViec>> GetNoPaging(TenantInfo info, Guid DuanId);
         Task<PrjCongViec> GetByIdAsync(Guid id, TenantInfo info);
         Task<CudResponseDto> AddAsync(CongViecRequest request, TenantInfo info);
-        Task<CudResponseDto> UpdateAsync(Guid id, CongViecRequest request, TenantInfo info);
+        Task<CudResponseDto> UpdateAsync(Guid id, UpdateCongViecRequest request, TenantInfo info);
         Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info);
         Task<IEnumerable<CongViecGroupByNhomCongViecDto>> GetCongViecGrid(TenantInfo info, Guid DuanId);
         Task<IEnumerable<CongViecKanbanDto>> GetCongViecKanban(TenantInfo info, Guid DuanId);
