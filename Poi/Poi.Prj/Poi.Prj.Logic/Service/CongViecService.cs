@@ -34,13 +34,14 @@ namespace Poi.Prj.Logic.Service
                 NgayBatDau = request.NgayBatDau.ToUTC(),
                 NgayKetThuc = request.NgayKetThuc.ToUTC(),
                 TrangThai = TrangThaiCongViecHelper.DefaultTrangThaiKey,
-                NguoiThucHienId = request.NguoiThucHienId,
+                NguoiDuocGiaoId = request.NguoiDuocGiaoId,
                 NguoiGiaoViecId = info.UserId,
                 CongViecChaId = request.CongViecChaId,
                 LoaiCongViecId = request.LoaiCongViecId,
                 NhomCongViecId = request.NhomCongViecId,
                 TenantId = info.TenantId,
                 NguoiPhoiHop = await _context.Users.Where(x => request.NguoiPhoiHopIds.Contains(x.Id)).ToListAsync(),
+                NguoiThucHien = await _context.Users.Where(x => request.NguoiThucHienIds.Contains(x.Id)).ToListAsync(),
                 TagCongViec = await _context.PrjTagCongViec.Where(x => request.TagCongViecIds.Contains(x.Id)).ToListAsync()
             };
 
@@ -90,6 +91,11 @@ namespace Poi.Prj.Logic.Service
                                             .Include(x => x.TagCongViec)
                                             .Include(x => x.LoaiCongViec)
                                             .Include(x => x.NhomCongViec)
+                                            .Include(x => x.NguoiDuocGiao)
+                                            .Include(x => x.LoaiCongViec)
+                                            .Include(x => x.DuAnNvChuyenMon).ThenInclude(x => x.ThanhVienDuAn)
+                                            .Include(x => x.DuAnNvChuyenMon).ThenInclude(x => x.DuAnSetting)
+                                            .Include(x => x.DuAnNvChuyenMon).ThenInclude(x => x.TagComment)
                                             .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == info.TenantId);
         }
 
@@ -102,6 +108,8 @@ namespace Poi.Prj.Logic.Service
                                             .Include(x => x.TagCongViec)
                                             .Include(x => x.LoaiCongViec)
                                             .Include(x => x.NhomCongViec)
+                                            .Include(x => x.NguoiDuocGiao)
+                                            .Include(x => x.DuAnNvChuyenMon)
                                             .Where(x => x.DuAnNvChuyenMonId == DuanId && x.TenantId == info.TenantId)
                                             .ToListAsync();
         }
@@ -127,7 +135,7 @@ namespace Poi.Prj.Logic.Service
             entity.NgayBatDau = request.NgayBatDau.ToUTC();
             entity.NgayKetThuc = request.NgayKetThuc.ToUTC();
             entity.TrangThai = request.TrangThai;
-            entity.NguoiThucHienId = request.NguoiThucHienId;
+            entity.NguoiDuocGiaoId = request.NguoiDuocGiaoId;
             entity.NguoiGiaoViecId = request.NguoiGiaoViecId;
             entity.CongViecChaId = request.CongViecChaId;
             entity.LoaiCongViecId = request.LoaiCongViecId;
@@ -152,6 +160,7 @@ namespace Poi.Prj.Logic.Service
                                                 .Include(x => x.NguoiThucHien)
                                                 .Include(x => x.NguoiGiaoViec)
                                                 .Include(x => x.NhomCongViec)
+                                                .Include(x => x.NguoiDuocGiao)
                                                 .Where(x => x.DuAnNvChuyenMonId == DuanId && x.CongViecChaId == null && x.TenantId == info.TenantId)
                                                 .ToListAsync();
 
@@ -169,9 +178,9 @@ namespace Poi.Prj.Logic.Service
                                                 NgayBatDau = y.NgayBatDau.ToLocalTime(),
                                                 NgayKetThuc = y.NgayKetThuc.ToLocalTime(),
                                                 TrangThai = y.TrangThai,
-                                                NguoiThucHien = y.NguoiThucHien,
+                                                NguoiDuocGiao = y.NguoiDuocGiao,
                                                 NguoiGiaoViec = y.NguoiGiaoViec,
-                                                CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                                                CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
                                             }).ToList()
                                         });
 
@@ -188,7 +197,7 @@ namespace Poi.Prj.Logic.Service
 
             // Lấy danh sách công việc của dự án
             var listCongViec = await _context.PrjCongViec
-                                            .Include(x => x.NguoiThucHien)
+                                            .Include(x => x.NguoiDuocGiao)
                                             .Include(x => x.NguoiGiaoViec)
                                             .Include(x => x.NhomCongViec)
                                             .Include(x => x.TagCongViec)
@@ -212,7 +221,7 @@ namespace Poi.Prj.Logic.Service
                     NgayBatDau = y.NgayBatDau.ToLocalTime(),
                     NgayKetThuc = y.NgayKetThuc.ToLocalTime(),
                     TrangThai = y.TrangThai,
-                    NguoiThucHien = y.NguoiThucHien,
+                    NguoiDuocGiao = y.NguoiDuocGiao,
                     NguoiGiaoViec = y.NguoiGiaoViec,
                     TagCongViec = y.TagCongViec,
                     CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")

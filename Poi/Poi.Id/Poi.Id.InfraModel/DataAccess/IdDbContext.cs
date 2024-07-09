@@ -322,6 +322,11 @@ namespace Poi.Id.InfraModel.DataAccess
                 .WithMany()
                 .UsingEntity(j => j.ToTable("PrjCongViecNguoiPhoiHop"));
 
+            modelBuilder.Entity<PrjCongViec>()
+                .HasMany(d => d.NguoiThucHien)
+                .WithMany()
+                .UsingEntity(j => j.ToTable("PrjCongViecNguoiThucHien"));
+
             modelBuilder.Entity<PrjKanban>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");

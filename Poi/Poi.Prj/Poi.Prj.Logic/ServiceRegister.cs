@@ -20,6 +20,7 @@ namespace Poi.Prj.Logic
             services.AddScoped<IDuAnSettingService, DuAnSettingService>();
             services.AddScoped<ICongViecService, CongViecService>();
             services.AddScoped<IKanbanService, KanbanService>();
+            services.AddScoped<ICommentService, CommentService>();
         }
     }
 }

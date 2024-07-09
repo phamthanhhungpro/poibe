@@ -1,0 +1,76 @@
+﻿using Poi.Id.InfraModel.DataAccess.Prj;
+using Poi.Prj.InfraModel.DataAccess;
+using Poi.Prj.Logic.Dtos;
+using Poi.Prj.Logic.Interface;
+using Poi.Prj.Logic.Requests;
+using Poi.Shared.Model.BaseModel;
+using Poi.Shared.Model.Dtos;
+using System.Text.RegularExpressions;
+
+namespace Poi.Prj.Logic.Service
+{
+    public class CommentService : ICommentService
+    {
+        private readonly PrjDbContext _context;
+        public CommentService(PrjDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<CudResponseDto> CreatePrjCommentAsync(CongViecCommentRequest request, TenantInfo info)
+        {
+            // #TAG @user content
+            List<string> Tags = [];
+            List<string> Usernames = [];
+            string content = string.Empty;
+
+            var tagRegex = new Regex(@"#\w+");
+            var usernameRegex = new Regex(@"@\w+");
+
+            var input = request.NoiDung;
+            // Find all tags and usernames
+            var tagMatches = tagRegex.Matches(input);
+            var usernameMatches = usernameRegex.Matches(input);
+
+            foreach (Match match in tagMatches)
+            {
+                Tags.Add(match.Value);
+            }
+
+            foreach (Match match in usernameMatches)
+            {
+                Usernames.Add(match.Value);
+            }
+
+            // Remove tags and usernames from input to get the content
+            content = tagRegex.Replace(input, "").Trim();
+            //content = usernameRegex.Replace(contentWithoutTags, "").Trim();
+
+            // Gửi thông báo cho người được tag
+
+
+            var comment = new PrjComment
+            {
+                NoiDung = content,
+                TenantId = info.TenantId,
+                CongViecId = request.CongViecId,
+                TagComments = _context.PrjTagComment.Where(x => Tags.Contains(x.MaTag)).ToList()
+            };
+
+            _context.PrjComment.Add(comment);
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Id = comment.Id,
+                Message = "Comment thành công",
+                IsSucceeded = true
+            };
+        }
+
+        public async Task<CongViecCommentDto> GetCommentByIdCongViec(Guid congViecId)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

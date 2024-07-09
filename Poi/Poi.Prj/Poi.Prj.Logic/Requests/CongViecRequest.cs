@@ -11,9 +11,10 @@
         public Guid? NhomCongViecId { get; set; }
         public Guid? LoaiCongViecId { get; set; }
         public Guid? CongViecChaId { get; set; }
-        public Guid? NguoiThucHienId { get; set; }
+        public Guid? NguoiDuocGiaoId { get; set; }
         public Guid? NguoiGiaoViecId { get; set; }
         public List<Guid> NguoiPhoiHopIds { get; set; }
+        public List<Guid> NguoiThucHienIds { get; set; }
         public List<Guid> TagCongViecIds { get; set; }
         public Guid DuAnNvChuyenMonId { get; set; }
     }

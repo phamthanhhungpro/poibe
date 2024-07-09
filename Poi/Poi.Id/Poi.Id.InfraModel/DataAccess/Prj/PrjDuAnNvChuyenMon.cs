@@ -29,6 +29,7 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public ICollection<PrjNhomCongViec> NhomCongViec { get; set; }
         public ICollection<PrjLoaiCongViec> LoaiCongViec { get; set; }
         public ICollection<PrjTagCongViec> TagCongViec { get; set; }
+        public ICollection<PrjTagComment> TagComment { get; set; }
         public bool IsCaNhan { get; set; }
         public ICollection<PrjDuAnSetting> DuAnSetting { get; set; }
 
