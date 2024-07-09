@@ -42,7 +42,9 @@ namespace Poi.Prj.Logic.Service
                 TenantId = info.TenantId,
                 NguoiPhoiHop = await _context.Users.Where(x => request.NguoiPhoiHopIds.Contains(x.Id)).ToListAsync(),
                 NguoiThucHien = await _context.Users.Where(x => request.NguoiThucHienIds.Contains(x.Id)).ToListAsync(),
-                TagCongViec = await _context.PrjTagCongViec.Where(x => request.TagCongViecIds.Contains(x.Id)).ToListAsync()
+                TagCongViec = await _context.PrjTagCongViec.Where(x => request.TagCongViecIds.Contains(x.Id)).ToListAsync(),
+                ThoiGianDuKien = request.ThoiGianDuKien,
+                MucDoUuTien = request.MucDoUuTien,
             };
 
             _context.PrjCongViec.Add(entity);
@@ -189,6 +191,7 @@ namespace Poi.Prj.Logic.Service
 
             // Lấy danh sách công việc của dự án
             var listCongViec = await _context.PrjCongViec
+                                            .Include(x => x.NguoiThucHien)
                                             .Include(x => x.NguoiDuocGiao)
                                             .Include(x => x.NguoiGiaoViec)
                                             .Include(x => x.NhomCongViec)

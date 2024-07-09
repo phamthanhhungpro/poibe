@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240709163102_UpdateTableCongViec")]
+    partial class UpdateTableCongViec
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1273,9 +1276,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Attachments")
-                        .HasColumnType("text");
-
                     b.Property<Guid?>("CongViecChaId")
                         .HasColumnType("uuid");
 
@@ -1307,9 +1307,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<string>("MoTa")
                         .HasColumnType("text");
 
-                    b.Property<string>("MucDoUuTien")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("NgayBatDau")
                         .HasColumnType("timestamp with time zone");
 
@@ -1331,16 +1328,8 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ThoiGianDuKien")
-                        .HasColumnType("text");
-
                     b.Property<string>("TrangThai")
                         .HasColumnType("text");
-
-                    b.Property<string>("TrangThaiChiTiet")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("READY");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

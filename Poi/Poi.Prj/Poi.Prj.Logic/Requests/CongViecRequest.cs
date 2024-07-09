@@ -17,5 +17,8 @@
         public List<Guid> NguoiThucHienIds { get; set; }
         public List<Guid> TagCongViecIds { get; set; }
         public Guid DuAnNvChuyenMonId { get; set; }
+        public string ThoiGianDuKien { get; set; }
+        public string MucDoUuTien { get; set; }
+        public string Attachments { get; set; }
     }
 }

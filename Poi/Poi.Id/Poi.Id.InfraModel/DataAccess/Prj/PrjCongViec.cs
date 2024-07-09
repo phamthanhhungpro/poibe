@@ -34,5 +34,10 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
 
         public PrjDuAnNvChuyenMon DuAnNvChuyenMon { get; set; }
         public Guid DuAnNvChuyenMonId { get; set; }
+
+        public string ThoiGianDuKien { get; set; }
+        public string MucDoUuTien { get; set; }
+        public string TrangThaiChiTiet { get; set; }
+        public string Attachments { get; set; }
     }
 }
