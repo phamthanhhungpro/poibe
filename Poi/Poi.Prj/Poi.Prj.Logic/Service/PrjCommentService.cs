@@ -55,7 +55,8 @@ namespace Poi.Prj.Logic.Service
                 NoiDung = content,
                 TenantId = info.TenantId,
                 CongViecId = request.CongViecId,
-                TagComments = _context.PrjTagComment.Where(x => Tags.Contains(x.MaTag)).ToList()
+                TagComments = _context.PrjTagComment.Where(x => Tags.Contains(x.MaTag)).ToList(),
+                NguoiComment = _context.Users.FirstOrDefault(x => x.Id == info.UserId).UserName
             };
 
             _context.PrjComment.Add(comment);
@@ -80,8 +81,21 @@ namespace Poi.Prj.Logic.Service
                     Id = x.Id,
                     NoiDung = x.NoiDung,
                     ThoiGian = x.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
-                    TagComments = x.TagComments
+                    TagComments = x.TagComments,
+                    NguoiComment = x.NguoiComment,
                 }).ToListAsync();
+
+            var listUserNames = comment.Select(x => x.NguoiComment).Distinct().ToList();
+            var listUsers = _context.Users.Where(x => listUserNames.Contains(x.UserName)).ToList();
+
+            foreach (var item in comment)
+            {
+                if(item.NguoiComment == null)
+                {
+                    continue;
+                }
+                item.NguoiCommentFullName = listUsers.FirstOrDefault(x => x.UserName == item.NguoiComment).FullName;
+            };
 
             return comment;
         }

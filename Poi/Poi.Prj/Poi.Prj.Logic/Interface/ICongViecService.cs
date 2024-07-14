@@ -16,5 +16,10 @@ namespace Poi.Prj.Logic.Interface
         Task<IEnumerable<CongViecGroupByNhomCongViecDto>> GetCongViecGrid(TenantInfo info, Guid DuanId);
         Task<IEnumerable<CongViecKanbanDto>> GetCongViecKanban(TenantInfo info, Guid DuanId);
         Task<CudResponseDto> UpdateKanbanStatus(TenantInfo info, UpdateCongViecKanbanStatusRequest request);
+        Task<CudResponseDto> GiaHanCongViec(TenantInfo info, GiaHanCongViecRequest request);
+        Task<IEnumerable<CongViecGroupByNhomCongViecDto>> GetCongViecGridByTrangThai(TenantInfo info, Guid DuanId, string TrangThai);
+        Task<CudResponseDto> ApproveGiaHanCongViec(TenantInfo info, ApproveGiaHanCongViec request);
+        Task<CudResponseDto> ApproveTrangThaiCongViec(TenantInfo info, ApproveTrangThaiCongViec request);
+        Task<CudResponseDto> ApproveDeXuatCongViec(TenantInfo info, ApproveDeXuatCongViec request);
     }
 }

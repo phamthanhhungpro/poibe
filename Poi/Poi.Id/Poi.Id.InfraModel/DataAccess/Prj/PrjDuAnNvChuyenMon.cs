@@ -34,5 +34,6 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public ICollection<PrjDuAnSetting> DuAnSetting { get; set; }
 
         public ICollection<PrjCongViec> CongViec { get; set; }
+        public ICollection<PrjKanban> Kanban { get; set; }
     }
 }

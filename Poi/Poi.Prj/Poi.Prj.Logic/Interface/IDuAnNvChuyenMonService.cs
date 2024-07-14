@@ -7,7 +7,7 @@ namespace Poi.Prj.Logic.Interface
 {
     public interface IDuAnNvChuyenMonService
     {
-        Task<IEnumerable<PrjDuAnNvChuyenMon>> GetNoPaging(bool isNvChuyenMon, TenantInfo info);
+        Task<IEnumerable<PrjDuAnNvChuyenMon>> GetNoPaging(bool isNvChuyenMon, TenantInfo info, bool isGetAll);
         Task<PrjDuAnNvChuyenMon> GetByIdAsync(Guid id, TenantInfo info);
         Task<CudResponseDto> AddAsync(DuAnNvChuyenMonRequest LinhVuc, TenantInfo info);
         Task<CudResponseDto> UpdateAsync(Guid id, DuAnNvChuyenMonRequest LinhVuc, TenantInfo info);

@@ -45,21 +45,122 @@ namespace Poi.Prj.Logic.Service
             _context.PrjDuAnNvChuyenMon.Add(entity);
             await _context.SaveChangesAsync();
 
-            // Khởi tạo mặc định 1 số thông tin cho Dự án, Nhiệm vụ
-
-            // Khởi tạo Tag
-
-            // Khởi tạo trạng thái công việc mặc định
-            var jsonSettingEntity = new PrjDuAnSetting
+            if (request.IsSaoChepThietLap && request.DuAnCanSaoChepId.HasValue)
             {
-                DuAnNvChuyenMonId = entity.Id,
-                Key = "trangThaiSetting",
-                JsonValue = $@"[{{""key"": ""{TrangThaiCongViecHelper.DefaultTrangThaiKey}"", ""value"": ""{TrangThaiCongViecHelper.DefaultTrangThaiValue}"", ""yeuCauXacNhan"": false }}]"
-            };
+                // Sao chép thiết lập từ dự án khác
+                var duAnCanSaoChep = await _context.PrjDuAnNvChuyenMon
+                    .Include(x => x.DuAnSetting)
+                    .Include(x => x.NhomCongViec)
+                    .Include(x => x.LoaiCongViec)
+                    .Include(x => x.TagCongViec)
+                    .Include(x => x.TagComment)
+                    .Include(x => x.Kanban)
+                    .FirstOrDefaultAsync(x => x.Id == request.DuAnCanSaoChepId.Value);
 
-            _context.PrjDuAnSetting.Add(jsonSettingEntity);
+                if (duAnCanSaoChep != null)
+                {
+                    entity.DuAnSetting = duAnCanSaoChep.DuAnSetting.Select(x => new PrjDuAnSetting
+                    {
+                        DuAnNvChuyenMonId = entity.Id,
+                        Key = x.Key,
+                        JsonValue = x.JsonValue,
+                    }).ToList();
 
-            await _context.SaveChangesAsync();
+                    entity.NhomCongViec = duAnCanSaoChep.NhomCongViec.Select(x => new PrjNhomCongViec
+                    {
+                        DuAnNvChuyenMonId = entity.Id,
+                        MaNhomCongViec = x.MaNhomCongViec,
+                        TenNhomCongViec = x.TenNhomCongViec,
+                        MoTa = x.MoTa,
+                        TenantId = info.TenantId
+                    }).ToList();
+
+                    entity.LoaiCongViec = duAnCanSaoChep.LoaiCongViec.Select(x => new PrjLoaiCongViec
+                    {
+                        DuAnNvChuyenMonId = entity.Id,
+                        MaLoaiCongViec = x.MaLoaiCongViec,
+                        TenLoaiCongViec = x.TenLoaiCongViec,
+                        MoTa = x.MoTa,
+                        TenantId = info.TenantId
+                    }).ToList();
+
+                    entity.TagCongViec = duAnCanSaoChep.TagCongViec.Select(x => new PrjTagCongViec
+                    {
+                        DuAnNvChuyenMonId = entity.Id,
+                        TenTag = x.TenTag,
+                        MaTag = x.MaTag,
+                        MauSac = x.MauSac,
+                        TenantId = info.TenantId
+                    }).ToList();
+
+                    entity.TagComment = duAnCanSaoChep.TagComment.Select(x => new PrjTagComment
+                    {
+                        DuAnNvChuyenMonId = entity.Id,
+                        TenTag = x.TenTag,
+                        MaTag = x.MaTag,
+                        MauSac = x.MauSac,
+                        TenantId = info.TenantId
+                    }).ToList();
+
+                    entity.Kanban = duAnCanSaoChep.Kanban.Select(x => new PrjKanban
+                    {
+                        DuAnNvChuyenMonId = entity.Id,
+                        TenCot = x.TenCot,
+                        MoTa = x.MoTa,
+                        TrangThaiCongViec = x.TrangThaiCongViec,
+                        ThuTu = x.ThuTu,
+                        YeuCauXacNhan = x.YeuCauXacNhan,
+                    }).ToList();
+
+                    _context.PrjDuAnNvChuyenMon.Update(entity);
+                    await _context.SaveChangesAsync();
+                }
+
+
+            } else
+            {
+                // Khởi tạo mặc định 1 số thông tin cho Dự án, Nhiệm vụ
+
+                // Khởi tạo Tag
+
+                // Khởi tạo nhóm công việc
+                var nhomCongViec = new PrjNhomCongViec
+                {
+                    TenNhomCongViec = "Chưa xác định",
+                    MoTa = "Nhóm công việc mặc định",
+                    MaNhomCongViec = "CHUAXACDINH",
+                    DuAnNvChuyenMonId = entity.Id,
+                    TenantId = info.TenantId
+                };
+
+                _context.PrjNhomCongViec.Add(nhomCongViec);
+                await _context.SaveChangesAsync();
+
+                // Khởi tạo loại công việc
+                var loaiCongViec = new PrjLoaiCongViec
+                {
+                    TenLoaiCongViec = "Chưa xác định",
+                    MoTa = "Loại công việc mặc định",
+                    MaLoaiCongViec = "CHUAXACDINH",
+                    DuAnNvChuyenMonId = entity.Id,
+                    TenantId = info.TenantId
+                };
+
+                _context.PrjLoaiCongViec.Add(loaiCongViec);
+                await _context.SaveChangesAsync();
+
+                // Khởi tạo trạng thái công việc mặc định
+                var jsonSettingEntity = new PrjDuAnSetting
+                {
+                    DuAnNvChuyenMonId = entity.Id,
+                    Key = TrangThaiCongViecHelper.TrangThaiSettingKey,
+                    JsonValue = $@"[{{""key"": ""{TrangThaiCongViecHelper.DefaultTrangThaiKey}"", ""value"": ""{TrangThaiCongViecHelper.DefaultTrangThaiValue}"", ""yeuCauXacNhan"": false }}]"
+                };
+
+                _context.PrjDuAnSetting.Add(jsonSettingEntity);
+
+                await _context.SaveChangesAsync();
+            }
 
             return new CudResponseDto
             {
@@ -108,8 +209,14 @@ namespace Poi.Prj.Logic.Service
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<PrjDuAnNvChuyenMon>> GetNoPaging(bool isNvChuyenMon, TenantInfo info)
+        public async Task<IEnumerable<PrjDuAnNvChuyenMon>> GetNoPaging(bool isNvChuyenMon, TenantInfo info, bool isGetAll)
         {
+            if(isGetAll)
+            {
+                return await _context.PrjDuAnNvChuyenMon
+                                    .Where(x => x.TenantId == info.TenantId)
+                                    .ToListAsync();
+            }
             return await _context.PrjDuAnNvChuyenMon
                                 .Include(x => x.ThanhVienDuAn)
                                 .Include(x => x.QuanLyDuAn)

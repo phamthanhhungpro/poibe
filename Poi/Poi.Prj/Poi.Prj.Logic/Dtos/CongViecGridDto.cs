@@ -22,5 +22,7 @@ namespace Poi.Prj.Logic.Dtos
         public string CreatedAt { get; set; }
         public IEnumerable<PrjTagCongViec> TagCongViec { get; set; }
         public PrjDuAnNvChuyenMon DuAnNvChuyenMon { get; set; }
+        public DateTime? NgayGiaHan { get; set; }
+        public bool Selected { get; set; } = false;
     }
 }

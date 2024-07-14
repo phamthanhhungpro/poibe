@@ -27,5 +27,6 @@ namespace Poi.Shared.Model.Helpers
 
         public const string DefaultTrangThaiKey = "chua-xac-dinh";
         public const string DefaultTrangThaiValue = "Chưa xác định";
+        public const string TrangThaiSettingKey = "trangThaiSetting";
     }
 }

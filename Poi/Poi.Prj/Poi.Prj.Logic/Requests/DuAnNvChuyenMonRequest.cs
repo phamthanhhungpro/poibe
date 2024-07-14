@@ -23,5 +23,7 @@ namespace Poi.Prj.Logic.Requests
         public DateTime ThoiGianKetThuc { get; set; }
         public Guid? LinhVucId { get; set; }
         public bool IsNhiemVuChuyenMon { get; set; }
+        public bool IsSaoChepThietLap { get; set; }
+        public Guid? DuAnCanSaoChepId { get; set; }
     }
 }

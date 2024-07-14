@@ -15,5 +15,6 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public PrjCongViec CongViec { get; set; }
         public Guid CongViecId { get; set; }
         public ICollection<PrjTagComment> TagComments { get; set; }
+        public string NguoiComment { get; set; }
     }
 }

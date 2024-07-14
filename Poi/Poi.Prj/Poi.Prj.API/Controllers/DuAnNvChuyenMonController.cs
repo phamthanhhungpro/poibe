@@ -19,14 +19,21 @@ namespace Poi.Prj.API.Controllers
         [HttpGet("duan-nopaging")]
         public async Task<IActionResult> GetDuan()
         {
-            var result = await _service.GetNoPaging(false, TenantInfo);
+            var result = await _service.GetNoPaging(false, TenantInfo, false);
             return Ok(result);
         }
 
         [HttpGet("nvchuyenmon-nopaging")]
         public async Task<IActionResult> GetNvChuyenMon()
         {
-            var result = await _service.GetNoPaging(true, TenantInfo);
+            var result = await _service.GetNoPaging(true, TenantInfo, false);
+            return Ok(result);
+        }
+
+        [HttpGet("nopaging")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _service.GetNoPaging(true, TenantInfo, true);
             return Ok(result);
         }
 

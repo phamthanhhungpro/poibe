@@ -72,5 +72,40 @@ namespace Poi.Prj.API.Controllers
             var result = await _congViecService.UpdateKanbanStatus(TenantInfo, request);
             return Ok(result);
         }
+
+        [HttpPut("GiaHanCongViec")]
+        public async Task<IActionResult> GiaHanCongViec(GiaHanCongViecRequest request)
+        {
+            var result = await _congViecService.GiaHanCongViec(TenantInfo, request);
+            return Ok(result);
+        }
+
+        [HttpGet("GetCongViecGridByTrangThai")]
+        public async Task<IActionResult> GetCongViecGridByTrangThai(Guid DuanId, string trangThai)
+        {
+            var result = await _congViecService.GetCongViecGridByTrangThai(TenantInfo, DuanId, trangThai);
+            return Ok(result);
+        }
+
+        [HttpPut("ApproveGiaHanCongViec")]
+        public async Task<IActionResult> ApproveGiaHanCongViec(ApproveGiaHanCongViec request)
+        {
+            var result = await _congViecService.ApproveGiaHanCongViec(TenantInfo, request);
+            return Ok(result);
+        }
+
+        [HttpPut("ApproveTrangThaiCongViec")]
+        public async Task<IActionResult> ApproveTrangThaiCongViec(ApproveTrangThaiCongViec request)
+        {
+            var result = await _congViecService.ApproveTrangThaiCongViec(TenantInfo, request);
+            return Ok(result);
+        }
+
+        [HttpPut("ApproveDeXuatCongViec")]
+        public async Task<IActionResult> ApproveDeXuatCongViec(ApproveTrangThaiCongViec request)
+        {
+            var result = await _congViecService.ApproveTrangThaiCongViec(TenantInfo, request);
+            return Ok(result);
+        }
     }
 }

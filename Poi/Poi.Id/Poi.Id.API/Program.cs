@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Poi.Id.API.Controllers;
@@ -67,6 +69,10 @@ builder.Services.AddControllers()
             });
 
 builder.Services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<IdDbContext>();
+
+builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).Configure(options => {
+    options.BearerTokenExpiration = TimeSpan.FromSeconds(86400);
+});
 builder.Services.AddAuthorization();
 
 // add DI for services

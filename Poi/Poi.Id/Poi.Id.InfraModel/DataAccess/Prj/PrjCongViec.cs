@@ -39,5 +39,8 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public string MucDoUuTien { get; set; }
         public string TrangThaiChiTiet { get; set; }
         public string Attachments { get; set; }
+        public DateTime? NgayGiaHan { get; set; }
+        public string TrangThaiChoXacNhan { get; set; }
+
     }
 }

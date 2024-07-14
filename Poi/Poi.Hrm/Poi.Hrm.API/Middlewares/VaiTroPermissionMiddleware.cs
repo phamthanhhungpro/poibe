@@ -45,6 +45,12 @@ public class VaiTroPermissionMiddleware
             return false;
         }
 
+        // Check if the user is an OWNER
+        if (tenantInfo.Role == RoleConstants.ROLE_OWNER)
+        {
+            return true;
+        }
+
         // get the endpoint, method from the request
         var endpoint = context.Request.Path.Value;
         var method = context.Request.Method;
