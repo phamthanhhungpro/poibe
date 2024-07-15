@@ -107,5 +107,26 @@ namespace Poi.Prj.API.Controllers
             var result = await _congViecService.ApproveTrangThaiCongViec(TenantInfo, request);
             return Ok(result);
         }
+
+        [HttpPut("RejectDeXuatCongViec")]
+        public async Task<IActionResult> RejectDeXuatCongViec(RejectCongViecRequest request)
+        {
+            var result = await _congViecService.RejectDeXuatCongViec(TenantInfo, request);
+            return Ok(result);
+        }
+
+        [HttpPut("RejectGiaHanCongViec")]
+        public async Task<IActionResult> RejectGiaHanCongViec(RejectCongViecRequest request)
+        {
+            var result = await _congViecService.RejectGiaHanCongViec(TenantInfo, request);
+            return Ok(result);
+        }
+
+        [HttpPut("RejectTrangThaiCongViec")]
+        public async Task<IActionResult> RejectTrangThaiCongViec(RejectCongViecRequest request)
+        {
+            var result = await _congViecService.RejectTrangThaiCongViec(TenantInfo, request);
+            return Ok(result);
+        }
     }
 }

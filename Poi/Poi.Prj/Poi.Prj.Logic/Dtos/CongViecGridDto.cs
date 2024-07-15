@@ -17,6 +17,7 @@ namespace Poi.Prj.Logic.Dtos
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }
         public string TrangThai { get; set; }
+        public string TrangThaiChiTiet { get; set; }
         public User NguoiDuocGiao { get; set; }
         public User NguoiGiaoViec { get; set; }
         public string CreatedAt { get; set; }

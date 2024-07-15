@@ -144,18 +144,20 @@ namespace Poi.Prj.Logic.Service
                 };
             }
 
-            if(!string.IsNullOrEmpty(request.TrangThai))
+            if (!string.IsNullOrEmpty(request.TrangThai))
             {
                 // get settings
                 var settings = await _context.PrjDuAnSetting.FirstOrDefaultAsync(x => x.DuAnNvChuyenMonId == entity.DuAnNvChuyenMonId && x.Key == TrangThaiCongViecHelper.TrangThaiSettingKey);
-                 if (settings != null) {
+                if (settings != null)
+                {
                     var trangThaiSetting = JsonSerializer.Deserialize<List<TrangThaiCongViecSettingDto>>(settings.JsonValue);
 
                     var requestTrangThai = trangThaiSetting.FirstOrDefault(x => x.key == request.TrangThai);
                     if (requestTrangThai != null && requestTrangThai.yeuCauXacNhan)
                     {
                         entity.TrangThaiChiTiet = TrangThaiCongViecChiTiet.ChoDuyetHoanThanh;
-                        entity.TrangThaiChoXacNhan = request.TrangThai;
+                        entity.TrangThaiChoXacNhan = entity.TrangThai;
+                        entity.TrangThai = request.TrangThai;
                     }
                     else
                     {
@@ -207,6 +209,7 @@ namespace Poi.Prj.Logic.Service
                                                 NguoiDuocGiao = y.NguoiDuocGiao,
                                                 NguoiGiaoViec = y.NguoiGiaoViec,
                                                 CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                                                TrangThaiChiTiet = y.TrangThaiChiTiet
                                             }).ToList()
                                         });
 
@@ -251,7 +254,8 @@ namespace Poi.Prj.Logic.Service
                     NguoiDuocGiao = y.NguoiDuocGiao,
                     NguoiGiaoViec = y.NguoiGiaoViec,
                     TagCongViec = y.TagCongViec,
-                    CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                    CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                    TrangThaiChiTiet = y.TrangThaiChiTiet
                 }).ToList()
             });
 
@@ -286,7 +290,7 @@ namespace Poi.Prj.Logic.Service
             if (!string.IsNullOrEmpty(kanban.TrangThaiCongViec))
             {
                 // get settings
-                var settings = await _context.PrjDuAnSetting.FirstOrDefaultAsync(x => x.DuAnNvChuyenMonId == congViec.DuAnNvChuyenMonId 
+                var settings = await _context.PrjDuAnSetting.FirstOrDefaultAsync(x => x.DuAnNvChuyenMonId == congViec.DuAnNvChuyenMonId
                                                                                    && x.Key == TrangThaiCongViecHelper.TrangThaiSettingKey);
                 if (settings != null)
                 {
@@ -297,7 +301,8 @@ namespace Poi.Prj.Logic.Service
                     {
                         message = "Chờ xác nhận để hoàn thành công việc";
                         congViec.TrangThaiChiTiet = TrangThaiCongViecChiTiet.ChoDuyetHoanThanh;
-                        congViec.TrangThaiChoXacNhan = kanban.TrangThaiCongViec;
+                        congViec.TrangThaiChoXacNhan = congViec.TrangThai;
+                        congViec.TrangThai = kanban.TrangThaiCongViec;
                     }
                     else
                     {
@@ -331,7 +336,7 @@ namespace Poi.Prj.Logic.Service
                 };
             }
 
-            if(request.NgayKetThuc < entity.NgayKetThuc)
+            if (request.NgayKetThuc < entity.NgayKetThuc)
             {
                 return new CudResponseDto
                 {
@@ -381,6 +386,7 @@ namespace Poi.Prj.Logic.Service
                                                 NguoiDuocGiao = y.NguoiDuocGiao,
                                                 NguoiGiaoViec = y.NguoiGiaoViec,
                                                 CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                                                TrangThaiChiTiet = y.TrangThaiChiTiet
                                             }).ToList()
                                         });
 
@@ -441,7 +447,7 @@ namespace Poi.Prj.Logic.Service
 
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
-                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThai, p => p.TrangThaiChoXacNhan)
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThai, p => p.TrangThai)
                                           .SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY));
 
             if (result == 0)
@@ -494,6 +500,117 @@ namespace Poi.Prj.Logic.Service
                 {
                     IsSucceeded = true,
                     Message = "Duyệt đề xuất công việc thành công"
+                };
+            }
+        }
+
+        public async Task<CudResponseDto> RejectDeXuatCongViec(TenantInfo info, RejectCongViecRequest request)
+        {
+            var duAn = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
+
+            if (info.UserId != duAn.QuanLyDuAnId)
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = false,
+                    Message = "Bạn không có quyền từ chối đề xuất công việc"
+                };
+            }
+
+            // Get cong viec
+            var result = await _context.PrjCongViec
+                .Where(x => request.CongViecIds.Contains(x.Id))
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.REJECT));
+
+            if (result == 0)
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = false,
+                    Message = "Từ chối đề xuất công việc không thành công"
+                };
+            }
+            else
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = true,
+                    Message = "Từ chối đề xuất công việc thành công"
+                };
+            }
+
+        }
+
+        public async Task<CudResponseDto> RejectGiaHanCongViec(TenantInfo info, RejectCongViecRequest request)
+        {
+            var duAn = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
+
+            if (info.UserId != duAn.QuanLyDuAnId)
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = false,
+                    Message = "Bạn không có quyền từ chối gia hạn công việc"
+                };
+            }
+
+            // Get cong viec
+            var result = await _context.PrjCongViec
+                .Where(x => request.CongViecIds.Contains(x.Id))
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY)
+                                          .SetProperty(p => p.NgayGiaHan.Value, null));
+
+            if (result == 0)
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = false,
+                    Message = "Từ chối gia hạn công việc không thành công"
+                };
+            }
+            else
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = true,
+                    Message = "Từ chối gia hạn công việc thành công"
+                };
+            }
+        }
+
+        public async Task<CudResponseDto> RejectTrangThaiCongViec(TenantInfo info, RejectCongViecRequest request)
+        {
+            var duAn = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
+
+            if (info.UserId != duAn.QuanLyDuAnId)
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = false,
+                    Message = "Bạn không có quyền từ chối thay đổi trạng thái công việc"
+                };
+            }
+
+            // Get cong viec
+            var result = await _context.PrjCongViec
+                .Where(x => request.CongViecIds.Contains(x.Id))
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY)
+                                          .SetProperty(p => p.TrangThai, t => t.TrangThaiChiTiet));
+
+            if (result == 0)
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = false,
+                    Message = "Từ chối thay đổi trạng thái công việc không thành công"
+                };
+            }
+            else
+            {
+                return new CudResponseDto
+                {
+                    IsSucceeded = true,
+                    Message = "Từ chối thay đổi trạng thái công việc thành công"
                 };
             }
         }

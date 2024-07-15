@@ -21,5 +21,8 @@ namespace Poi.Prj.Logic.Interface
         Task<CudResponseDto> ApproveGiaHanCongViec(TenantInfo info, ApproveGiaHanCongViec request);
         Task<CudResponseDto> ApproveTrangThaiCongViec(TenantInfo info, ApproveTrangThaiCongViec request);
         Task<CudResponseDto> ApproveDeXuatCongViec(TenantInfo info, ApproveDeXuatCongViec request);
+        Task<CudResponseDto> RejectDeXuatCongViec(TenantInfo info, RejectCongViecRequest request);
+        Task<CudResponseDto> RejectGiaHanCongViec(TenantInfo info, RejectCongViecRequest request);
+        Task<CudResponseDto> RejectTrangThaiCongViec(TenantInfo info, RejectCongViecRequest request);
     }
 }
