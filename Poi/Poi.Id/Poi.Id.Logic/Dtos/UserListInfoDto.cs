@@ -1,4 +1,5 @@
 ﻿using Poi.Id.InfraModel.DataAccess;
+using Poi.Id.InfraModel.DataAccess.AppPermission;
 
 namespace Poi.Id.Logic.Dtos
 {
@@ -18,6 +19,7 @@ namespace Poi.Id.Logic.Dtos
         public string TenantName { get; set; }
         public bool IsActive { get; set; }
 
+        public ICollection<PerRole> PerRoles { get; set; }
         public IList<App> Apps { get; set; }
 
         public string FullName

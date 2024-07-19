@@ -6,7 +6,9 @@ using Poi.Id.API.Controllers;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic;
 using Poi.Id.Logic.Interfaces;
+using Poi.Id.Logic.Interfaces.AppPermission;
 using Poi.Id.Logic.Services;
+using Poi.Id.Logic.Services.AppPermission;
 using Poi.Shared.Model.MiddleWare;
 using System.Text.Json.Serialization;
 
@@ -87,6 +89,11 @@ builder.Services.AddScoped<IChiNhanhVanPhongService, ChiNhanhVanPhongService>();
 builder.Services.AddScoped<IPhongBanService, PhongBanService>();
 builder.Services.AddScoped<IAFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ITokenExpiredService, TokenExpiredService>();
+builder.Services.AddScoped<IPerApiEndpointService, PerApiEndpointService>();
+builder.Services.AddScoped<IFunctionService, FunctionService>();
+builder.Services.AddScoped<IScopeService, ScopeService>();
+builder.Services.AddScoped<IGroupFunctionService, GroupFunctionService>();
+builder.Services.AddScoped<IPerRoleService, PerRoleService>();
 
 ServiceRegister.AddLogic(builder.Services);
 

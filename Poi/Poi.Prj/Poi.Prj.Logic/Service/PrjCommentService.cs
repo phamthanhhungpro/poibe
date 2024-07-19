@@ -55,7 +55,7 @@ namespace Poi.Prj.Logic.Service
                 NoiDung = content,
                 TenantId = info.TenantId,
                 CongViecId = request.CongViecId,
-                TagComments = _context.PrjTagComment.Where(x => Tags.Contains(x.MaTag)).ToList(),
+                TagComments = _context.PrjTagComment.Where(x => Tags.Contains(x.MaTag) && x.DuAnNvChuyenMonId == request.DuAnId).ToList(),
                 NguoiComment = _context.Users.FirstOrDefault(x => x.Id == info.UserId).UserName
             };
 

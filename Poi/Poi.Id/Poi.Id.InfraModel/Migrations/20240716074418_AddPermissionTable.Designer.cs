@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240716074418_AddPermissionTable")]
+    partial class AddPermissionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,6 +207,21 @@ namespace Poi.Id.InfraModel.Migrations
                     b.ToTable("PerEndpointPerFunction");
                 });
 
+            modelBuilder.Entity("PerFunctionPerRole", b =>
+                {
+                    b.Property<Guid>("FunctionsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RolesId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("FunctionsId", "RolesId");
+
+                    b.HasIndex("RolesId");
+
+                    b.ToTable("PerFunctionPerRole");
+                });
+
             modelBuilder.Entity("PerFunctionPerScope", b =>
                 {
                     b.Property<Guid>("FunctionsId")
@@ -217,21 +235,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("ScopesId");
 
                     b.ToTable("PerFunctionPerScope");
-                });
-
-            modelBuilder.Entity("PerRoleUser", b =>
-                {
-                    b.Property<Guid>("PerRolesId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("PerRolesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("PerRoleUser");
                 });
 
             modelBuilder.Entity("PermissionRole", b =>
@@ -507,53 +510,16 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("PerRole");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerRoleFunctionScope", b =>
-                {
-                    b.Property<Guid>("PerRoleId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PerFunctionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid?>("PerScopeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("PerRoleId", "PerFunctionId");
-
-                    b.HasIndex("PerFunctionId");
-
-                    b.HasIndex("PerScopeId");
-
-                    b.ToTable("PerRoleFunctionScope");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerScope", b =>
@@ -563,9 +529,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("AppCode")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Code")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -2631,6 +2594,21 @@ namespace Poi.Id.InfraModel.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PerFunctionPerRole", b =>
+                {
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerFunction", null)
+                        .WithMany()
+                        .HasForeignKey("FunctionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerRole", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PerFunctionPerScope", b =>
                 {
                     b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerFunction", null)
@@ -2642,21 +2620,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerScope", null)
                         .WithMany()
                         .HasForeignKey("ScopesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PerRoleUser", b =>
-                {
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerRole", null)
-                        .WithMany()
-                        .HasForeignKey("PerRolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2695,32 +2658,11 @@ namespace Poi.Id.InfraModel.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", null)
+                        .WithMany("PerRoles")
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerRoleFunctionScope", b =>
-                {
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerFunction", "Function")
-                        .WithMany("PerRoleFunctionScope")
-                        .HasForeignKey("PerFunctionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerRole", "Role")
-                        .WithMany("PerRoleFunctionScope")
-                        .HasForeignKey("PerRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerScope", "Scope")
-                        .WithMany()
-                        .HasForeignKey("PerScopeId");
-
-                    b.Navigation("Function");
-
-                    b.Navigation("Role");
-
-                    b.Navigation("Scope");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.ChiNhanhVanPhong", b =>
@@ -3328,19 +3270,9 @@ namespace Poi.Id.InfraModel.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerFunction", b =>
-                {
-                    b.Navigation("PerRoleFunctionScope");
-                });
-
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerGroupFunction", b =>
                 {
                     b.Navigation("Functions");
-                });
-
-            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerRole", b =>
-                {
-                    b.Navigation("PerRoleFunctionScope");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.Group", b =>
@@ -3404,6 +3336,8 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Navigation("HrmChamCongDiemDanh");
 
                     b.Navigation("HrmHoSoNhanSu");
+
+                    b.Navigation("PerRoles");
                 });
 #pragma warning restore 612, 618
         }

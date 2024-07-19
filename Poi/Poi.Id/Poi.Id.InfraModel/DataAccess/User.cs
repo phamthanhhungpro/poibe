@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Poi.Id.InfraModel.DataAccess.AppPermission;
 using Poi.Id.InfraModel.DataAccess.Hrm;
 using Poi.Id.InfraModel.DataAccess.Prj;
 
@@ -37,6 +38,8 @@ namespace Poi.Id.InfraModel.DataAccess
         public virtual ICollection<PrjToNhom> ThanhVienToNhom { get; set; }
         public virtual ICollection<PrjDuAnNvChuyenMon> PrjDuAnNvChuyenMon { get; set; }
         public virtual ICollection<HrmChamCongDiemDanh> HrmChamCongDiemDanh { get; set; }
+
+        public virtual ICollection<PerRole> PerRoles { get; set; }
 
         public string FullName
         {

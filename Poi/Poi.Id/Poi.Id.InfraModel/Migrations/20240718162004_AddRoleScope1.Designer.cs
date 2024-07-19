@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240718162004_AddRoleScope1")]
+    partial class AddRoleScope1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,21 +220,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("ScopesId");
 
                     b.ToTable("PerFunctionPerScope");
-                });
-
-            modelBuilder.Entity("PerRoleUser", b =>
-                {
-                    b.Property<Guid>("PerRolesId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("PerRolesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("PerRoleUser");
                 });
 
             modelBuilder.Entity("PermissionRole", b =>
@@ -507,9 +495,14 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("PerRole");
                 });
@@ -2646,21 +2639,6 @@ namespace Poi.Id.InfraModel.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PerRoleUser", b =>
-                {
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerRole", null)
-                        .WithMany()
-                        .HasForeignKey("PerRolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("PermissionRole", b =>
                 {
                     b.HasOne("Poi.Id.InfraModel.DataAccess.Permission", null)
@@ -2694,6 +2672,10 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", null)
+                        .WithMany("PerRoles")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Tenant");
                 });
@@ -3404,6 +3386,8 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Navigation("HrmChamCongDiemDanh");
 
                     b.Navigation("HrmHoSoNhanSu");
+
+                    b.Navigation("PerRoles");
                 });
 #pragma warning restore 612, 618
         }

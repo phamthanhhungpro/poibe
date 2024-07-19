@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Poi.Id.InfraModel.DataAccess.AppPermission;
 using Poi.Id.InfraModel.DataAccess.Hrm;
 using Poi.Id.InfraModel.DataAccess.Prj;
 using System.Text.Json;
@@ -22,6 +23,12 @@ namespace Poi.Id.InfraModel.DataAccess
         public DbSet<PhongBanBoPhan> PhongBanBoPhans { get; set; }
         public DbSet<AFeedback> AFeedbacks { get; set; }
         public DbSet<TokenExpired> TokenExpired { get; set; }
+        public DbSet<PerEndpoint> PerEndpoint { get; set; }
+        public DbSet<PerFunction> PerFunction { get; set; }
+        public DbSet<PerGroupFunction> PerGroupFunction { get; set; }
+        public DbSet<PerRole> PerRole { get; set; }
+        public DbSet<PerScope> PerScope { get; set; }
+        public DbSet<PerRoleFunctionScope> PerRoleFunctionScope { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -349,6 +356,66 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+
+            modelBuilder.Entity<PerEndpoint>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PerFunction>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PerGroupFunction>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PerRole>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PerScope>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PerRoleFunctionScope>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
+
+            modelBuilder.Entity<PerRoleFunctionScope>()
+                .HasKey(rf => new { rf.PerRoleId, rf.PerFunctionId });
+
+            modelBuilder.Entity<PerRoleFunctionScope>()
+                .HasOne(rf => rf.Role)
+                .WithMany(r => r.PerRoleFunctionScope)
+                .HasForeignKey(rf => rf.PerRoleId);
+
+            modelBuilder.Entity<PerRoleFunctionScope>()
+                .HasOne(rf => rf.Function)
+                .WithMany(f => f.PerRoleFunctionScope)
+                .HasForeignKey(rf => rf.PerFunctionId);
+
+            modelBuilder.Entity<PerRoleFunctionScope>()
+                .HasOne(rf => rf.Scope)
+                .WithMany()
+                .HasForeignKey(rf => rf.PerScopeId);
         }
     }
 }

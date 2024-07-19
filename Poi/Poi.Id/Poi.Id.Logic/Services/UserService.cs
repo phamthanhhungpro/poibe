@@ -159,6 +159,7 @@ namespace Poi.Id.Logic.Services
                 .Include(t => t.Tenant)
                 .Include(t => t.Role)
                 .Include(t => t.Group)
+                .Include(t => t.PerRoles)
                 .Where(t => t.Tenant.Id == info.TenantId)
                 .OrderByDescending(o => o.CreatedAt).AsNoTracking();
 
@@ -186,7 +187,8 @@ namespace Poi.Id.Logic.Services
                     GroupName = x.Group.Name,
                     TenantName = x.Tenant.Name,
                     IsActive = x.IsActive,
-                    Apps = x.Apps.ToList()
+                    Apps = x.Apps.ToList(),
+                    PerRoles = x.PerRoles.ToList(),
                 }).ToListAsync();
 
             var count = await query.CountAsync();
