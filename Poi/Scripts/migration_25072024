@@ -1,0 +1,39 @@
+﻿START TRANSACTION;
+
+ALTER TABLE "AspNetUsers" DROP CONSTRAINT "FK_AspNetUsers_PhongBanBoPhans_ManagerOfPhongBanBoPhanId";
+
+ALTER TABLE "AspNetUsers" DROP CONSTRAINT "FK_AspNetUsers_PhongBanBoPhans_PhongBanBoPhanId";
+
+DROP INDEX "IX_AspNetUsers_ManagerOfPhongBanBoPhanId";
+
+DROP INDEX "IX_AspNetUsers_PhongBanBoPhanId";
+
+ALTER TABLE "AspNetUsers" DROP COLUMN "ManagerOfPhongBanBoPhanId";
+
+ALTER TABLE "AspNetUsers" DROP COLUMN "PhongBanBoPhanId";
+
+CREATE TABLE "PhongBanLanhDao" (
+    "LanhDaoPhongBanId" uuid NOT NULL,
+    "QuanLyId" uuid NOT NULL,
+    CONSTRAINT "PK_PhongBanLanhDao" PRIMARY KEY ("LanhDaoPhongBanId", "QuanLyId"),
+    CONSTRAINT "FK_PhongBanLanhDao_AspNetUsers_QuanLyId" FOREIGN KEY ("QuanLyId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_PhongBanLanhDao_PhongBanBoPhans_LanhDaoPhongBanId" FOREIGN KEY ("LanhDaoPhongBanId") REFERENCES "PhongBanBoPhans" ("Id") ON DELETE CASCADE
+);
+
+CREATE TABLE "PhongBanThanhVien" (
+    "ThanhVienId" uuid NOT NULL,
+    "ThanhVienPhongBanId" uuid NOT NULL,
+    CONSTRAINT "PK_PhongBanThanhVien" PRIMARY KEY ("ThanhVienId", "ThanhVienPhongBanId"),
+    CONSTRAINT "FK_PhongBanThanhVien_AspNetUsers_ThanhVienId" FOREIGN KEY ("ThanhVienId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_PhongBanThanhVien_PhongBanBoPhans_ThanhVienPhongBanId" FOREIGN KEY ("ThanhVienPhongBanId") REFERENCES "PhongBanBoPhans" ("Id") ON DELETE CASCADE
+);
+
+CREATE INDEX "IX_PhongBanLanhDao_QuanLyId" ON "PhongBanLanhDao" ("QuanLyId");
+
+CREATE INDEX "IX_PhongBanThanhVien_ThanhVienPhongBanId" ON "PhongBanThanhVien" ("ThanhVienPhongBanId");
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20240724183918_UpdatePhongBan', '8.0.4');
+
+COMMIT;
+

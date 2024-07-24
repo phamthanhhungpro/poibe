@@ -8,6 +8,7 @@ using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Dtos;
 using Poi.Shared.Model.Helpers;
+using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace Poi.Prj.Logic.Service
@@ -183,6 +184,54 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<IEnumerable<CongViecGroupByNhomCongViecDto>> GetCongViecGrid(TenantInfo info, Guid DuanId)
         {
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && !string.IsNullOrEmpty(info.RequestScopeCode))
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode)
+                {
+                    // Tất cả công việc của đơn vị
+                    case ScopeCode.DANHSACH_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Công việc của phòng ban người dùng thuộc về
+                    case ScopeCode.DANHSACH_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienPhongBanIds = user?.ThanhVienPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienToNhomIds = user?.ThanhVienToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x =>
+                            x.DuAnNvChuyenMon != null &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            thanhVienPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value) ||
+                            thanhVienToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value));
+                        break;
+
+                    // Chỉ những công việc mà người dùng liên quan
+                    case ScopeCode.DANHSACH_CONGVIEC_RELATED:
+                        filterExpression = x => x.NguoiThucHien.Any(tv => tv.Id == info.UserId)
+                                             || x.NguoiDuocGiaoId == info.UserId
+                                             || x.NguoiGiaoViecId == info.UserId
+                                             || x.NguoiPhoiHop.Any(tv => tv.Id == info.UserId);
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
+
             // Lấy danh sách công việc cha (CongViecChaId == null) của dự án theo nhóm công việc
             var listCongViecCha = await _context.PrjCongViec
                                                 .Include(x => x.NguoiThucHien)
@@ -190,6 +239,7 @@ namespace Poi.Prj.Logic.Service
                                                 .Include(x => x.NhomCongViec)
                                                 .Include(x => x.NguoiDuocGiao)
                                                 .Where(x => x.DuAnNvChuyenMonId == DuanId && x.CongViecChaId == null && x.TenantId == info.TenantId)
+                                                .Where(filterExpression)
                                                 .ToListAsync();
 
             // Group công việc cha theo nhóm công việc
@@ -218,6 +268,53 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<IEnumerable<CongViecKanbanDto>> GetCongViecKanban(TenantInfo info, Guid DuanId)
         {
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && !string.IsNullOrEmpty(info.RequestScopeCode))
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode)
+                {
+                    // Tất cả công việc của đơn vị
+                    case ScopeCode.DANHSACH_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Công việc của phòng ban người dùng thuộc về
+                    case ScopeCode.DANHSACH_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienPhongBanIds = user?.ThanhVienPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienToNhomIds = user?.ThanhVienToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x =>
+                            x.DuAnNvChuyenMon != null &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            thanhVienPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value) ||
+                            thanhVienToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value));
+                        break;
+
+                    // Chỉ những công việc mà người dùng liên quan
+                    case ScopeCode.DANHSACH_CONGVIEC_RELATED:
+                        filterExpression = x => x.NguoiThucHien.Any(tv => tv.Id == info.UserId)
+                                             || x.NguoiDuocGiaoId == info.UserId
+                                             || x.NguoiGiaoViecId == info.UserId
+                                             || x.NguoiPhoiHop.Any(tv => tv.Id == info.UserId);
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
             // Lấy danh sách cột kanban của dự án
             var listKanban = await _context.PrjKanban
                                             .Where(x => x.DuAnNvChuyenMonId == DuanId)
@@ -232,6 +329,7 @@ namespace Poi.Prj.Logic.Service
                                             .Include(x => x.NhomCongViec)
                                             .Include(x => x.TagCongViec)
                                             .Where(x => x.DuAnNvChuyenMonId == DuanId)
+                                            .Where(filterExpression)
                                             .ToListAsync();
 
             // Group công việc theo cột kanban

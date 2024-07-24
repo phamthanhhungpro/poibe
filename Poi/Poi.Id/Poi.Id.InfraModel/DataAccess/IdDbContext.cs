@@ -82,19 +82,7 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
-            // Configure User -> PhongBanBoPhan (ThanhVien) relationship
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.PhongBanBoPhan)
-                .WithMany(p => p.ThanhVien)
-                .HasForeignKey(u => u.PhongBanBoPhanId)
-                .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure User -> PhongBanBoPhan (Managers) relationship
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.ManagerOfPhongBanBoPhan)
-                .WithMany(p => p.QuanLy)
-                .HasForeignKey(u => u.ManagerOfPhongBanBoPhanId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Role>(entity =>
             {
@@ -123,6 +111,16 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
+
+            modelBuilder.Entity<PhongBanBoPhan>()
+                .HasMany(tn => tn.ThanhVien)
+                .WithMany(u => u.ThanhVienPhongBan)
+                .UsingEntity(j => j.ToTable("PhongBanThanhVien"));
+
+            modelBuilder.Entity<PhongBanBoPhan>()
+                .HasMany(tn => tn.QuanLy)
+                .WithMany(u => u.LanhDaoPhongBan)
+                .UsingEntity(j => j.ToTable("PhongBanLanhDao"));
 
             modelBuilder.Entity<HrmHoSoNhanSu>(entity =>
             {

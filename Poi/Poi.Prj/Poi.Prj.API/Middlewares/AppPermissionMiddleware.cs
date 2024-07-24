@@ -76,6 +76,11 @@ namespace Poi.Prj.API.Middlewares
 
             var userPerRole = user.PerRoles.FirstOrDefault(x => x.AppCode == tenantInfo.AppCode);
 
+            if(userPerRole == null)
+            {
+                return false;
+            }
+
             var permission = await dbContext.PerRoleFunctionScope
                 .Include(x => x.Function)
                 .Include(x => x.Scope)

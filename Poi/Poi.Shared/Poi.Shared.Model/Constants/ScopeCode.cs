@@ -31,11 +31,11 @@ namespace Poi.Shared.Model.Constants
         public const string DANHGIA_CONGVIEC_LEADER = "ONLY-LEADER";
 
         public const string DANHSACH_DUAN_ALL = "ALL";
-        public const string DANHSACH_DUAN_DUAN = "ALL-DUAN";
+        public const string DANHSACH_DUAN_DUAN = "ALL-DU-AN";
         public const string DANHSACH_DUAN_RELATED = "RELATED";
 
         public const string XOA_DUAN_ALL = "ALL";
-        public const string XOA_DUAN_DUAN = "ALL-DUAN";
+        public const string XOA_DUAN_DUAN = "ALL-DU-AN";
         public const string XOA_DUAN_CREATED = "ONLY-CREATED";
 
         public const string HOATDONG_DUAN_ALL = "ALL";

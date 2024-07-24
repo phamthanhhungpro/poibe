@@ -4,11 +4,13 @@ using Poi.Prj.InfraModel.DataAccess;
 using Poi.Prj.Logic.Interface;
 using Poi.Prj.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
+using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Dtos;
 using Poi.Shared.Model.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -211,10 +213,54 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<IEnumerable<PrjDuAnNvChuyenMon>> GetNoPaging(bool isNvChuyenMon, TenantInfo info, bool isGetAll)
         {
+            Expression<Func<PrjDuAnNvChuyenMon, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && !string.IsNullOrEmpty(info.RequestScopeCode)) {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode)
+                {
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.DANHSACH_DUAN_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Dự án của phòng ban người dùng thuộc về
+                    case ScopeCode.DANHSACH_DUAN_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienPhongBanIds = user?.ThanhVienPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienToNhomIds = user?.ThanhVienToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x =>
+                            lanhDaoPhongBanIds.Contains(x.PhongBanBoPhanId.Value) ||
+                            thanhVienPhongBanIds.Contains(x.PhongBanBoPhanId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.ToNhomId.Value) ||
+                            thanhVienToNhomIds.Contains(x.ToNhomId.Value);
+                        break;
+
+                    // Chỉ những dự án mà người dùng là thành viên
+                    case ScopeCode.DANHSACH_DUAN_RELATED:
+                        filterExpression = x => x.ThanhVienDuAn.Any(tv => tv.Id == info.UserId)
+                                             || x.QuanLyDuAnId == info.UserId;
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
             if(isGetAll)
             {
                 return await _context.PrjDuAnNvChuyenMon
                                     .Where(x => x.TenantId == info.TenantId)
+                                    .Where(filterExpression)
                                     .ToListAsync();
             }
             return await _context.PrjDuAnNvChuyenMon
@@ -226,6 +272,7 @@ namespace Poi.Prj.Logic.Service
 
                                 .Include(x => x.PhongBanBoPhan).ThenInclude(x => x.QuanLy)
                                 .Where(x => x.IsNhiemVuChuyenMon == isNvChuyenMon && x.TenantId == info.TenantId)
+                                .Where(filterExpression)
                                 .ToListAsync();
         }
 

@@ -345,11 +345,11 @@ namespace Poi.Id.Logic.Services
         {
             var data = await _context.Users
                 .Include(u => u.Tenant)
-                .Include(u => u.PhongBanBoPhan).ThenInclude(p => p.QuanLy)
+                .Include(u => u.LanhDaoPhongBan).ThenInclude(p => p.QuanLy)
                 .Select(u => new UserPhongBanDto
                 {
                     Id = u.Id,
-                    PhongBanBoPhan = u.PhongBanBoPhan,
+                    PhongBanBoPhan = u.LanhDaoPhongBan.First(),
                 })
                 .FirstOrDefaultAsync(u => u.Id == userId);
 

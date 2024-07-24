@@ -26,13 +26,11 @@ namespace Poi.Id.InfraModel.DataAccess
 
         // Collection of direct reports (users)
         public virtual ICollection<User> DirectReports { get; set; }
-        public Guid? PhongBanBoPhanId { get; set; } // Foreign key for ThanhVien
-        public virtual PhongBanBoPhan PhongBanBoPhan { get; set; } // Navigation property for ThanhVien
-
-        public Guid? ManagerOfPhongBanBoPhanId { get; set; } // Foreign key for Managers
-        public virtual PhongBanBoPhan ManagerOfPhongBanBoPhan { get; set; } // Navigation property for Managers
 
         public virtual HrmHoSoNhanSu HrmHoSoNhanSu { get; set; }
+
+        public virtual ICollection<PhongBanBoPhan> LanhDaoPhongBan { get; set; }
+        public virtual ICollection<PhongBanBoPhan> ThanhVienPhongBan { get; set; }
 
         public virtual ICollection<PrjToNhom> LanhDaoToNhom { get; set; }
         public virtual ICollection<PrjToNhom> ThanhVienToNhom { get; set; }
