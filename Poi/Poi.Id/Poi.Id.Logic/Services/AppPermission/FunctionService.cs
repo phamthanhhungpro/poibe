@@ -140,7 +140,9 @@ namespace Poi.Id.Logic.Services.AppPermission
             var pageSize = request.PageSize;
             var pageNumber = request.PageNumber;
 
-            var query = _context.PerFunction.Where(x => x.AppCode == info.AppCode).AsNoTracking();
+            var query = _context.PerFunction.Where(x => x.AppCode == info.AppCode)
+                .OrderBy(o => o.CreatedAt)
+                .AsNoTracking();
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             var count = await query.CountAsync();
@@ -177,7 +179,7 @@ namespace Poi.Id.Logic.Services.AppPermission
             {
                 GroupId = x.Key,
                 GroupName = x.First().GroupFunction.Name,
-                ListFunction = [.. x]
+                ListFunction = [.. x.OrderBy(o => o.CreatedAt)]
             }).ToList();
 
             return data;

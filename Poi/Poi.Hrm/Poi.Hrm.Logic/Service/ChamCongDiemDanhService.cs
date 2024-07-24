@@ -118,7 +118,7 @@ namespace Poi.Hrm.Logic.Service
                     ThoiGian = request.NgayChamCong.Value.ToUniversalTime(),
                     HrmTrangThaiChamCong = defaultTrangThaiChamCong.FirstOrDefault(x => x.MaTrangThai == "CHUA_CHAM_CONG")
                 };
-                model.TrangThai = model.HrmTrangThaiChamCong.YeuCauGiaiTrinh ? TrangThaiEnum.ChoGiaiTrinh : TrangThaiEnum.XacNhan;
+                model.TrangThai = (model.HrmTrangThaiChamCong != null && model.HrmTrangThaiChamCong.YeuCauGiaiTrinh) ? TrangThaiEnum.ChoGiaiTrinh : TrangThaiEnum.XacNhan;
                 data.Add(model);
             }
 

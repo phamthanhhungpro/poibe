@@ -40,7 +40,7 @@ namespace Poi.Id.Logic.Services
                 entity.QuanLy = await _context.Users
                     .Include(u => u.Role)
                     .Where(u => phongBan.ManagerIds.Contains(u.Id))
-                    .Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
+                    //.Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
                     .Where(u => u.Tenant.Id == info.TenantId)
                     .ToListAsync();
             }
@@ -89,7 +89,12 @@ namespace Poi.Id.Logic.Services
 
         public async Task<CudResponseDto> UpdateAsync(Guid id, PhongBanRequest request)
         {
-            var entity = await _context.PhongBanBoPhans.FindAsync(id);
+            var entity = await _context.PhongBanBoPhans
+                .Include(x => x.Parent)
+                .Include(x => x.Tenant)
+                .Include(x => x.ChiNhanhVanPhong)
+                .Include(x => x.QuanLy)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
             {
                 throw new Exception($"PhongBanBoPhan {Error.NotFound}");
@@ -113,7 +118,7 @@ namespace Poi.Id.Logic.Services
                 entity.QuanLy = await _context.Users
                     .Include(u => u.Role)
                     .Where(u => request.ManagerIds.Contains(u.Id))
-                    .Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
+                    //.Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
                     .Where(u => u.Tenant.Id == entity.Tenant.Id)
                     .ToListAsync();
             }

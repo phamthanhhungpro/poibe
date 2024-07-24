@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Poi.Prj.API.Middlewares;
 using Poi.Prj.InfraModel.DataAccess;
 using Poi.Prj.Logic;
 using Poi.Shared.Model.MiddleWare;
@@ -56,6 +57,7 @@ app.UseCors("AllowAllOrigins");
 
 app.UseMiddleware<HeaderExtractorMiddleWare>();
 app.UseMiddleware<TokenCheckMiddleware>();
+app.UseMiddleware<AppPermissionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();

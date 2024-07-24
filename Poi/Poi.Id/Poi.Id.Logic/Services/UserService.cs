@@ -106,7 +106,7 @@ namespace Poi.Id.Logic.Services
             var data = await _context.Users.Include(u => u.Role)
                 .Include(u => u.Tenant)
                 .Where(u => u.Tenant.Id == info.TenantId)
-                .Where(u => u.Role.Code == RoleConstants.ROLE_MEMBER || u.Role.Code == RoleConstants.ROLE_ADMIN)
+                //.Where(u => u.Role.Code == RoleConstants.ROLE_MEMBER || u.Role.Code == RoleConstants.ROLE_ADMIN)
                 .Select(x => new UserListInfoDto
                 {
                     Id = x.Id,
@@ -124,7 +124,7 @@ namespace Poi.Id.Logic.Services
             var data = await _context.Users.Include(u => u.Role)
                 .Include(u => u.Tenant)
                 .Where(u => u.Tenant.Id == info.TenantId)
-                .Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
+                //.Where(u => u.Role.Code == RoleConstants.ROLE_ADMIN)
                 .Select(x => new UserListInfoDto
                 {
                     Id = x.Id,
