@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240725172838_UpdatePermission")]
+    partial class UpdatePermission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,14 +197,14 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<Guid>("EndpointsId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("PerFunctionId")
+                    b.Property<Guid>("FunctionsId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("EndpointsId", "PerFunctionId");
+                    b.HasKey("EndpointsId", "FunctionsId");
 
-                    b.HasIndex("PerFunctionId");
+                    b.HasIndex("FunctionsId");
 
-                    b.ToTable("PerFunctionEndPoint", (string)null);
+                    b.ToTable("PerEndpointPerFunction");
                 });
 
             modelBuilder.Entity("PerFunctionPerScope", b =>
@@ -448,9 +451,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("MainEndPointId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -460,8 +460,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GroupFunctionId");
-
-                    b.HasIndex("MainEndPointId");
 
                     b.ToTable("PerFunction");
                 });
@@ -576,6 +574,9 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<Guid?>("PerEndpointId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("PerScopeId")
                         .HasColumnType("uuid");
 
@@ -583,6 +584,8 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("PerRoleId", "PerFunctionId");
+
+                    b.HasIndex("PerEndpointId");
 
                     b.HasIndex("PerFunctionId");
 
@@ -2651,7 +2654,7 @@ namespace Poi.Id.InfraModel.Migrations
 
                     b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerFunction", null)
                         .WithMany()
-                        .HasForeignKey("PerFunctionId")
+                        .HasForeignKey("FunctionsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2739,13 +2742,7 @@ namespace Poi.Id.InfraModel.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerEndpoint", "MainEndPoint")
-                        .WithMany()
-                        .HasForeignKey("MainEndPointId");
-
                     b.Navigation("GroupFunction");
-
-                    b.Navigation("MainEndPoint");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerRole", b =>
@@ -2761,6 +2758,10 @@ namespace Poi.Id.InfraModel.Migrations
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerRoleFunctionScope", b =>
                 {
+                    b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerEndpoint", "Endpoint")
+                        .WithMany("PerRoleFunctionScope")
+                        .HasForeignKey("PerEndpointId");
+
                     b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerFunction", "Function")
                         .WithMany("PerRoleFunctionScope")
                         .HasForeignKey("PerFunctionId")
@@ -2776,6 +2777,8 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasOne("Poi.Id.InfraModel.DataAccess.AppPermission.PerScope", "Scope")
                         .WithMany()
                         .HasForeignKey("PerScopeId");
+
+                    b.Navigation("Endpoint");
 
                     b.Navigation("Function");
 
@@ -3373,6 +3376,11 @@ namespace Poi.Id.InfraModel.Migrations
                         .HasForeignKey("ManagersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerEndpoint", b =>
+                {
+                    b.Navigation("PerRoleFunctionScope");
                 });
 
             modelBuilder.Entity("Poi.Id.InfraModel.DataAccess.AppPermission.PerFunction", b =>

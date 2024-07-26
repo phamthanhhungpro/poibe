@@ -9,7 +9,7 @@
         public string Token { get; set; }
         public string AppCode { get; set; }
 
-        public string RequestScopeCode { get; set; }
+        public List<string> RequestScopeCode { get; set; }
         public bool IsNeedCheckScope { get; set; }
     }
 }

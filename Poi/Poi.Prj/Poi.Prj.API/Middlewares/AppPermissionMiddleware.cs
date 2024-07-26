@@ -61,13 +61,14 @@ namespace Poi.Prj.API.Middlewares
             var endpoint = context.Request.Path.Value;
             var method = context.Request.Method;
 
-            var isEndpointExsit = await dbContext.PerEndpoint.AnyAsync(c => c.Path == endpoint && c.Method == method);
+            var endpointExsit = await dbContext.PerEndpoint.Where(c => c.Path == endpoint && c.Method == method).ToListAsync();
 
-            if (!isEndpointExsit)
+            if (endpointExsit.Count == 0)
             {
                 return true;
             }
 
+            var endPointIds = endpointExsit.Select(x => x.Id).ToList();
             // Kiểm tra xem user có quyền truy cập endpoint không
 
             var user = await dbContext.Users
@@ -76,7 +77,7 @@ namespace Poi.Prj.API.Middlewares
 
             var userPerRole = user.PerRoles.FirstOrDefault(x => x.AppCode == tenantInfo.AppCode);
 
-            if(userPerRole == null)
+            if (userPerRole == null)
             {
                 return false;
             }
@@ -84,15 +85,21 @@ namespace Poi.Prj.API.Middlewares
             var permission = await dbContext.PerRoleFunctionScope
                 .Include(x => x.Function)
                 .Include(x => x.Scope)
-                .FirstOrDefaultAsync(c => c.PerRoleId == userPerRole.Id && c.Function.Endpoints.Any(e => e.Path == endpoint && e.Method == method));
-            if (permission == null)
+                .Where(c => c.PerRoleId == userPerRole.Id &&
+                c.Function.Endpoints.Any(e => e.Path == endpoint && e.Method == method)).ToListAsync();
+
+            if (permission.Count == 0)
             {
                 return false;
             }
             else
             {
-                tenantInfo.IsNeedCheckScope = permission.PerScopeId.HasValue;
-                tenantInfo.RequestScopeCode = permission.PerScopeId.HasValue ? permission.Scope.Code : string.Empty;
+                var mainPermissions = permission.Where(p => !p.Function.MainEndPointId.HasValue || endPointIds.Contains(p.Function.MainEndPointId.Value)).ToList();
+
+                tenantInfo.IsNeedCheckScope = mainPermissions.Any(p => p.PerScopeId.HasValue);
+
+                tenantInfo.RequestScopeCode = permission.Where(p => p.PerScopeId.HasValue).Select(p => p.Scope.Code).ToList();
+
                 return true;
             }
         }

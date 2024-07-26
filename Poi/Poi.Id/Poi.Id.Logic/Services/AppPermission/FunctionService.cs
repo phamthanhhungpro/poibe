@@ -38,6 +38,7 @@ namespace Poi.Id.Logic.Services.AppPermission
                 .ToListAsync();
 
             function.Endpoints = endpoints;
+            function.MainEndPointId = request.MainEndPointId;
 
             _context.PerFunction.Update(function);
             await _context.SaveChangesAsync();

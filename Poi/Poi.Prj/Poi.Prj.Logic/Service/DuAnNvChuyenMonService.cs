@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.InfraModel.DataAccess.Prj;
 using Poi.Prj.InfraModel.DataAccess;
 using Poi.Prj.Logic.Interface;
@@ -215,7 +216,8 @@ namespace Poi.Prj.Logic.Service
         {
             Expression<Func<PrjDuAnNvChuyenMon, bool>> filterExpression = x => true;
             // check scope
-            if (info.IsNeedCheckScope && !string.IsNullOrEmpty(info.RequestScopeCode)) {
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
+            {
                 // check scope
                 var user = await _context.Users
                                         .Include(x => x.LanhDaoPhongBan)
@@ -224,7 +226,7 @@ namespace Poi.Prj.Logic.Service
                                         .Include(x => x.ThanhVienToNhom)
                                         .FirstOrDefaultAsync(x => x.Id == info.UserId);
 
-                switch (info.RequestScopeCode)
+                switch (info.RequestScopeCode.First())
                 {
                     // Tất cả dự án của đơn vị
                     case ScopeCode.DANHSACH_DUAN_ALL:
@@ -259,7 +261,7 @@ namespace Poi.Prj.Logic.Service
             if(isGetAll)
             {
                 return await _context.PrjDuAnNvChuyenMon
-                                    .Where(x => x.TenantId == info.TenantId)
+                                    .Where(x => !x.IsCaNhan && x.TenantId == info.TenantId)
                                     .Where(filterExpression)
                                     .ToListAsync();
             }
@@ -271,9 +273,94 @@ namespace Poi.Prj.Logic.Service
                                 .Include(x => x.ToNhom).ThenInclude(x => x.ThanhVien)
 
                                 .Include(x => x.PhongBanBoPhan).ThenInclude(x => x.QuanLy)
-                                .Where(x => x.IsNhiemVuChuyenMon == isNvChuyenMon && x.TenantId == info.TenantId)
+                                .Where(x => !x.IsCaNhan && x.IsNhiemVuChuyenMon == isNvChuyenMon && x.TenantId == info.TenantId)
                                 .Where(filterExpression)
                                 .ToListAsync();
+        }
+
+        public async Task<PrjDuAnNvChuyenMon> GetViecCaNhan(TenantInfo info)
+        {
+            // Lấy dự án cá nhân
+            var viecCaNhan = await _context.PrjDuAnNvChuyenMon
+                .Include(x => x.ThanhVienDuAn)
+                .Include(x => x.QuanLyDuAn)
+                .Include(x => x.NhomCongViec)
+                .Include(x => x.DuAnSetting)
+                .Include(x => x.LoaiCongViec)
+                .Include(x => x.TagCongViec)
+                .FirstOrDefaultAsync(x => x.IsCaNhan && x.QuanLyDuAnId == info.UserId);
+
+            // Nếu chưa có dự án cá nhân thì tạo mới
+            if (viecCaNhan == null)
+            {
+                var newDuAn = new PrjDuAnNvChuyenMon
+                {
+                    TenDuAn = "Việc cá nhân",
+                    MoTaDuAn = "Việc cá nhân",
+                    ThoiGianBatDau = DateTime.UtcNow,
+                    ThoiGianKetThuc = DateTime.MaxValue,
+                    IsNhiemVuChuyenMon = false,
+                    IsCaNhan = true,
+                    TenantId = info.TenantId,
+                    QuanLyDuAnId = info.UserId,
+                    ThanhVienDuAn = [await _context.Users.FindAsync(info.UserId)]
+                };
+
+                _context.PrjDuAnNvChuyenMon.Add(newDuAn);
+                await _context.SaveChangesAsync();
+                // Khởi tạo mặc định 1 số thông tin cho Dự án, Nhiệm vụ
+
+                // Khởi tạo Tag
+
+                // Khởi tạo nhóm công việc
+                var nhomCongViec = new PrjNhomCongViec
+                {
+                    TenNhomCongViec = "Chưa xác định",
+                    MoTa = "Nhóm công việc mặc định",
+                    MaNhomCongViec = "CHUAXACDINH",
+                    DuAnNvChuyenMonId = newDuAn.Id,
+                    TenantId = info.TenantId
+                };
+
+                _context.PrjNhomCongViec.Add(nhomCongViec);
+                await _context.SaveChangesAsync();
+
+                // Khởi tạo loại công việc
+                var loaiCongViec = new PrjLoaiCongViec
+                {
+                    TenLoaiCongViec = "Chưa xác định",
+                    MoTa = "Loại công việc mặc định",
+                    MaLoaiCongViec = "CHUAXACDINH",
+                    DuAnNvChuyenMonId = newDuAn.Id,
+                    TenantId = info.TenantId
+                };
+
+                _context.PrjLoaiCongViec.Add(loaiCongViec);
+                await _context.SaveChangesAsync();
+
+                // Khởi tạo trạng thái công việc mặc định
+                var jsonSettingEntity = new PrjDuAnSetting
+                {
+                    DuAnNvChuyenMonId = newDuAn.Id,
+                    Key = TrangThaiCongViecHelper.TrangThaiSettingKey,
+                    JsonValue = $@"[{{""key"": ""{TrangThaiCongViecHelper.DefaultTrangThaiKey}"", ""value"": ""{TrangThaiCongViecHelper.DefaultTrangThaiValue}"", ""yeuCauXacNhan"": false }}]"
+                };
+
+                _context.PrjDuAnSetting.Add(jsonSettingEntity);
+
+                await _context.SaveChangesAsync();
+
+                return await _context.PrjDuAnNvChuyenMon
+                .Include(x => x.ThanhVienDuAn)
+                .Include(x => x.QuanLyDuAn)
+                .Include(x => x.NhomCongViec)
+                .Include(x => x.DuAnSetting)
+                .Include(x => x.LoaiCongViec)
+                .Include(x => x.TagCongViec)
+                .FirstOrDefaultAsync(x => x.IsCaNhan && x.QuanLyDuAnId == info.UserId);
+            }
+
+            return viecCaNhan;
         }
 
         public async Task<CudResponseDto> UpdateAsync(Guid id, DuAnNvChuyenMonRequest request, TenantInfo info)

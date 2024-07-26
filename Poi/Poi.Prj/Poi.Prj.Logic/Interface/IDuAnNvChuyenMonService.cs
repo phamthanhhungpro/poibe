@@ -12,5 +12,6 @@ namespace Poi.Prj.Logic.Interface
         Task<CudResponseDto> AddAsync(DuAnNvChuyenMonRequest LinhVuc, TenantInfo info);
         Task<CudResponseDto> UpdateAsync(Guid id, DuAnNvChuyenMonRequest LinhVuc, TenantInfo info);
         Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info);
+        Task<PrjDuAnNvChuyenMon> GetViecCaNhan(TenantInfo info);
     }
 }

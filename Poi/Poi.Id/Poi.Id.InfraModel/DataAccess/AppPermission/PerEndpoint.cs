@@ -10,6 +10,5 @@ namespace Poi.Id.InfraModel.DataAccess.AppPermission
         public string Path { get; set; }
         public bool IsPublic { get; set; }
         public string AppCode { get; set; }
-        public ICollection<PerFunction> Functions { get; set; }
     }
 }

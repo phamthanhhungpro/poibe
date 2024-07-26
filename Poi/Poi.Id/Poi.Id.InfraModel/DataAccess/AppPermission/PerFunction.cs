@@ -13,5 +13,8 @@ namespace Poi.Id.InfraModel.DataAccess.AppPermission
         public PerGroupFunction GroupFunction { get; set; }
         public Guid GroupFunctionId { get; set; }
         public string AppCode { get; set; }
+        public Guid? MainEndPointId { get; set; }
+        public PerEndpoint MainEndPoint { get; set; }
+
     }
 }

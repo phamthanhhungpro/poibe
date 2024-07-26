@@ -369,6 +369,11 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
+            modelBuilder.Entity<PerFunction>()
+                .HasMany(d => d.Endpoints)
+                .WithMany()
+                .UsingEntity(j => j.ToTable("PerFunctionEndPoint"));
+
             modelBuilder.Entity<PerGroupFunction>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");

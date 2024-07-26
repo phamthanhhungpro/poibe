@@ -186,7 +186,7 @@ namespace Poi.Prj.Logic.Service
         {
             Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
             // check scope
-            if (info.IsNeedCheckScope && !string.IsNullOrEmpty(info.RequestScopeCode))
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
             {
                 // check scope
                 var user = await _context.Users
@@ -196,7 +196,7 @@ namespace Poi.Prj.Logic.Service
                                         .Include(x => x.ThanhVienToNhom)
                                         .FirstOrDefaultAsync(x => x.Id == info.UserId);
 
-                switch (info.RequestScopeCode)
+                switch (info.RequestScopeCode.First())
                 {
                     // Tất cả công việc của đơn vị
                     case ScopeCode.DANHSACH_CONGVIEC_ALL:
@@ -270,7 +270,7 @@ namespace Poi.Prj.Logic.Service
         {
             Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
             // check scope
-            if (info.IsNeedCheckScope && !string.IsNullOrEmpty(info.RequestScopeCode))
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
             {
                 // check scope
                 var user = await _context.Users
@@ -280,7 +280,7 @@ namespace Poi.Prj.Logic.Service
                                         .Include(x => x.ThanhVienToNhom)
                                         .FirstOrDefaultAsync(x => x.Id == info.UserId);
 
-                switch (info.RequestScopeCode)
+                switch (info.RequestScopeCode.First())
                 {
                     // Tất cả công việc của đơn vị
                     case ScopeCode.DANHSACH_CONGVIEC_ALL:

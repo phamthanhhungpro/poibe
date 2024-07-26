@@ -10,5 +10,7 @@ namespace Poi.Id.Logic.Requests.AppPermission
     {
         public Guid FunctionId { get; set; }
         public List<Guid> EndPointIds { get; set; }
+
+        public Guid MainEndPointId { get; set; }
     }
 }

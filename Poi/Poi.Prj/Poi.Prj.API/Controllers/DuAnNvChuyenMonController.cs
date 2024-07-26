@@ -64,5 +64,12 @@ namespace Poi.Prj.API.Controllers
             var result = await _service.DeleteAsync(id, TenantInfo);
             return Ok(result);
         }
+
+        [HttpGet("canhan")]
+        public async Task<IActionResult> GetViecCaNhan()
+        {
+            var result = await _service.GetViecCaNhan(TenantInfo);
+            return Ok(result);
+        }
     }
 }
