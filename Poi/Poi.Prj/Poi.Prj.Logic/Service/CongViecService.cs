@@ -10,6 +10,7 @@ using Poi.Shared.Model.Dtos;
 using Poi.Shared.Model.Helpers;
 using System.Linq.Expressions;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Poi.Prj.Logic.Service
 {
@@ -62,6 +63,27 @@ namespace Poi.Prj.Logic.Service
             }
 
             _context.PrjCongViec.Add(entity);
+
+            await _context.SaveChangesAsync();
+
+            // Log hoạt động
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                WriteIndented = true
+            };
+
+            var jsonString = JsonSerializer.Serialize(entity, options);
+            var hoatDong = new PrjHoatDong
+            {
+                NoiDung = "Tạo công việc",
+                TenantId = info.TenantId,
+                CongViecId = entity.Id,
+                UserName = info.UserName,
+                MoreInfo = jsonString,
+            };
+
+            _context.PrjHoatDong.Add(hoatDong);
 
             await _context.SaveChangesAsync();
 
@@ -133,9 +155,9 @@ namespace Poi.Prj.Logic.Service
         public async Task<CudResponseDto> UpdateAsync(Guid id, UpdateCongViecRequest request, TenantInfo info)
         {
             var entity = await _context.PrjCongViec
-                                            .Include(x => x.NguoiPhoiHop)
-                                            .Include(x => x.NguoiThucHien)
-                                            .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == info.TenantId);
+                                        .Include(x => x.NguoiPhoiHop)
+                                        .Include(x => x.NguoiThucHien)
+                                        .FirstOrDefaultAsync(x => x.Id == id && x.TenantId == info.TenantId);
             if (entity == null)
             {
                 return new CudResponseDto
@@ -166,6 +188,14 @@ namespace Poi.Prj.Logic.Service
                     }
                 }
             }
+            entity.TenCongViec = request.TenCongViec;
+            entity.MoTa = request.MoTa;
+            entity.NgayBatDau = request.NgayBatDau.ToUTC();
+            entity.NhomCongViecId = request.NhomCongViecId;
+            entity.LoaiCongViecId = request.LoaiCongViecId;
+            entity.ThoiGianDuKien = request.ThoiGianDuKien;
+            entity.MucDoUuTien = request.MucDoUuTien;
+            entity.TagCongViec = await _context.PrjTagCongViec.Where(x => request.TagCongViecIds.Contains(x.Id)).ToListAsync();
 
             entity.NgayKetThuc = request.NgayKetThuc.ToUTC();
             entity.NguoiDuocGiaoId = request.NguoiDuocGiaoId;
@@ -175,12 +205,29 @@ namespace Poi.Prj.Logic.Service
             _context.PrjCongViec.Update(entity);
             await _context.SaveChangesAsync();
 
+            // Determine changed columns
+
+
+            // Log hoạt động
+            var hoatDong = new PrjHoatDong
+            {
+                NoiDung = "Cập nhật công việc",
+                TenantId = info.TenantId,
+                CongViecId = entity.Id,
+                UserName = info.UserName,
+            };
+
+            _context.PrjHoatDong.Add(hoatDong);
+
+            await _context.SaveChangesAsync();
+
             return new CudResponseDto
             {
                 Message = "Cập nhật thành công",
                 IsSucceeded = true
             };
         }
+
 
         public async Task<IEnumerable<CongViecGroupByNhomCongViecDto>> GetCongViecGrid(TenantInfo info, Guid DuanId)
         {
@@ -711,6 +758,21 @@ namespace Poi.Prj.Logic.Service
                     Message = "Từ chối thay đổi trạng thái công việc thành công"
                 };
             }
+        }
+
+        public async Task<IEnumerable<CongViecHoatDongDto>> GetCongViecHoatDong(TenantInfo info, Guid CongViecId)
+        {
+            return await _context.PrjHoatDong
+                                .Where(x => x.CongViecId == CongViecId && x.TenantId == info.TenantId)
+                                .OrderByDescending(x => x.CreatedAt)
+                                .Select(x => new CongViecHoatDongDto
+                                {
+                                    NoiDung = x.NoiDung,
+                                    UserName = x.UserName,
+                                    ThoiGian = x.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                                    MoreInfo = x.MoreInfo
+                                })
+                                .ToListAsync();
         }
     }
 }

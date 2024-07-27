@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.InfraModel.DataAccess.Prj;
 using Poi.Prj.InfraModel.DataAccess;
 using Poi.Prj.Logic.Interface;
@@ -8,13 +7,7 @@ using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Dtos;
 using Poi.Shared.Model.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Poi.Prj.Logic.Service
 {

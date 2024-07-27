@@ -19,6 +19,7 @@ namespace Poi.Prj.Logic.Dtos
         public string TrangThai { get; set; }
         public string TrangThaiChiTiet { get; set; }
         public User NguoiDuocGiao { get; set; }
+        public Guid NguoiDuocGiaoId { get; set; }
         public User NguoiGiaoViec { get; set; }
         public string CreatedAt { get; set; }
         public IEnumerable<PrjTagCongViec> TagCongViec { get; set; }

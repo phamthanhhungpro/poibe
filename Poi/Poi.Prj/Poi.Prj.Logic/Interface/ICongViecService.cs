@@ -24,5 +24,7 @@ namespace Poi.Prj.Logic.Interface
         Task<CudResponseDto> RejectDeXuatCongViec(TenantInfo info, RejectCongViecRequest request);
         Task<CudResponseDto> RejectGiaHanCongViec(TenantInfo info, RejectCongViecRequest request);
         Task<CudResponseDto> RejectTrangThaiCongViec(TenantInfo info, RejectCongViecRequest request);
+
+        Task<IEnumerable<CongViecHoatDongDto>> GetCongViecHoatDong(TenantInfo info, Guid CongViecId);
     }
 }

@@ -128,5 +128,12 @@ namespace Poi.Prj.API.Controllers
             var result = await _congViecService.RejectTrangThaiCongViec(TenantInfo, request);
             return Ok(result);
         }
+
+        [HttpGet("GetCongViecHoatDong")]
+        public async Task<IActionResult> GetCongViecHoatDong(Guid congViecId)
+        {
+            var result = await _congViecService.GetCongViecHoatDong(TenantInfo, congViecId);
+            return Ok(result);
+        }
     }
 }

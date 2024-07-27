@@ -419,6 +419,13 @@ namespace Poi.Id.InfraModel.DataAccess
                 .HasOne(rf => rf.Scope)
                 .WithMany()
                 .HasForeignKey(rf => rf.PerScopeId);
+
+            modelBuilder.Entity<PrjHoatDong>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.HasQueryFilter(e => !e.IsDeleted);
+            });
         }
     }
 }
