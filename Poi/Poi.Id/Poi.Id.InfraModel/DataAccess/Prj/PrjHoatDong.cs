@@ -11,5 +11,6 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public Guid CongViecId { get; set; }
         public string UserName { get; set; }
         public string MoreInfo { get; set; }
+        public Guid DuanNvChuyenMonId { get; set; }
     }
 }

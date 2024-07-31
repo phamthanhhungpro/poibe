@@ -89,7 +89,7 @@ namespace Poi.Id.Logic.Services.AppPermission
 
         public async Task<IEnumerable<PerEndpoint>> GetNopaging(TenantInfo info)
         {
-            return await _context.PerEndpoint.Where(x => x.AppCode == info.AppCode).ToListAsync();
+            return await _context.PerEndpoint.Where(x => x.AppCode == info.AppCode).OrderBy(o => o.CreatedAt).ToListAsync();
         }
 
         public async Task<CudResponseDto> UpdateAsync(Guid id, ApiEndpointRequest request, TenantInfo info)

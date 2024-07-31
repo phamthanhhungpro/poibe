@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Poi.Id.InfraModel.DataAccess.Prj;
 using Poi.Prj.InfraModel.DataAccess;
+using Poi.Prj.Logic.Dtos;
 using Poi.Prj.Logic.Interface;
 using Poi.Prj.Logic.Requests;
 using Poi.Shared.Model.BaseModel;
@@ -113,7 +114,8 @@ namespace Poi.Prj.Logic.Service
                 }
 
 
-            } else
+            }
+            else
             {
                 // Khởi tạo mặc định 1 số thông tin cho Dự án, Nhiệm vụ
 
@@ -205,6 +207,68 @@ namespace Poi.Prj.Logic.Service
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<PagingResponse<DuanHoatDongDto>> GetHoatDongDuan(TenantInfo info, GetHoatDongDuAnRequest request)
+        {
+            var query = _context.PrjHoatDong.Where(x => x.DuanNvChuyenMonId == request.DuanId).OrderByDescending(x => x.CreatedAt);
+
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip(request.PageIndex * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
+
+            // Group the items by date and then by DuanId
+            var groupedData = items
+                .GroupBy(x => x.CreatedAt.Date) // Group by date
+                .Select(dateGroup => new DuanHoatDongDto
+                {
+                    ThoiGian = dateGroup.Key.ToLocalTime().ToString(),
+                    ListCongViec = dateGroup
+                        .GroupBy(x => x.CongViecId) // Group by DuanId
+                        .Select(duanGroup => new HoatDongGroupByCongViecDto
+                        {
+                            IdCongViec = duanGroup.Key,
+                            ListHoatDong = duanGroup.Select(x => new CongViecHoatDongDto
+                            {
+                                NoiDung = x.NoiDung,
+                                UserName = x.UserName,
+                                ThoiGian = x.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                                MoreInfo = x.MoreInfo
+                            })
+                            .ToList()
+
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            var listCongViecId = groupedData.SelectMany(x => x.ListCongViec.Select(x => x.IdCongViec)).ToList();
+            var listCongViec = await _context.PrjCongViec.Where(x => listCongViecId.Contains(x.Id)).ToListAsync();
+
+            var listUserName = groupedData.SelectMany(x => x.ListCongViec.SelectMany(x => x.ListHoatDong.Select(x => x.UserName))).ToList();
+            var listUser = await _context.Users.Where(x => listUserName.Contains(x.UserName)).ToListAsync();
+
+            foreach (var item in groupedData)
+            {
+                foreach (var itemGroupByCongViec in item.ListCongViec)
+                {
+                    var congViec = listCongViec.FirstOrDefault(x => x.Id == itemGroupByCongViec.IdCongViec);
+                    itemGroupByCongViec.TenViec = congViec.TenCongViec;
+
+                    foreach (var itemHoatDong in itemGroupByCongViec.ListHoatDong)
+                    {
+                        itemHoatDong.UserFullName = listUser.FirstOrDefault(x => x.UserName == itemHoatDong.UserName)?.FullName;
+                    }
+                }
+            }
+
+            return new PagingResponse<DuanHoatDongDto>
+            {
+                Count = total,
+                Items = groupedData
+            };
+        }
+
         public async Task<IEnumerable<PrjDuAnNvChuyenMon>> GetNoPaging(bool isNvChuyenMon, TenantInfo info, bool isGetAll)
         {
             Expression<Func<PrjDuAnNvChuyenMon, bool>> filterExpression = x => true;
@@ -251,7 +315,7 @@ namespace Poi.Prj.Logic.Service
                         break;
                 }
             }
-            if(isGetAll)
+            if (isGetAll)
             {
                 return await _context.PrjDuAnNvChuyenMon
                                     .Where(x => !x.IsCaNhan && x.TenantId == info.TenantId)
@@ -269,6 +333,68 @@ namespace Poi.Prj.Logic.Service
                                 .Where(x => !x.IsCaNhan && x.IsNhiemVuChuyenMon == isNvChuyenMon && x.TenantId == info.TenantId)
                                 .Where(filterExpression)
                                 .ToListAsync();
+        }
+
+        public async Task<TongQuanDuAnDto> GetTongQuanDuAn(TenantInfo info, Guid DuanId)
+        {
+            var duAn = await _context.PrjDuAnNvChuyenMon
+                .Include(x => x.ThanhVienDuAn)
+                .Include(x => x.CongViec)
+                .FirstOrDefaultAsync(x => x.Id == DuanId);
+
+            if (duAn == null)
+            {
+                return null;
+            }
+
+            var tongQuan = new TongQuanDuAnDto
+            {
+                TenDuAn = duAn.TenDuAn,
+                MoTa = duAn.MoTaDuAn,
+                NgayBatDau = duAn.ThoiGianBatDau.ToLocalTime().ToString("dd/MM/yyyy"),
+                NgayKetThuc = duAn.ThoiGianKetThuc.ToLocalTime().ToString("dd/MM/yyyy"),
+                ThanhVien = duAn.ThanhVienDuAn.Select(x => x.FullName).ToList(),
+                TongQuanCongViec = new TongQuanCongViecDto()
+                {
+                    SoLuongCongViec = duAn.CongViec.Count,
+                    HoanThanh = duAn.CongViec.Count(x => x.TrangThai == TrangThaiCongViecHelper.TrangThaiHoanThanh),
+                    QuaHan = duAn.CongViec.Count(x => x.NgayKetThuc < DateTime.UtcNow && x.TrangThai != TrangThaiCongViecHelper.TrangThaiHoanThanh),
+                    ChuaBatDau = duAn.CongViec.Count(x => x.NgayBatDau > DateTime.UtcNow),
+                    DangThucHien = duAn.CongViec.Count(x => x.NgayBatDau <= DateTime.UtcNow && x.NgayKetThuc >= DateTime.UtcNow)
+                }
+            };
+
+            return tongQuan;
+        }
+
+        public async Task<List<CongViecHoatDongDto>> GetTopHoatDongDuan(TenantInfo info, Guid DuanId)
+        {
+            var data = await _context.PrjHoatDong
+                                .Where(x => x.DuanNvChuyenMonId == DuanId && x.TenantId == info.TenantId)
+                                .OrderByDescending(x => x.CreatedAt)
+                                .Select(x => new CongViecHoatDongDto
+                                {
+                                    NoiDung = x.NoiDung,
+                                    UserName = x.UserName,
+                                    ThoiGian = x.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                                    MoreInfo = x.MoreInfo
+                                })
+                                .Take(10)
+                                .ToListAsync();
+
+            var listUserNames = data.Select(x => x.UserName).Distinct().ToList();
+            var listUsers = _context.Users.Where(x => listUserNames.Contains(x.UserName)).ToList();
+
+            foreach (var item in data)
+            {
+                if (item.UserName == null)
+                {
+                    continue;
+                }
+                item.UserFullName = listUsers.FirstOrDefault(x => x.UserName == item.UserName).FullName;
+            };
+
+            return data;
         }
 
         public async Task<PrjDuAnNvChuyenMon> GetViecCaNhan(TenantInfo info)

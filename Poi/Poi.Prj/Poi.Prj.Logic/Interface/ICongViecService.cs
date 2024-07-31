@@ -13,7 +13,7 @@ namespace Poi.Prj.Logic.Interface
         Task<CudResponseDto> AddAsync(CongViecRequest request, TenantInfo info);
         Task<CudResponseDto> UpdateAsync(Guid id, UpdateCongViecRequest request, TenantInfo info);
         Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info);
-        Task<IEnumerable<CongViecGroupByNhomCongViecDto>> GetCongViecGrid(TenantInfo info, Guid DuanId);
+        Task<PagingResponse<CongViecGroupByNhomCongViecDto>> GetCongViecGrid(TenantInfo info, GetCongViecGridRequest request);
         Task<IEnumerable<CongViecKanbanDto>> GetCongViecKanban(TenantInfo info, Guid DuanId);
         Task<CudResponseDto> UpdateKanbanStatus(TenantInfo info, UpdateCongViecKanbanStatusRequest request);
         Task<CudResponseDto> GiaHanCongViec(TenantInfo info, GiaHanCongViecRequest request);

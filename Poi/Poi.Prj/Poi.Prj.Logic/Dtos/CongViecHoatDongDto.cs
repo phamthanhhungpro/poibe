@@ -4,7 +4,6 @@ namespace Poi.Prj.Logic.Dtos
 {
     public class CongViecHoatDongDto
     {
-        public Guid Id { get; set; }
         public string UserName { get; set; }
         public string UserFullName { get; set; }
         public string ThoiGian { get; set; }

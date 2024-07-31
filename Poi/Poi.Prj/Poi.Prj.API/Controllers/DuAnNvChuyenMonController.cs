@@ -71,5 +71,26 @@ namespace Poi.Prj.API.Controllers
             var result = await _service.GetViecCaNhan(TenantInfo);
             return Ok(result);
         }
+
+        [HttpPost("hoatdongduan")]
+        public async Task<IActionResult> GetHoatDongDuan([FromBody] GetHoatDongDuAnRequest request)
+        {
+            var result = await _service.GetHoatDongDuan(TenantInfo, request);
+            return Ok(result);
+        }
+
+        [HttpGet("tongquanduan")]
+        public async Task<IActionResult> GetTongQuanDuAn(Guid DuanId)
+        {
+            var result = await _service.GetTongQuanDuAn(TenantInfo, DuanId);
+            return Ok(result);
+        }
+
+        [HttpGet("topHoatDong")]
+        public async Task<IActionResult> GetTopHoatDong(Guid DuanId)
+        {
+            var result = await _service.GetTopHoatDongDuan(TenantInfo, DuanId);
+            return Ok(result);
+        }
     }
 }

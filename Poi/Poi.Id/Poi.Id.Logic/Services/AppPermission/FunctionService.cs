@@ -142,7 +142,8 @@ namespace Poi.Id.Logic.Services.AppPermission
             var pageNumber = request.PageNumber;
 
             var query = _context.PerFunction.Where(x => x.AppCode == info.AppCode)
-                .OrderBy(o => o.CreatedAt)
+                .OrderBy(o => o.GroupFunctionId)
+                .ThenBy(o => o.Name)
                 .AsNoTracking();
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
@@ -170,7 +171,7 @@ namespace Poi.Id.Logic.Services.AppPermission
             var allFunctions = await _context.PerFunction
                                             .Include(x => x.GroupFunction)
                                             .Include(x => x.Scopes)
-                                            .Include(x => x.PerRoleFunctionScope).ThenInclude(p => p.Role)
+                                            //.Include(x => x.PerRoleFunctionScope).ThenInclude(p => p.Role)
                                             .Where(x => x.AppCode == info.AppCode)
                                             .ToListAsync();
 
@@ -180,7 +181,7 @@ namespace Poi.Id.Logic.Services.AppPermission
             {
                 GroupId = x.Key,
                 GroupName = x.First().GroupFunction.Name,
-                ListFunction = [.. x.OrderBy(o => o.CreatedAt)]
+                ListFunction = x.ToList()
             }).ToList();
 
             return data;

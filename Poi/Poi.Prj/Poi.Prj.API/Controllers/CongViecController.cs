@@ -52,10 +52,10 @@ namespace Poi.Prj.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetCongViecGrid")]
-        public async Task<IActionResult> GetCongViecGrid(Guid DuanId)
+        [HttpPost("GetCongViecGrid")]
+        public async Task<IActionResult> GetCongViecGrid([FromBody] GetCongViecGridRequest request)
         {
-            var result = await _congViecService.GetCongViecGrid(TenantInfo, DuanId);
+            var result = await _congViecService.GetCongViecGrid(TenantInfo, request);
             return Ok(result);
         }
 
