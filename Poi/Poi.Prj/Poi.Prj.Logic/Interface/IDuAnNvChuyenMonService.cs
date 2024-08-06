@@ -20,5 +20,6 @@ namespace Poi.Prj.Logic.Interface
         Task<TongQuanDuAnDto> GetTongQuanDuAn(TenantInfo info, Guid DuanId);
 
         Task<List<CongViecHoatDongDto>> GetTopHoatDongDuan(TenantInfo info, Guid DuanId);
+        Task<CudResponseDto> OpenCloseDuAn(TenantInfo info, OpenCloseDuanRequest request);
     }
 }

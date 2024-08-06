@@ -26,5 +26,6 @@ namespace Poi.Prj.Logic.Dtos
         public PrjDuAnNvChuyenMon DuAnNvChuyenMon { get; set; }
         public DateTime? NgayGiaHan { get; set; }
         public bool Selected { get; set; } = false;
+        public string TenDuAn { get; set; }
     }
 }

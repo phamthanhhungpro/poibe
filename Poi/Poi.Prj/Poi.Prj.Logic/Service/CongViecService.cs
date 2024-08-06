@@ -478,7 +478,7 @@ namespace Poi.Prj.Logic.Service
 
             await _context.SaveChangesAsync();
 
-            if(oldTrangThai != newTrangThai)
+            if (oldTrangThai != newTrangThai)
             {
                 // Log hoạt động
                 await LogHoatDong(info, congViec, "Cập nhật trạng thái công việc", $"Cập nhật trạng thái từ {oldTrangThai} sang {newTrangThai}");
@@ -848,6 +848,140 @@ namespace Poi.Prj.Logic.Service
 
             _context.PrjHoatDong.Add(hoatDong);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<PagingResponse<CongViecGridDto>> GetQuanLyCongViec(TenantInfo info, GetQuanLyCongViecRequest request)
+        {
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
+                {
+                    // Tất cả công việc của đơn vị
+                    case ScopeCode.DANHSACH_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Công việc của phòng ban người dùng thuộc về
+                    case ScopeCode.DANHSACH_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienPhongBanIds = user?.ThanhVienPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienToNhomIds = user?.ThanhVienToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x =>
+                            x.DuAnNvChuyenMon != null &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            thanhVienPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value) ||
+                            thanhVienToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value));
+                        break;
+
+                    // Chỉ những công việc mà người dùng liên quan
+                    case ScopeCode.DANHSACH_CONGVIEC_RELATED:
+                        filterExpression = x => x.NguoiThucHien.Any(tv => tv.Id == info.UserId)
+                                             || x.NguoiDuocGiaoId == info.UserId
+                                             || x.NguoiGiaoViecId == info.UserId
+                                             || x.NguoiPhoiHop.Any(tv => tv.Id == info.UserId);
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
+
+            // Apply additional filters from request
+            if (!string.IsNullOrEmpty(request.TaskName))
+            {
+                filterExpression = filterExpression.AndAlso(x => x.TenCongViec.Contains(request.TaskName));
+            }
+
+            if (request.StartDate.HasValue && request.EndDate.HasValue)
+            {
+                filterExpression = filterExpression.AndAlso(x => x.NgayKetThuc >= request.StartDate.Value.ToUTC() && x.NgayKetThuc <= request.EndDate.Value.ToUTC());
+            }
+
+            if (request.AssignedUserIds != null && request.AssignedUserIds.Count > 0)
+            {
+                filterExpression = filterExpression.AndAlso(x => x.NguoiThucHien.Any(tv => request.AssignedUserIds.Contains(tv.Id)) || request.AssignedUserIds.Contains(x.NguoiDuocGiaoId.Value));
+            }
+
+            if (request.Status != null && request.Status.Count > 0)
+            {
+                filterExpression = filterExpression.AndAlso(x => request.Status.Contains(x.TrangThai));
+            }
+
+            if (request.DuAnIds != null && request.DuAnIds.Count > 0)
+            {
+                filterExpression = filterExpression.AndAlso(x => request.DuAnIds.Contains(x.DuAnNvChuyenMonId));
+            }
+
+            // Fetch tasks from the database with the applied filters and pagination (CongViecChaId == null to get only parent tasks)
+            var query = _context.PrjCongViec
+                                .Include(x => x.NguoiThucHien)
+                                .Include(x => x.NguoiGiaoViec)
+                                .Include(x => x.NhomCongViec)
+                                .Include(x => x.NguoiDuocGiao)
+                                .Include(x => x.DuAnNvChuyenMon)
+                                .Where(x => x.CongViecChaId == null && x.TenantId == info.TenantId)
+                                .Where(filterExpression)
+                                .OrderByDescending(x => x.CreatedAt);
+
+            var totalItems = await query.CountAsync();
+            var items = await query.Skip(request.PageIndex * request.PageSize).Take(request.PageSize).ToListAsync();
+
+            var listDuAnIds = items.Select(x => x.DuAnNvChuyenMonId).ToList();
+            // list settings
+            var listSettings = await _context.PrjDuAnSetting.Where(x => listDuAnIds.Contains(x.DuAnNvChuyenMonId) && x.Key == TrangThaiCongViecHelper.TrangThaiSettingKey).ToListAsync();
+            var listTrangThaiSetting = new Dictionary<Guid, List<TrangThaiCongViecSettingDto>>();
+            foreach (var item in listSettings)
+            {
+                listTrangThaiSetting.Add(item.DuAnNvChuyenMonId, JsonSerializer.Deserialize<List<TrangThaiCongViecSettingDto>>(item.JsonValue));
+            }
+
+            foreach (var item in items)
+            {
+                if (listTrangThaiSetting.ContainsKey(item.DuAnNvChuyenMonId))
+                {
+                    var trangThaiSetting = listTrangThaiSetting[item.DuAnNvChuyenMonId];
+                    item.TrangThai = trangThaiSetting.FirstOrDefault(x => x.key == item.TrangThai)?.value;
+                }
+            }
+
+            var result = items
+                .Select(y => new CongViecGridDto
+                {
+                    Id = y.Id,
+                    TenCongViec = y.TenCongViec,
+                    MoTa = y.MoTa,
+                    NgayBatDau = y.NgayBatDau.ToLocalTime(),
+                    NgayKetThuc = y.NgayKetThuc.ToLocalTime(),
+                    TrangThai = y.TrangThai,
+                    NguoiDuocGiao = y.NguoiDuocGiao,
+                    NguoiGiaoViec = y.NguoiGiaoViec,
+                    CreatedAt = y.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                    TrangThaiChiTiet = y.TrangThaiChiTiet,
+                    TenDuAn = y.DuAnNvChuyenMon?.TenDuAn,
+                })
+                .OrderByDescending(x => x.CreatedAt)
+                .ThenBy(x => x.TenDuAn)
+                .ToList();
+
+            return new PagingResponse<CongViecGridDto>
+            {
+                Count = totalItems,
+                Items = result
+            };
         }
     }
 }

@@ -26,5 +26,8 @@ namespace Poi.Prj.Logic.Interface
         Task<CudResponseDto> RejectTrangThaiCongViec(TenantInfo info, RejectCongViecRequest request);
 
         Task<IEnumerable<CongViecHoatDongDto>> GetCongViecHoatDong(TenantInfo info, Guid CongViecId);
+
+        Task<PagingResponse<CongViecGridDto>> GetQuanLyCongViec(TenantInfo info, GetQuanLyCongViecRequest request);
+
     }
 }

@@ -31,6 +31,7 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public ICollection<PrjTagCongViec> TagCongViec { get; set; }
         public ICollection<PrjTagComment> TagComment { get; set; }
         public bool IsCaNhan { get; set; }
+        public bool IsClosed { get; set; }
         public ICollection<PrjDuAnSetting> DuAnSetting { get; set; }
 
         public ICollection<PrjCongViec> CongViec { get; set; }

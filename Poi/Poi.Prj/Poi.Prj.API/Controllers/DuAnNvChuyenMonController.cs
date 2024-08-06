@@ -92,5 +92,12 @@ namespace Poi.Prj.API.Controllers
             var result = await _service.GetTopHoatDongDuan(TenantInfo, DuanId);
             return Ok(result);
         }
+
+        [HttpPut("open-close")]
+        public async Task<IActionResult> OpenCloseDuAn([FromBody] OpenCloseDuanRequest request)
+        {
+            var result = await _service.OpenCloseDuAn(TenantInfo, request);
+            return Ok(result);
+        }
     }
 }

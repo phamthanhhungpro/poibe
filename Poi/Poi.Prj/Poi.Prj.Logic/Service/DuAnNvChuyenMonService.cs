@@ -482,6 +482,32 @@ namespace Poi.Prj.Logic.Service
             return viecCaNhan;
         }
 
+        public async Task<CudResponseDto> OpenCloseDuAn(TenantInfo info, OpenCloseDuanRequest request)
+        {
+            var entity = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
+            if (entity == null)
+            {
+                return new CudResponseDto
+                {
+                    Id = request.DuanId,
+                    Message = "Not found",
+                    IsSucceeded = false
+                };
+            }
+
+            entity.IsClosed = request.IsClosed;
+
+            _context.PrjDuAnNvChuyenMon.Update(entity);
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                Id = request.DuanId,
+                Message = "Success",
+                IsSucceeded = true
+            };
+        }
+
         public async Task<CudResponseDto> UpdateAsync(Guid id, DuAnNvChuyenMonRequest request, TenantInfo info)
         {
             var entity = await _context.PrjDuAnNvChuyenMon

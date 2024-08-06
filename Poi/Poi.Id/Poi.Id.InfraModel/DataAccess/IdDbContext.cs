@@ -249,6 +249,7 @@ namespace Poi.Id.InfraModel.DataAccess
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
                 entity.Property(e => e.IsCaNhan).HasDefaultValue(false);
+                entity.Property(e => e.IsClosed).HasDefaultValue(false);
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
