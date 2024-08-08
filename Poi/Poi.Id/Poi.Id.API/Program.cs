@@ -112,12 +112,8 @@ app.UseMiddleware<HeaderExtractorMiddleWare>();
 app.UseMiddleware<TokenCheckMiddleware>();
 
 // get the section from appsettings.json
-var isEnabled = app.Configuration.GetSection("EnableSecureMiddleware").Get<bool>();
+app.UseMiddleware<PermissionCheckMiddleware>();
 
-if (isEnabled)
-{
-    app.UseMiddleware<PermissionCheckMiddleware>();
-}
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();

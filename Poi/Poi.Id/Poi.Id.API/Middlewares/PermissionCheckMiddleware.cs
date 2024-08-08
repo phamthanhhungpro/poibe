@@ -42,6 +42,10 @@ public class PermissionCheckMiddleware
             return true;
         }
 
+        if (context.Request.Path.Value.Contains("/manage/info"))
+        {
+            return true;
+        }
         // Get the tenant info from the context
         TenantInfo tenantInfo = context.Items["TenantInfo"] as TenantInfo;
 
@@ -55,6 +59,17 @@ public class PermissionCheckMiddleware
             return true;
         }
 
+        // get the endpoint, method from the request
+        var endpoint = context.Request.Path.Value;
+        var method = context.Request.Method;
+
+        // If the method and endpoint is not register so It's not required permission
+        var isRequiredPermission = await dbContext.Permissions.AnyAsync(x => x.Path == endpoint && x.Method == method);
+        if (!isRequiredPermission)
+        {
+            return true;
+        }
+
         var role = await dbContext.Roles
             .Include(u => u.Permissions)
             .FirstOrDefaultAsync(u => u.Code == tenantInfo.Role);
@@ -63,10 +78,6 @@ public class PermissionCheckMiddleware
         {
             return false;
         }
-
-        // get the endpoint, method from the request
-        var endpoint = context.Request.Path.Value;
-        var method = context.Request.Method;
 
         // Check if the user has the required permission
         if (role.Permissions.Any(p => string.Equals(p.Path, endpoint, StringComparison.OrdinalIgnoreCase) && string.Equals(p.Method, method, StringComparison.OrdinalIgnoreCase)))

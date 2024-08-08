@@ -164,5 +164,7 @@ namespace Poi.Id.API.Controllers
             var response = await _userService.GetUserPhongBanInfo(userId, TenantInfo);
             return Ok(response);
         }
+
+        
     }
 }

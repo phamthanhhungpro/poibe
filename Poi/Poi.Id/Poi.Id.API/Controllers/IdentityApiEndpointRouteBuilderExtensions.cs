@@ -153,6 +153,28 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             return TypedResults.Empty;
         });
 
+        // change password api
+        routeGroup.MapPost("/change-password", async Task<Results<Ok, ValidationProblem>>
+            ([FromBody] ChangePasswordRequest changePasswordRequest, [FromServices] IServiceProvider sp) =>
+        {
+            var userManager = sp.GetRequiredService<UserManager<TUser>>();
+
+            var user = await userManager.FindByIdAsync(changePasswordRequest.UserId.ToString());
+            if (user is null)
+            {
+                return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidUserName(changePasswordRequest.UserId.ToString())));
+            }
+
+            var result = await userManager.ChangePasswordAsync(user, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return CreateValidationProblem(result);
+            }
+
+            return TypedResults.Ok();
+        });
+
         routeGroup.MapPost("/sign-in", async Task<Results<Ok<AccessTokenResponse>, EmptyHttpResult, ProblemHttpResult>>
             ([FromBody] Microsoft.AspNetCore.Identity.Data.LoginRequest login, [FromQuery] bool? useCookies, [FromQuery] bool? useSessionCookies, [FromServices] IServiceProvider sp) =>
         {

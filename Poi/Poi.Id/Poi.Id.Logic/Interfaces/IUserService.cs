@@ -23,5 +23,6 @@ namespace Poi.Id.Logic.Interfaces
         Task<List<UserListInfoDto>> GetUserForCreateHoSoNhanSu(TenantInfo info);
         Task<List<UserListInfoDto>> GetUserInTenant(TenantInfo info);
         Task<UserPhongBanDto> GetUserPhongBanInfo(Guid userId, TenantInfo info);
+
     }
 }
