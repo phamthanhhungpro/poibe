@@ -45,6 +45,7 @@ namespace Poi.Prj.Logic.Service
                 TagCongViec = await _context.PrjTagCongViec.Where(x => request.TagCongViecIds.Contains(x.Id)).ToListAsync(),
                 ThoiGianDuKien = request.ThoiGianDuKien,
                 MucDoUuTien = request.MucDoUuTien,
+                Attachments = request.Attachments,
             };
 
             // Kiểm tra người tạo việc có phải là quản lý dự án không
@@ -192,6 +193,8 @@ namespace Poi.Prj.Logic.Service
             entity.NguoiDuocGiaoId = request.NguoiDuocGiaoId;
             entity.NguoiPhoiHop = await _context.Users.Where(x => request.NguoiPhoiHopIds.Contains(x.Id)).ToListAsync();
             entity.NguoiThucHien = await _context.Users.Where(x => request.NguoiThucHienIds.Contains(x.Id)).ToListAsync();
+
+            entity.Attachments = request.Attachments;
 
             _context.PrjCongViec.Update(entity);
             await _context.SaveChangesAsync();

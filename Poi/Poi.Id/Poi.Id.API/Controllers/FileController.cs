@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Poi.Shared.Model.Helpers;
 
 namespace Poi.Id.API.Controllers
 {
@@ -32,14 +33,16 @@ namespace Poi.Id.API.Controllers
             {
                 if (file.Length > 0)
                 {
-                    var filePath = Path.Combine(_environment.WebRootPath, "uploads", file.FileName);
+                    var uniqueFileName = StringHelper.Random6charString() + "_" + file.FileName;
+
+                    var filePath = Path.Combine(_environment.WebRootPath, "uploads", uniqueFileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream);
                     }
 
-                    var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/{file.FileName}";
+                    var fileUrl = $"uploads/{uniqueFileName}";
                     fileUrls.Add(fileUrl);
                 }
             }

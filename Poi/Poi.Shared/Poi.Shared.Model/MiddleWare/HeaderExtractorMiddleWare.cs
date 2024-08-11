@@ -36,6 +36,12 @@ namespace Poi.Shared.Model.MiddleWare
                 return;
             }
 
+            if (path.Contains("/uploads/"))
+            {
+                await _next(context);
+                return;
+            }
+
             if ((string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role)))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;

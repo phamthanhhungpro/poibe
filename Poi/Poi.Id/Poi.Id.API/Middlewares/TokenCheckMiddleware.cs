@@ -48,6 +48,10 @@ public class TokenCheckMiddleware
             return true;
         }
 
+        if (context.Request.Path.Value.Contains("/uploads/"))
+        {
+            return true;
+        }
         // Get the tenant info from the context
         TenantInfo tenantInfo = context.Items["TenantInfo"] as TenantInfo;
 
