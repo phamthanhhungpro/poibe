@@ -29,5 +29,6 @@ namespace Poi.Prj.Logic.Interface
 
         Task<PagingResponse<CongViecGridDto>> GetQuanLyCongViec(TenantInfo info, GetQuanLyCongViecRequest request);
 
+        Task<CudResponseDto> DanhGiaCongViec(TenantInfo info, DanhGiaCongViecRequest request);
     }
 }

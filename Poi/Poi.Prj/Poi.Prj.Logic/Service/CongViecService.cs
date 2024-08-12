@@ -986,5 +986,38 @@ namespace Poi.Prj.Logic.Service
                 Items = result
             };
         }
+
+        public async Task<CudResponseDto> DanhGiaCongViec(TenantInfo info, DanhGiaCongViecRequest request)
+        {
+            var entity = await _context.PrjCongViec.FindAsync(request.CongViecId);
+
+            if (entity == null)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Không tìm thấy công việc",
+                    IsSucceeded = false
+                };
+            }
+
+            entity.DGChatLuongHieuQua = request.DGChatLuongHieuQua;
+            entity.DGTienDo = request.DGTienDo;
+            entity.DGChapHanhCheDoThongTinBaoCao = request.DGChapHanhCheDoThongTinBaoCao;
+            entity.DGChapHanhDieuDongLamThemGio = request.DGChapHanhDieuDongLamThemGio;
+
+            entity.UpdatedAt = DateTime.UtcNow;
+            _context.PrjCongViec.Update(entity);
+
+
+            await _context.SaveChangesAsync();
+
+            await LogHoatDong(info, entity, "Đánh giá hoàn thành công việc", string.Empty);
+
+            return new CudResponseDto
+            {
+                Message = "Đánh giá hoàn thành công việc thành công",
+                IsSucceeded = true
+            };
+        }
     }
 }

@@ -142,5 +142,12 @@ namespace Poi.Prj.API.Controllers
             var result = await _congViecService.GetQuanLyCongViec(TenantInfo, request);
             return Ok(result);
         }
+
+        [HttpPut("DanhGiaCongViec")]
+        public async Task<IActionResult> DanhGiaCongViec(DanhGiaCongViecRequest request)
+        {
+            var result = await _congViecService.DanhGiaCongViec(TenantInfo, request);
+            return Ok(result);
+        }
     }
 }
