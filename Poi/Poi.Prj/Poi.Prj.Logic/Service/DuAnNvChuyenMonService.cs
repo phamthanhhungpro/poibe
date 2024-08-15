@@ -34,7 +34,8 @@ namespace Poi.Prj.Logic.Service
                 ThoiGianKetThuc = request.ThoiGianKetThuc.ToUTC(),
                 LinhVucId = request.LinhVucId,
                 IsNhiemVuChuyenMon = request.IsNhiemVuChuyenMon,
-                TenantId = info.TenantId
+                TenantId = info.TenantId,
+                CreatedBy = info.UserId,
             };
             entity.CreatedBy = info.UserId;
             entity.ThanhVienDuAn = _context.Users.Where(x => request.ThanhVienDuAnIds.Contains(x.Id)).ToList();
@@ -170,7 +171,53 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info)
         {
-            var entity = await _context.PrjDuAnNvChuyenMon.FindAsync(id);
+            Expression<Func<PrjDuAnNvChuyenMon, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
+                {
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.XOA_DUAN_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Dự án của phòng ban người dùng thuộc về
+                    case ScopeCode.XOA_DUAN_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienPhongBanIds = user?.ThanhVienPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienToNhomIds = user?.ThanhVienToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x =>
+                            lanhDaoPhongBanIds.Contains(x.PhongBanBoPhanId.Value) ||
+                            thanhVienPhongBanIds.Contains(x.PhongBanBoPhanId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.ToNhomId.Value) ||
+                            thanhVienToNhomIds.Contains(x.ToNhomId.Value);
+                        break;
+
+                    // Chỉ những dự án mà người dùng tạo ra
+                    case ScopeCode.XOA_DUAN_CREATED:
+                        filterExpression = x => x.CreatedBy == info.UserId;
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
+            var entity = await _context.PrjDuAnNvChuyenMon
+                .Where(filterExpression)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (entity == null)
             {
                 return new CudResponseDto
@@ -510,8 +557,48 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> UpdateAsync(Guid id, DuAnNvChuyenMonRequest request, TenantInfo info)
         {
+            Expression<Func<PrjDuAnNvChuyenMon, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
+                {
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.EDIT_DUAN_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Dự án của phòng ban người dùng thuộc về
+                    case ScopeCode.EDIT_DUAN_PHONGBAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienPhongBanIds = user?.ThanhVienPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienToNhomIds = user?.ThanhVienToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x =>
+                            lanhDaoPhongBanIds.Contains(x.PhongBanBoPhanId.Value) ||
+                            thanhVienPhongBanIds.Contains(x.PhongBanBoPhanId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.ToNhomId.Value) ||
+                            thanhVienToNhomIds.Contains(x.ToNhomId.Value);
+                        break;
+
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
             var entity = await _context.PrjDuAnNvChuyenMon
                                         .Include(x => x.ThanhVienDuAn)
+                                        .Where(filterExpression)
                                         .FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
             {

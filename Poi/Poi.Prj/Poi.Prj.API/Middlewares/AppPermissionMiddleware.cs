@@ -98,7 +98,7 @@ namespace Poi.Prj.API.Middlewares
 
                 tenantInfo.IsNeedCheckScope = mainPermissions.Any(p => p.PerScopeId.HasValue);
 
-                tenantInfo.RequestScopeCode = permission.Where(p => p.PerScopeId.HasValue).Select(p => p.Scope.Code).ToList();
+                tenantInfo.RequestScopeCode = mainPermissions.Where(p => p.PerScopeId.HasValue).Select(p => p.Scope.Code).ToList();
 
                 return true;
             }

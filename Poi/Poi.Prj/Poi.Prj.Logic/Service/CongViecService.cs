@@ -46,6 +46,7 @@ namespace Poi.Prj.Logic.Service
                 ThoiGianDuKien = request.ThoiGianDuKien,
                 MucDoUuTien = request.MucDoUuTien,
                 Attachments = request.Attachments,
+                CreatedBy = info.UserId
             };
 
             // Kiểm tra người tạo việc có phải là quản lý dự án không
@@ -60,7 +61,7 @@ namespace Poi.Prj.Logic.Service
             }
 
             var loaiCongViec = "Tạo công việc";
-            if (info.UserId != duAn.QuanLyDuAnId && !duAn.IsCaNhan)
+            if (info.UserId != duAn.QuanLyDuAnId && !duAn.IsCaNhan && (info.RequestScopeCode == null || !info.RequestScopeCode.Contains(ScopeCode.THEM_CONGVIEC_AUTODUYET)))
             {
                 entity.TrangThaiChiTiet = TrangThaiCongViecChiTiet.ChoDuyetDeXuat;
                 loaiCongViec = "Đề xuất công việc";
@@ -83,7 +84,53 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> DeleteAsync(Guid id, TenantInfo info)
         {
-            var entity = await _context.PrjCongViec.FindAsync(id);
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
+                {
+                    // Tất cả công việc của đơn vị
+                    case ScopeCode.XOA_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Công việc của phòng ban người dùng thuộc về
+                    case ScopeCode.XOA_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienPhongBanIds = user?.ThanhVienPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+                        var thanhVienToNhomIds = user?.ThanhVienToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x =>
+                            x.DuAnNvChuyenMon != null &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            thanhVienPhongBanIds.Contains(x.DuAnNvChuyenMon.PhongBanBoPhanId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value) ||
+                            thanhVienToNhomIds.Contains(x.DuAnNvChuyenMon.ToNhomId.Value));
+                        break;
+
+                    // Chỉ những công việc mà người dùng tạo ra
+                    case ScopeCode.XOA_CONGVIEC_CREATED:
+                        filterExpression = x => x.CreatedBy == info.UserId;
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
+
+            var entity = await _context.PrjCongViec.Where(filterExpression).FirstOrDefaultAsync(x => x.Id == id);
+
             if (entity == null)
             {
                 return new CudResponseDto
@@ -571,9 +618,45 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> ApproveGiaHanCongViec(TenantInfo info, ApproveGiaHanCongViec request)
         {
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
+                {
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.DUYET_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Duyệt phòng ban tổ nhóm mình phụ trách
+                    case ScopeCode.DUYET_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x => x.DuAnNvChuyenMon != null && x.DuAnNvChuyenMon.QuanLyDuAnId.HasValue &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value));
+                        break;
+
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
             // Get cong viec
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
+                .Where(filterExpression)
                 .ExecuteUpdateAsync(x => x.SetProperty(p => p.NgayKetThuc, p => p.NgayGiaHan)
                                           .SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY));
 
@@ -604,8 +687,44 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> ApproveTrangThaiCongViec(TenantInfo info, ApproveTrangThaiCongViec request)
         {
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
+                {
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.DUYET_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Duyệt phòng ban tổ nhóm mình phụ trách
+                    case ScopeCode.DUYET_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x => x.DuAnNvChuyenMon != null && x.DuAnNvChuyenMon.QuanLyDuAnId.HasValue &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value));
+                        break;
+
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
+                .Where(filterExpression)
                 .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThai, p => p.TrangThai)
                                           .SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY));
 
@@ -635,20 +754,46 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> ApproveDeXuatCongViec(TenantInfo info, ApproveDeXuatCongViec request)
         {
-            var duAn = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
-
-            if (info.UserId != duAn.QuanLyDuAnId)
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
             {
-                return new CudResponseDto
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
                 {
-                    IsSucceeded = false,
-                    Message = "Bạn không có quyền duyệt đề xuất công việc"
-                };
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.DUYET_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Duyệt phòng ban tổ nhóm mình phụ trách
+                    case ScopeCode.DUYET_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x => x.DuAnNvChuyenMon != null && x.DuAnNvChuyenMon.QuanLyDuAnId.HasValue &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value));
+                        break;
+
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
             }
 
             // Get cong viec
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
+                .Where(filterExpression)
                 .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY));
 
             if (result == 0)
@@ -678,20 +823,47 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> RejectDeXuatCongViec(TenantInfo info, RejectCongViecRequest request)
         {
-            var duAn = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
-
-            if (info.UserId != duAn.QuanLyDuAnId)
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
             {
-                return new CudResponseDto
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
                 {
-                    IsSucceeded = false,
-                    Message = "Bạn không có quyền từ chối đề xuất công việc"
-                };
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.DUYET_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Duyệt phòng ban tổ nhóm mình phụ trách
+                    case ScopeCode.DUYET_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x => x.DuAnNvChuyenMon != null && x.DuAnNvChuyenMon.QuanLyDuAnId.HasValue &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value));
+                        break;
+
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
             }
+
 
             // Get cong viec
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
+                .Where(filterExpression)
                 .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.REJECT));
 
             if (result == 0)
@@ -722,20 +894,47 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> RejectGiaHanCongViec(TenantInfo info, RejectCongViecRequest request)
         {
-            var duAn = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
-
-            if (info.UserId != duAn.QuanLyDuAnId)
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
             {
-                return new CudResponseDto
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
                 {
-                    IsSucceeded = false,
-                    Message = "Bạn không có quyền từ chối gia hạn công việc"
-                };
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.DUYET_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Duyệt phòng ban tổ nhóm mình phụ trách
+                    case ScopeCode.DUYET_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x => x.DuAnNvChuyenMon != null && x.DuAnNvChuyenMon.QuanLyDuAnId.HasValue &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value));
+                        break;
+
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
             }
+
 
             // Get cong viec
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
+                .Where(filterExpression)
                 .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY)
                                           .SetProperty(p => p.NgayGiaHan.Value, null));
 
@@ -765,20 +964,46 @@ namespace Poi.Prj.Logic.Service
 
         public async Task<CudResponseDto> RejectTrangThaiCongViec(TenantInfo info, RejectCongViecRequest request)
         {
-            var duAn = await _context.PrjDuAnNvChuyenMon.FindAsync(request.DuanId);
-
-            if (info.UserId != duAn.QuanLyDuAnId)
+            Expression<Func<PrjCongViec, bool>> filterExpression = x => true;
+            // check scope
+            if (info.IsNeedCheckScope && info.RequestScopeCode != null && info.RequestScopeCode.Count > 0)
             {
-                return new CudResponseDto
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .Include(x => x.ThanhVienPhongBan)
+                                        .Include(x => x.LanhDaoToNhom)
+                                        .Include(x => x.ThanhVienToNhom)
+                                        .FirstOrDefaultAsync(x => x.Id == info.UserId);
+
+                switch (info.RequestScopeCode.First())
                 {
-                    IsSucceeded = false,
-                    Message = "Bạn không có quyền từ chối thay đổi trạng thái công việc"
-                };
+                    // Tất cả dự án của đơn vị
+                    case ScopeCode.DUYET_CONGVIEC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // Duyệt phòng ban tổ nhóm mình phụ trách
+                    case ScopeCode.DUYET_CONGVIEC_DUAN:
+                        var lanhDaoPhongBanIds = user?.LanhDaoPhongBan?.Select(pb => pb.Id).ToList() ?? [];
+                        var lanhDaoToNhomIds = user?.LanhDaoToNhom?.Select(pb => pb.Id).ToList() ?? [];
+
+                        filterExpression = x => x.DuAnNvChuyenMon != null && x.DuAnNvChuyenMon.QuanLyDuAnId.HasValue &&
+                            (lanhDaoPhongBanIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value) ||
+                            lanhDaoToNhomIds.Contains(x.DuAnNvChuyenMon.QuanLyDuAnId.Value));
+                        break;
+
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
             }
 
             // Get cong viec
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
+                .Where(filterExpression)
                 .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY)
                                           .SetProperty(p => p.TrangThai, t => t.TrangThaiChiTiet));
 
@@ -936,7 +1161,7 @@ namespace Poi.Prj.Logic.Service
                                 .Include(x => x.NhomCongViec)
                                 .Include(x => x.NguoiDuocGiao)
                                 .Include(x => x.DuAnNvChuyenMon)
-                                .Where(x => x.CongViecChaId == null && x.TenantId == info.TenantId)
+                                .Where(x => x.CongViecChaId == null && x.TenantId == info.TenantId && (x.DuAnNvChuyenMon == null || !x.DuAnNvChuyenMon.IsCaNhan))
                                 .Where(filterExpression)
                                 .OrderByDescending(x => x.CreatedAt);
 

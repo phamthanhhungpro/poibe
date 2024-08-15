@@ -40,5 +40,8 @@ namespace Poi.Shared.Model.Constants
 
         public const string HOATDONG_DUAN_ALL = "ALL";
         public const string HOATDONG_DUAN_RELATED = "RELATED";
+
+        public const string EDIT_DUAN_ALL = "ALL";
+        public const string EDIT_DUAN_PHONGBAN = "ALL-PHONGBAN";
     }
 }

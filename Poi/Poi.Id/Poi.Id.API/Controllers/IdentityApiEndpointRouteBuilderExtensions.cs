@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Id.Logic.Dtos;
 using Poi.Id.Logic.Requests;
+using Poi.Id.Logic.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -138,6 +139,13 @@ public static class IdentityApiEndpointRouteBuilderExtensions
     ([FromBody] Logic.Requests.BaseLoginRequest login, [FromServices] IServiceProvider sp) =>
         {
             var signInManager = sp.GetRequiredService<SignInManager<TUser>>();
+            var userManager = sp.GetRequiredService<UserManager<User>>();
+            // check if user is active
+            var user = await userManager.FindByNameAsync(login.UserName);
+            if (user is null || !user.IsActive)
+            {
+                return TypedResults.Problem("Không tìm thấy người dùng hoặc người dùng đã bị khóa. Vui lòng liên hệ quản trị viên.", statusCode: StatusCodes.Status401Unauthorized);
+            }
 
             signInManager.AuthenticationScheme = IdentityConstants.BearerScheme;
 
@@ -146,7 +154,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
 
             if (!result.Succeeded)
             {
-                return TypedResults.Problem(result.ToString(), statusCode: StatusCodes.Status401Unauthorized);
+                return TypedResults.Problem("Tên đăng nhập hoặc mật khẩu không đúng", statusCode: StatusCodes.Status401Unauthorized);
             }
 
             // The signInManager already produced the needed response in the form of a cookie or bearer token.
