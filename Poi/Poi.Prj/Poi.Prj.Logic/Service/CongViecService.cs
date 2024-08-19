@@ -722,10 +722,12 @@ namespace Poi.Prj.Logic.Service
                         break;
                 }
             }
+            var now = DateTime.UtcNow;
+
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
                 .Where(filterExpression)
-                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThai, p => p.TrangThai)
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.NgayXacNhanHoanThanh, now)
                                           .SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY));
 
             if (result == 0)
@@ -1004,8 +1006,8 @@ namespace Poi.Prj.Logic.Service
             var result = await _context.PrjCongViec
                 .Where(x => request.CongViecIds.Contains(x.Id))
                 .Where(filterExpression)
-                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY)
-                                          .SetProperty(p => p.TrangThai, t => t.TrangThaiChiTiet));
+                .ExecuteUpdateAsync(x => x.SetProperty(p => p.TrangThai, t => t.TrangThaiChiTiet)
+                                          .SetProperty(p => p.TrangThaiChiTiet, TrangThaiCongViecChiTiet.READY));
 
             if (result == 0)
             {

@@ -33,5 +33,12 @@ namespace Poi.Hrm.API.Controllers
             }
             return Ok(result);
         }
+
+        [HttpPost("diem-danh-thu-cong")]
+        public async Task<IActionResult> DiemDanhThuCong(DiemDanhThuCongRequest request)
+        {
+            var res = await _chamCongDiemDanhService.DiemDanhThuCong(TenantInfo, request);
+            return Ok(res);
+        }
     }
 }

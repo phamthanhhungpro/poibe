@@ -136,6 +136,56 @@ namespace Poi.Hrm.Logic.Service
             throw new NotImplementedException();
         }
 
+        public async Task<CudResponseDto> DiemDanhThuCong(TenantInfo tenantInfo, DiemDanhThuCongRequest request)
+        {
+            var startDay = DateTime.Now.ToStartOfDayUtc();
+            var endDay = DateTime.Now.ToEndOfDayUtc();
+            // check if user has checkin today
+            var check = await _context.HrmChamCongDiemDanh.AnyAsync(x => x.User.Id == tenantInfo.UserId && x.ThoiGian >= startDay && x.ThoiGian <= endDay);
+
+            if (check)
+            {
+                return new CudResponseDto
+                {
+                    Message = "Bạn đã điểm danh hôm nay rồi",
+                    IsSucceeded = false
+                };
+            }
+            var defaultCongKhaiBao = await _context.HrmCongKhaiBao.FirstOrDefaultAsync(x => x.IsDefault && x.IsSystem);
+            var defaultTrangThaiChamCong = await _context.HrmTrangThaiChamCong.Where(x => x.IsSystem && x.MaTrangThai == MaTrangThaiChamCongSystem.CHAM_CONG_THU_CONG).FirstOrDefaultAsync();
+
+
+            var model = new HrmChamCongDiemDanh()
+            {
+                User = await _context.Users.FirstOrDefaultAsync(x => x.Id == tenantInfo.UserId),
+                HrmCongKhaiBao = defaultCongKhaiBao,
+                ThoiGian = DateTime.Now.ToUniversalTime(),
+                HrmTrangThaiChamCong = defaultTrangThaiChamCong,
+                TrangThai = TrangThaiEnum.ChoXacNhan
+            };
+
+            await _context.HrmChamCongDiemDanh.AddAsync(model);
+            await _context.SaveChangesAsync();
+
+            var giaiTrinh = new HrmGiaiTrinhChamCong
+            {
+                HrmChamCongDiemDanh = model,
+                LyDo = "Điểm danh thủ công",
+                HrmCongKhaiBao = defaultCongKhaiBao,
+                TrangThai = false,
+                NguoiXacNhan = _context.Users.Find(request.NguoiXacNhanId),
+            };
+
+            await _context.HrmGiaiTrinhChamCong.AddAsync(giaiTrinh);
+            await _context.SaveChangesAsync();
+
+            return new CudResponseDto
+            {
+                IsSucceeded = true,
+                Message = "Điểm danh thành công"
+            };
+        }
+
         public Task<List<HrmChamCongDiemDanh>> GetChamCongDiemDanh(TenantInfo tenantInfo)
         {
             throw new NotImplementedException();

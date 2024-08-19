@@ -15,5 +15,6 @@ namespace Poi.Hrm.Logic.Interface
         Task<CudResponseDto> DeleteChamCongDiemDanh(TenantInfo tenantInfo, Guid id);
 
         Task<CudResponseDto> UpdateChamCongDiemDanh(Guid id, TenantInfo tenantInfo, ChamCongDiemDanhRequest request);
+        Task<CudResponseDto> DiemDanhThuCong(TenantInfo tenantInfo, DiemDanhThuCongRequest request);
     }
 }

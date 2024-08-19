@@ -153,7 +153,13 @@ namespace Poi.Prj.Logic.Service
                 {
                     DuAnNvChuyenMonId = entity.Id,
                     Key = TrangThaiCongViecHelper.TrangThaiSettingKey,
-                    JsonValue = $@"[{{""key"": ""{TrangThaiCongViecHelper.DefaultTrangThaiKey}"", ""value"": ""{TrangThaiCongViecHelper.DefaultTrangThaiValue}"", ""yeuCauXacNhan"": false }}]"
+                    JsonValue = $@"[
+                                    {{""key"": ""{TrangThaiCongViecHelper.DefaultTrangThaiKey}"", ""value"": ""{TrangThaiCongViecHelper.DefaultTrangThaiValue}"", ""yeuCauXacNhan"": false }},
+                                    {{""key"": ""Sys-Can-Lam"", ""value"": ""Cần làm"", ""yeuCauXacNhan"": false }},
+                                    {{""key"": ""Sys-Dang-Thuc-Hien"", ""value"": ""Đang thực hiện"", ""yeuCauXacNhan"": false }},
+                                    {{""key"": ""Sys-Hoan-Thanh"", ""value"": ""Hoàn thành"", ""yeuCauXacNhan"": true }},
+                                    {{""key"": ""Sys-Gia-Han"", ""value"": ""Gia hạn"", ""yeuCauXacNhan"": false }}
+                                ]"
                 };
 
                 _context.PrjDuAnSetting.Add(jsonSettingEntity);

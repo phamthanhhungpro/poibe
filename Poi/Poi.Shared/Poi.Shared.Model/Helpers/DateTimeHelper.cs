@@ -17,5 +17,10 @@ namespace Poi.Shared.Model.Helpers
         {
             return dateTime.Date.ToUTC();
         }
+
+        public static DateTime ToEndOfDayUtc(this DateTime dateTime)
+        {
+            return dateTime.Date.AddDays(1).AddTicks(-1).ToUTC();
+        }
     }
 }

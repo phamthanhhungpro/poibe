@@ -46,5 +46,6 @@ namespace Poi.Id.InfraModel.DataAccess.Prj
         public string DGTienDo { get; set; }
         public string DGChapHanhCheDoThongTinBaoCao { get; set; }
         public string DGChapHanhDieuDongLamThemGio{ get; set; }
+        public DateTime? NgayXacNhanHoanThanh { get; set; }
     }
 }

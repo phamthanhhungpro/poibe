@@ -12,5 +12,7 @@ namespace Poi.Shared.Model.Constants
         public const string CHUA_CHAM_CONG = "CHUA_CHAM_CONG";
         public const string CHUA_CHAM_CONG_VAO = "CHUA_CHAM_CONG_VAO";
         public const string CHUA_CHAM_CONG_RA = "CHUA_CHAM_CONG_RA";
+        public const string CHAM_CONG_THU_CONG = "CHAM_CONG_THU_CONG";
+
     }
 }
