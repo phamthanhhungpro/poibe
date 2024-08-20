@@ -11,5 +11,8 @@ namespace Poi.Hrm.Logic.Requests
         public Guid UserId { get; set; }
         public DateTime ThoiGian { get; set; }
         public Guid NguoiXacNhanId { get; set; }
+        public Guid CongKhaiBaoId { get; set; }
+        public string LyDo { get; set; }
+        public string GhiChu { get; set; }
     }
 }

@@ -8,11 +8,7 @@ using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Dtos;
 using Poi.Shared.Model.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Poi.Hrm.Logic.Service
 {
@@ -25,6 +21,74 @@ namespace Poi.Hrm.Logic.Service
             _context = context;
 
         }
+
+        public async Task<List<BangChamCongDto>> BangChamCong(TenantInfo tenantInfo, BangChamCongRequest request)
+        {
+            Expression<Func<User, bool>> filterExpression = x => true;
+            // check scope
+            if (tenantInfo.IsNeedCheckScope && tenantInfo.RequestScopeCode != null && tenantInfo.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .FirstOrDefaultAsync(x => x.Id == tenantInfo.UserId);
+
+                var userInPhongBanIds = user.LanhDaoPhongBan.Where(u => u.ThanhVien != null)
+                                    .SelectMany(u => u.ThanhVien.Select(t => t.Id)).ToList();
+
+                switch (tenantInfo.RequestScopeCode.First())
+                {
+                    // Tất cả user của đơn vị
+                    case ScopeCode.LSCC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                        // User của phòng ban
+                     case ScopeCode.LSCC_PHONGBAN:
+                        filterExpression = x => userInPhongBanIds.Any(u => u == x.Id) || x.Id == tenantInfo.UserId;
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
+
+            var startOfMonth = request.Time.ToStartOfMonth();
+            var endOfMonth = request.Time.ToEndOfMonth();
+
+            // Generate a list of all dates in the month based on the request time
+            var allDaysInMonth = new List<DateTime>();
+            for (var date = startOfMonth; date <= endOfMonth; date = date.AddDays(1))
+            {
+                allDaysInMonth.Add(date);
+            }
+
+            var usersWithAttendance = await _context.Users
+                .AsNoTracking()
+                .Where(x => x.Tenant.Id == tenantInfo.TenantId && x.IsActive)
+                .Where(filterExpression)
+                .Include(x => x.HrmChamCongDiemDanh).ThenInclude(x => x.HrmCongXacNhan)
+                .ToListAsync(); // Load the data into memory
+
+            var data = usersWithAttendance.Select(x => new BangChamCongDto
+            {
+                UserId = x.Id,
+                UserName = x.UserName,
+                FullName = x.FullName,
+                Days = allDaysInMonth
+                        .Select(day => x.HrmChamCongDiemDanh
+                                        .Where(d => d.ThoiGian.AddHours(7).Date == day.Date)
+                                        .Select(d => d.HrmCongXacNhan?.MaCongKhaiBao)
+                                        .FirstOrDefault() ?? "")
+                        .ToList()
+            }).ToList();
+
+            return data;
+        }
+
+
+
 
         public async Task<CudResponseDto> CreateChamCongDiemDanh(TenantInfo tenantInfo, ChamCongDiemDanhRequest request)
         {
@@ -138,8 +202,8 @@ namespace Poi.Hrm.Logic.Service
 
         public async Task<CudResponseDto> DiemDanhThuCong(TenantInfo tenantInfo, DiemDanhThuCongRequest request)
         {
-            var startDay = DateTime.Now.ToStartOfDayUtc();
-            var endDay = DateTime.Now.ToEndOfDayUtc();
+            var startDay = DateTime.UtcNow.ToStartOfDay();
+            var endDay = DateTime.UtcNow.ToEndOfDay();
             // check if user has checkin today
             var check = await _context.HrmChamCongDiemDanh.AnyAsync(x => x.User.Id == tenantInfo.UserId && x.ThoiGian >= startDay && x.ThoiGian <= endDay);
 
@@ -151,7 +215,8 @@ namespace Poi.Hrm.Logic.Service
                     IsSucceeded = false
                 };
             }
-            var defaultCongKhaiBao = await _context.HrmCongKhaiBao.FirstOrDefaultAsync(x => x.IsDefault && x.IsSystem);
+
+            var defaultCongKhaiBao = await _context.HrmCongKhaiBao.FirstOrDefaultAsync(x => x.Id == request.CongKhaiBaoId);
             var defaultTrangThaiChamCong = await _context.HrmTrangThaiChamCong.Where(x => x.IsSystem && x.MaTrangThai == MaTrangThaiChamCongSystem.CHAM_CONG_THU_CONG).FirstOrDefaultAsync();
 
 
@@ -161,7 +226,10 @@ namespace Poi.Hrm.Logic.Service
                 HrmCongKhaiBao = defaultCongKhaiBao,
                 ThoiGian = DateTime.Now.ToUniversalTime(),
                 HrmTrangThaiChamCong = defaultTrangThaiChamCong,
-                TrangThai = TrangThaiEnum.ChoXacNhan
+                TrangThai = TrangThaiEnum.ChoXacNhan,
+                LyDo = request.LyDo,
+                GhiChu = request.GhiChu,
+                NguoiXacNhanId = request.NguoiXacNhanId
             };
 
             await _context.HrmChamCongDiemDanh.AddAsync(model);
@@ -170,7 +238,8 @@ namespace Poi.Hrm.Logic.Service
             var giaiTrinh = new HrmGiaiTrinhChamCong
             {
                 HrmChamCongDiemDanh = model,
-                LyDo = "Điểm danh thủ công",
+                LyDo = request.LyDo,
+                GhiChu = request.GhiChu,
                 HrmCongKhaiBao = defaultCongKhaiBao,
                 TrangThai = false,
                 NguoiXacNhan = _context.Users.Find(request.NguoiXacNhanId),
@@ -199,6 +268,15 @@ namespace Poi.Hrm.Logic.Service
                 .Include(x => x.HrmTrangThaiChamCong)
                 .Where(x => x.User.Id == userId && x.ThoiGian >= start && x.ThoiGian <= end)
                 .ToListAsync();
+        }
+
+        public async Task<HrmChamCongDiemDanh> GetDetailChamCong(TenantInfo tenantInfo, Guid id)
+        {
+            return await _context.HrmChamCongDiemDanh
+                        .Include(x => x.User)
+                        .Include(x => x.HrmCongKhaiBao)
+                        .Include(x => x.HrmTrangThaiChamCong)
+                        .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Task<CudResponseDto> UpdateChamCongDiemDanh(Guid id, TenantInfo tenantInfo, ChamCongDiemDanhRequest request)

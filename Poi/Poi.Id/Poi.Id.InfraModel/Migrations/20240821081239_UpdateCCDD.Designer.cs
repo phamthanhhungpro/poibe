@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Poi.Id.InfraModel.DataAccess;
@@ -11,9 +12,11 @@ using Poi.Id.InfraModel.DataAccess;
 namespace Poi.Id.InfraModel.Migrations
 {
     [DbContext(typeof(IdDbContext))]
-    partial class IdDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240821081239_UpdateCCDD")]
+    partial class UpdateCCDD
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -819,9 +822,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<string>("LyDo")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("NguoiXacNhanId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("ThoiGian")
                         .HasColumnType("timestamp with time zone");
 
@@ -832,7 +832,7 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -842,8 +842,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.HasIndex("HrmCongXacNhanId");
 
                     b.HasIndex("HrmTrangThaiChamCongId");
-
-                    b.HasIndex("NguoiXacNhanId");
 
                     b.HasIndex("UserId");
 
@@ -2922,24 +2920,15 @@ namespace Poi.Id.InfraModel.Migrations
                         .WithMany()
                         .HasForeignKey("HrmTrangThaiChamCongId");
 
-                    b.HasOne("Poi.Id.InfraModel.DataAccess.User", "NguoiXacNhan")
-                        .WithMany("XacNhanChamCongDiemDanh")
-                        .HasForeignKey("NguoiXacNhanId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Poi.Id.InfraModel.DataAccess.User", "User")
                         .WithMany("HrmChamCongDiemDanh")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("HrmCongKhaiBao");
 
                     b.Navigation("HrmCongXacNhan");
 
                     b.Navigation("HrmTrangThaiChamCong");
-
-                    b.Navigation("NguoiXacNhan");
 
                     b.Navigation("User");
                 });
@@ -3572,8 +3561,6 @@ namespace Poi.Id.InfraModel.Migrations
                     b.Navigation("HrmChamCongDiemDanh");
 
                     b.Navigation("HrmHoSoNhanSu");
-
-                    b.Navigation("XacNhanChamCongDiemDanh");
                 });
 #pragma warning restore 612, 618
         }

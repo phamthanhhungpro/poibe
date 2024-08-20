@@ -22,5 +22,35 @@ namespace Poi.Shared.Model.Helpers
         {
             return dateTime.Date.AddDays(1).AddTicks(-1).ToUTC();
         }
+
+        public static DateTime ToStartOfDay(this DateTime dateTime)
+        {
+            return dateTime.Date;
+        }
+
+        public static DateTime ToEndOfDay(this DateTime dateTime)
+        {
+            return dateTime.Date.AddDays(1).AddTicks(-1);
+        }
+
+        public static DateTime ToStartOfMonth(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, 1);
+        }
+
+        public static DateTime ToEndOfMonth(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, DateTime.DaysInMonth(dateTime.Year, dateTime.Month)).AddDays(1).AddTicks(-1);
+        }
+
+        public static DateTime ToStartOfMonthUtc(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, 1).ToUTC();
+        }
+
+        public static DateTime ToEndOfMonthUtc(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, DateTime.DaysInMonth(dateTime.Year, dateTime.Month)).AddDays(1).AddTicks(-1).ToUTC();
+        }
     }
 }

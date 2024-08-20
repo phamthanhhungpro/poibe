@@ -35,7 +35,8 @@ namespace Poi.Id.InfraModel.DataAccess
         public virtual ICollection<PrjToNhom> LanhDaoToNhom { get; set; }
         public virtual ICollection<PrjToNhom> ThanhVienToNhom { get; set; }
         public virtual ICollection<PrjDuAnNvChuyenMon> PrjDuAnNvChuyenMon { get; set; }
-        public virtual ICollection<HrmChamCongDiemDanh> HrmChamCongDiemDanh { get; set; }
+        public virtual ICollection<HrmChamCongDiemDanh> HrmChamCongDiemDanh { get; set; } // Tạo chấm công điểm danh
+        public virtual ICollection<HrmChamCongDiemDanh> XacNhanChamCongDiemDanh { get; set; } // Xác nhận chấm công điểm danh
 
         public virtual ICollection<PerRole> PerRoles { get; set; }
 

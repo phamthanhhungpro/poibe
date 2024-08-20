@@ -5,6 +5,7 @@
         public Guid ChamCongDiemDanhId { get; set; }
         public Guid CongKhaiBaoId { get; set; }
         public string LyDo { get; set; }
+        public string GhiChu { get; set; }
         public Guid NguoiXacNhan { get; set; }
     }
 }

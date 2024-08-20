@@ -6,6 +6,7 @@ using Poi.Id.InfraModel.DataAccess.Hrm;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Constants;
 using Poi.Shared.Model.Dtos;
+using System.Linq.Expressions;
 
 namespace Poi.Hrm.Logic.Service
 {
@@ -38,6 +39,7 @@ namespace Poi.Hrm.Logic.Service
                 HrmCongKhaiBao = _context.HrmCongKhaiBao.Find(request.CongKhaiBaoId),
                 TrangThai = false,
                 NguoiXacNhan = _context.Users.Find(request.NguoiXacNhan),
+                GhiChu = request.GhiChu
             };
 
             await _context.HrmGiaiTrinhChamCong.AddAsync(giaiTrinh);
@@ -45,6 +47,8 @@ namespace Poi.Hrm.Logic.Service
 
             // update trang thai cham cong diem danh
             chamCongDiemDanh.TrangThai = TrangThaiEnum.ChoXacNhan;
+            chamCongDiemDanh.NguoiXacNhan = giaiTrinh.NguoiXacNhan;
+            chamCongDiemDanh.UpdatedAt = DateTime.UtcNow;
             _context.HrmChamCongDiemDanh.Update(chamCongDiemDanh);
             await _context.SaveChangesAsync();
 
@@ -72,15 +76,43 @@ namespace Poi.Hrm.Logic.Service
 
         public async Task<List<HrmGiaiTrinhChamCong>> GetGiaiTrinhChamCongByUserId(TenantInfo tenantInfo, Guid userId)
         {
-            return await _context.HrmGiaiTrinhChamCong
-                                                        .Include(x => x.HrmChamCongDiemDanh).ThenInclude(h => h.User)
-                                                        .Include(x => x.HrmCongKhaiBao)
-                                                        .Include(x => x.HrmChamCongDiemDanh).ThenInclude(h => h.HrmTrangThaiChamCong)
-                                                        .Where(x => x.NguoiXacNhan.Id == userId
-                                                        && x.TrangThai == false
-                                                        && x.NguoiXacNhan.Tenant.Id == tenantInfo.TenantId)
-                                                      .OrderByDescending(o => o.CreatedAt)
-                                                      .ToListAsync();
+            Expression<Func<HrmGiaiTrinhChamCong, bool>> filterExpression = x => true;
+            // check scope
+            if (tenantInfo.IsNeedCheckScope && tenantInfo.RequestScopeCode != null && tenantInfo.RequestScopeCode.Count > 0)
+            {
+                // check scope
+                var user = await _context.Users
+                                        .Include(x => x.LanhDaoPhongBan)
+                                        .FirstOrDefaultAsync(x => x.Id == tenantInfo.UserId);
+
+                var userInPhongBanIds = user.LanhDaoPhongBan.Where(u => u.ThanhVien != null)
+                                    .SelectMany(u => u.ThanhVien.Select(t => t.Id)).ToList();
+
+                switch (tenantInfo.RequestScopeCode.First())
+                {
+                    // Tất cả user của đơn vị
+                    case ScopeCode.XNCC_ALL:
+                        filterExpression = x => true;
+                        break;
+
+                    // User của phòng ban
+                    case ScopeCode.XNCC_PHONGBAN:
+                        filterExpression = x => userInPhongBanIds.Any(u => u == x.NguoiXacNhan.Id) || x.NguoiXacNhan.Id == userId;
+                        break;
+
+                    default:
+                        // Handle other cases here
+                        break;
+                }
+            }
+
+            return await _context.HrmGiaiTrinhChamCong.Include(x => x.HrmChamCongDiemDanh).ThenInclude(h => h.User)
+                                                      .Include(x => x.HrmCongKhaiBao)
+                                                      .Include(x => x.HrmChamCongDiemDanh).ThenInclude(h => h.HrmTrangThaiChamCong)
+                                                      .Where(filterExpression)
+                                                      .Where(x => x.TrangThai == false && x.NguoiXacNhan.Tenant.Id == tenantInfo.TenantId)
+                                                     .OrderByDescending(o => o.CreatedAt)
+                                                     .ToListAsync();
         }
 
         public Task<CudResponseDto> UpdateGiaiTrinhChamCong(Guid id, TenantInfo tenantInfo, GiaiTrinhChamCongRequest request)
@@ -107,21 +139,26 @@ namespace Poi.Hrm.Logic.Service
                 };
             }
 
+            var congXacNhan = await _context.HrmCongKhaiBao.FirstOrDefaultAsync(x => x.Id == request.CongXacNhanId);
+
             if (request.IsXacNhan)
             {
                giaitrinh.TrangThai = true;
                giaitrinh.HrmChamCongDiemDanh.TrangThai = TrangThaiEnum.XacNhan;
-               giaitrinh.HrmChamCongDiemDanh.HrmCongKhaiBao = giaitrinh.HrmCongKhaiBao;
-               giaitrinh.HrmChamCongDiemDanh.HrmTrangThaiChamCong = await _context.HrmTrangThaiChamCong
-               .FirstOrDefaultAsync(t => t.MaTrangThai == MaTrangThaiChamCongSystem.HOP_LE);
+               giaitrinh.HrmChamCongDiemDanh.HrmCongXacNhan = congXacNhan;
+               giaitrinh.HrmChamCongDiemDanh.LyDo = giaitrinh.LyDo;
+               giaitrinh.HrmChamCongDiemDanh.GhiChu = giaitrinh.GhiChu;
 
+               giaitrinh.HrmChamCongDiemDanh.HrmCongXacNhan = congXacNhan;
+               giaitrinh.HrmChamCongDiemDanh.HrmTrangThaiChamCong = await _context.HrmTrangThaiChamCong.FirstOrDefaultAsync(t => t.MaTrangThai == MaTrangThaiChamCongSystem.HOP_LE);
+                
                giaitrinh.UpdatedAt = DateTime.UtcNow;
                giaitrinh.HrmChamCongDiemDanh.UpdatedAt = DateTime.UtcNow;
             } else
             {
                 giaitrinh.TrangThai = false;
                 giaitrinh.HrmChamCongDiemDanh.TrangThai = TrangThaiEnum.ChoGiaiTrinh;
-                giaitrinh.HrmChamCongDiemDanh.HrmCongKhaiBao = null;
+                giaitrinh.HrmChamCongDiemDanh.NguoiXacNhan = null;
                 giaitrinh.NguoiXacNhan = null;
 
                 giaitrinh.UpdatedAt = DateTime.UtcNow;

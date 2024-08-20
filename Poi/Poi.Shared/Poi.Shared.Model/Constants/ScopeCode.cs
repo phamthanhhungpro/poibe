@@ -43,5 +43,12 @@ namespace Poi.Shared.Model.Constants
 
         public const string EDIT_DUAN_ALL = "ALL";
         public const string EDIT_DUAN_PHONGBAN = "ALL-PHONGBAN";
+
+        public const string LSCC_PHONGBAN = "LSCC-PHONGBAN";
+        public const string LSCC_ALL= "LSCC-ALL";
+        public const string XNCC_PHONGBAN = "XNCC-PHONGBAN";
+        public const string XNCC_ALL = "XNCC-ALL";
+
+
     }
 }

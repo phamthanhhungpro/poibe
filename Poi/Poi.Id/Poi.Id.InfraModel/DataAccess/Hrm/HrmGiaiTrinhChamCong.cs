@@ -6,6 +6,7 @@ namespace Poi.Id.InfraModel.DataAccess.Hrm
     {
         public HrmChamCongDiemDanh HrmChamCongDiemDanh { get; set; }
         public string LyDo { get; set; }
+        public string GhiChu { get; set; }
         public HrmCongKhaiBao HrmCongKhaiBao { get; set; }
         public DateTime ThoiGian { get; set; }
         public User NguoiXacNhan { get; set; }

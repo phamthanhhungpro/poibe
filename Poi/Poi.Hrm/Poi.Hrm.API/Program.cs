@@ -1,10 +1,8 @@
 using Hangfire;
 using Hangfire.PostgreSql;
-using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Poi.Hrm.API.Jobs;
 using Poi.Hrm.Logic;
+using Poi.HRM.API.Middlewares;
 using Poi.Id.InfraModel.DataAccess;
 using Poi.Shared.Model.MiddleWare;
 using System.Text.Json.Serialization;
@@ -24,11 +22,11 @@ builder.Services.AddCors(options =>
 });
 
 // Add Hangfire services.
-builder.Services.AddHangfire(config =>
-config.UsePostgreSqlStorage(c =>
-        c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
+//builder.Services.AddHangfire(config =>
+//config.UsePostgreSqlStorage(c =>
+//        c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-builder.Services.AddHangfireServer();
+//builder.Services.AddHangfireServer();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<HrmDbContext>(options =>
@@ -61,13 +59,14 @@ app.UseCors("AllowAllOrigins");
 
 app.UseMiddleware<HeaderExtractorMiddleWare>();
 app.UseMiddleware<TokenCheckMiddleware>();
+app.UseMiddleware<AppPermissionMiddleware>();
+
 app.UseHttpsRedirection();
-app.UseMiddleware<VaiTroPermissionMiddleware>();
 
 //app.UseAuthorization();
-app.UseHangfireDashboard();
+//app.UseHangfireDashboard();
 // Schedule the job to run at 10 PM every day.
-RecurringJob.AddOrUpdate<SyncChamCongService>(job => job.SyncChamCong(), "0 21 * * 1-5");
+// RecurringJob.AddOrUpdate<SyncChamCongService>(job => job.SyncChamCong(), "0 21 * * 1-5");
 
 
 app.MapControllers();

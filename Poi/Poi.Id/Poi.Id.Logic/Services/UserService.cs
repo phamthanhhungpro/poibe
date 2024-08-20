@@ -160,16 +160,16 @@ namespace Poi.Id.Logic.Services
                 .Include(t => t.Role)
                 .Include(t => t.Group)
                 .Include(t => t.PerRoles)
-                .Where(t => t.Tenant.Id == info.TenantId)
+                .Where(t => t.Tenant.Id == info.TenantId && (string.IsNullOrEmpty(info.AppCode) || t.Apps.Any(a => a.Code == info.AppCode)))
                 .OrderByDescending(o => o.CreatedAt).AsNoTracking();
 
-            if (info.Role.IsSSA())
-            {
-                query = _context.Users
-                            .Include(t => t.Apps)
-                            .Include(t => t.Role)
-                            .Include(t => t.Group).OrderByDescending(o => o.CreatedAt).AsNoTracking();
-            }
+            //if (info.Role.IsSSA())
+            //{
+            //    query = _context.Users
+            //                .Include(t => t.Apps)
+            //                .Include(t => t.Role)
+            //                .Include(t => t.Group).OrderByDescending(o => o.CreatedAt).AsNoTracking();
+            //}
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize)
                 .Select(x => new UserListInfoDto
@@ -188,7 +188,7 @@ namespace Poi.Id.Logic.Services
                     TenantName = x.Tenant.Name,
                     IsActive = x.IsActive,
                     Apps = x.Apps.ToList(),
-                    PerRoles = x.PerRoles.ToList(),
+                    PerRoles = x.PerRoles.Where(r => r.AppCode == info.AppCode).ToList(),
                 }).ToListAsync();
 
             var count = await query.CountAsync();
@@ -346,10 +346,13 @@ namespace Poi.Id.Logic.Services
             var data = await _context.Users
                 .Include(u => u.Tenant)
                 .Include(u => u.LanhDaoPhongBan).ThenInclude(p => p.QuanLy)
+                .Include(u => u.ThanhVienPhongBan).ThenInclude(p => p.QuanLy)
                 .Select(u => new UserPhongBanDto
                 {
                     Id = u.Id,
-                    PhongBanBoPhan = u.LanhDaoPhongBan.First(),
+                    UserName = u.UserName,
+                    FullName = u.FullName,
+                    PhongBanBoPhan = u.LanhDaoPhongBan.FirstOrDefault() ?? u.ThanhVienPhongBan.FirstOrDefault(),
                 })
                 .FirstOrDefaultAsync(u => u.Id == userId);
 

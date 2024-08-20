@@ -170,7 +170,7 @@ namespace Poi.Id.Logic.Services.AppPermission
         {
             var allFunctions = await _context.PerFunction
                                             .Include(x => x.GroupFunction)
-                                            .Include(x => x.Scopes)
+                                            .Include(x => x.Scopes.OrderByDescending(o=> o.CreatedAt))
                                             //.Include(x => x.PerRoleFunctionScope).ThenInclude(p => p.Role)
                                             .Where(x => x.AppCode == info.AppCode)
                                             .ToListAsync();

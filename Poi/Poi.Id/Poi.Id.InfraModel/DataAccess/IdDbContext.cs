@@ -200,6 +200,18 @@ namespace Poi.Id.InfraModel.DataAccess
                          v => (TrangThaiEnum)Enum.Parse(typeof(TrangThaiEnum), v)); // Convert string to Enum for use
             });
 
+            modelBuilder.Entity<HrmChamCongDiemDanh>()
+                .HasOne(d => d.NguoiXacNhan)
+                .WithMany(u => u.XacNhanChamCongDiemDanh)
+                .HasForeignKey(d => d.NguoiXacNhanId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<HrmChamCongDiemDanh>()
+                .HasOne(d => d.User)
+                .WithMany(u => u.HrmChamCongDiemDanh)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<HrmDiemDanhHistory>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");

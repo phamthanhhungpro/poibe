@@ -4,5 +4,6 @@
     {
         public Guid GiaiTrinhChamCongId { get; set; }
         public bool IsXacNhan { get; set; }
+        public Guid CongXacNhanId { get; set; }
     }
 }

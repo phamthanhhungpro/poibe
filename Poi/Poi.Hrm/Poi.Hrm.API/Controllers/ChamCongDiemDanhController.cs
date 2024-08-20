@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Poi.Hrm.Logic.Dtos;
 using Poi.Hrm.Logic.Interface;
 using Poi.Hrm.Logic.Requests;
 using Poi.Hrm.Logic.Service;
@@ -38,6 +39,20 @@ namespace Poi.Hrm.API.Controllers
         public async Task<IActionResult> DiemDanhThuCong(DiemDanhThuCongRequest request)
         {
             var res = await _chamCongDiemDanhService.DiemDanhThuCong(TenantInfo, request);
+            return Ok(res);
+        }
+
+        [HttpPost("bang-cham-cong")]
+        public async Task<ActionResult<List<BangChamCongDto>>> BangChamCong(BangChamCongRequest request)
+        {
+            var res = await _chamCongDiemDanhService.BangChamCong(TenantInfo, request);
+            return Ok(res);
+        }
+
+        [HttpGet("detail")]
+        public async Task<ActionResult<List<HrmChamCongDiemDanh>>> GetChamCongDiemDanh([FromQuery] Guid id)
+        {
+            var res = await _chamCongDiemDanhService.GetDetailChamCong(TenantInfo, id);
             return Ok(res);
         }
     }

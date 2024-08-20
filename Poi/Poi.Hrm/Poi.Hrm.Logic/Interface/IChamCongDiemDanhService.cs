@@ -1,4 +1,5 @@
-﻿using Poi.Hrm.Logic.Requests;
+﻿using Poi.Hrm.Logic.Dtos;
+using Poi.Hrm.Logic.Requests;
 using Poi.Id.InfraModel.DataAccess.Hrm;
 using Poi.Shared.Model.BaseModel;
 using Poi.Shared.Model.Dtos;
@@ -16,5 +17,8 @@ namespace Poi.Hrm.Logic.Interface
 
         Task<CudResponseDto> UpdateChamCongDiemDanh(Guid id, TenantInfo tenantInfo, ChamCongDiemDanhRequest request);
         Task<CudResponseDto> DiemDanhThuCong(TenantInfo tenantInfo, DiemDanhThuCongRequest request);
+        Task<List<BangChamCongDto>> BangChamCong(TenantInfo tenantInfo, BangChamCongRequest request);
+
+        Task<HrmChamCongDiemDanh> GetDetailChamCong(TenantInfo tenantInfo, Guid id);
     }
 }
